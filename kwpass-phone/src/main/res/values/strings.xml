@@ -1,3 +1,17 @@
 <resources>
-    <string name="app_name">KW Pass</string>
+    <string name="app_name">KW Pass for Wear OS</string>
+    <string name="setting">설정</string>
+    <string name="welcome">환영합니다!</string>
+
+    <string name="rid">학번</string>
+    <string name="password">비밀번호</string>
+    <string name="tel">전화번호 (\'-\') 없이 입력</string>
+    <string name="apply">적용</string>
+
+    <string name="goBack">뒤로 가기</string>
+    <string name="error_getSecret">시크릿 키를 불러오던 중 문제가 발생했습니다.</string>
+    <string name="checking">확인 중</string>
+    <string name="fetching">요청 중</string>
+    <string name="fetch">요청</string>
+
 </resources>

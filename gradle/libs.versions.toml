@@ -1,26 +1,39 @@
 [versions]
 agp = "8.13.1"
-annotation = "0.8.13"
-core = "0.8.15"
+datastorePreferences = "1.2.0"
 kotlin = "2.2.21"
 coreKtx = "1.17.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
 kotlinxCoroutinesCore = "1.10.2"
+kotlinxSerializationJson = "1.9.0"
 lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.12.0"
 composeBom = "2025.11.01"
+materialIconsExtended = "1.7.8"
 playServicesWearable = "19.0.0"
 composeMaterial = "1.5.5"
 composeFoundation = "1.5.5"
-processor = "0.8.13"
-retrofitConverter = "0.8.13"
+retrofit = "3.0.0"
 wearToolingPreview = "1.0.0"
 coreSplashscreen = "1.2.0"
+navigationRuntimeKtx = "2.9.6"
+navigationCompose = "2.9.6"
+
+#noinspection NewerVersionAvailable
+annotation = "0.8.13" # 0.8.13
+#noinspection NewerVersionAvailable
+core = "0.8.13" # 0.8.13
+#noinspection NewerVersionAvailable
+retrofitConverter = "0.8.13" # 0.8.13
+#noinspection NewerVersionAvailable
+processor = "0.8.13" # 0.8.13
 
 [libraries]
+androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 annotation = { module = "com.tickaroo.tikxml:annotation", version.ref = "annotation" }
 core = { module = "com.tickaroo.tikxml:core", version.ref = "core" }
@@ -38,13 +51,17 @@ androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-
 androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 play-services-wearable = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "playServicesWearable" }
 androidx-compose-material = { group = "androidx.wear.compose", name = "compose-material", version.ref = "composeMaterial" }
 androidx-compose-foundation = { group = "androidx.wear.compose", name = "compose-foundation", version.ref = "composeFoundation" }
 androidx-wear-tooling-preview = { group = "androidx.wear", name = "wear-tooling-preview", version.ref = "wearToolingPreview" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 processor = { module = "com.tickaroo.tikxml:processor", version.ref = "processor" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-converter = { module = "com.tickaroo.tikxml:retrofit-converter", version.ref = "retrofitConverter" }
+androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

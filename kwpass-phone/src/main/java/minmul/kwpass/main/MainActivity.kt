@@ -12,8 +12,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             KWPassTheme {
-                MainScreen(
-                )
+                 MainScreen()
             }
         }
     }
