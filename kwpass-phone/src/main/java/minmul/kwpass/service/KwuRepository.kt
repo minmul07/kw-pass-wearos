@@ -7,6 +7,7 @@ import com.tickaroo.tikxml.annotation.Xml
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
+import javax.inject.Inject
 
 @Xml(name = "root")
 data class KwResponse(
@@ -46,7 +47,9 @@ interface KwuApiService {
     ): KwResponse
 }
 
-object Kwu {
+class KwuRepository @Inject constructor(
+    private val api: KwuApiService
+) {
     var secretKey: String = ""
     var authKey: String = ""
     var qrData: String = ""
@@ -74,7 +77,7 @@ object Kwu {
     ): String? {
         try {
             Log.i("getSecretKey", "1. 시크릿 키 요청 중...")
-            val keyResponse = Network.api.getSecretKey(
+            val keyResponse = api.getSecretKey(
                 userId = with(Encryption) {
                     rid.encode()
                 })
@@ -95,7 +98,7 @@ object Kwu {
     ): String? {
         try {
             Log.i("getAuthKey", "2. 로그인 요청 중...")
-            val loginResponse = Network.api.getAuthKey(realId = with(Encryption) {
+            val loginResponse = api.getAuthKey(realId = with(Encryption) {
                 rid.encode()
             }, rid = with(Encryption) {
                 rid.encode()
@@ -118,7 +121,7 @@ object Kwu {
         val encryption = Encryption
         try {
             Log.i("getQR", "3. QR코드 데이터 요청 중...")
-            val qrResponse = Network.api.getQrCode(
+            val qrResponse = api.getQrCode(
                 realId = with(encryption) {
                     rid.encode()
                 }, authKey = authKey, newCheck = "Y"

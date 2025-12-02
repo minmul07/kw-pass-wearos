@@ -14,7 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import minmul.kwpass.ScreenDestination
+import minmul.kwpass.ui.ScreenDestination
 import minmul.kwpass.ui.HomeScreen
 import minmul.kwpass.ui.InformationScreen
 import minmul.kwpass.ui.LandingScreen
@@ -23,7 +23,7 @@ import minmul.kwpass.ui.SettingScreen
 
 @Composable
 fun MainScreen(
-    mainViewModel: MainViewModel = viewModel(factory = MainViewModel.Factory),
+    mainViewModel: MainViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()

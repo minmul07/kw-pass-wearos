@@ -181,26 +181,26 @@ fun SettingScreen(
     }
 }
 
-@Preview
-@Composable
-fun SettingScreenAppBarPreview() {
-    SettingScreenAppBar(navigateUp = {})
-}
-
-@SuppressLint("ViewModelConstructorInComposable")
-@Preview
-@Composable
-fun SettingScreenPreview() {
-    val mainViewModel = MainViewModel(userData = UserData(LocalContext.current)).apply {
-        ridField = "test_rid"
-        passwordField = "test_password"
-        telField = "010-1234-5678"
-    }
-    val navController = rememberNavController()
-    SettingScreen(
-        mainViewModel = mainViewModel,
-        navController = navController,
-        focusManager = LocalFocusManager.current
-    )
-}
-
+//@Preview
+//@Composable
+//fun SettingScreenAppBarPreview() {
+//    SettingScreenAppBar(navigateUp = {})
+//}
+//
+//@SuppressLint("ViewModelConstructorInComposable")
+//@Preview
+//@Composable
+//fun SettingScreenPreview() {
+//    val mainViewModel = MainViewModel().apply {
+//        ridField = "test_rid"
+//        passwordField = "test_password"
+//        telField = "010-1234-5678"
+//    }
+//    val navController = rememberNavController()
+//    SettingScreen(
+//        mainViewModel = mainViewModel,
+//        navController = navController,
+//        focusManager = LocalFocusManager.current
+//    )
+//}
+//

@@ -8,31 +8,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import minmul.kwpass.service.Kwu
+import minmul.kwpass.service.KwuRepository
 import minmul.kwpass.service.UserData
+import javax.inject.Inject
 
-class MainViewModel(private val userData: UserData) : ViewModel() {
-
-    companion object {
-        val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(
-                modelClass: Class<T>,
-                extras: CreationExtras
-            ): T {
-                // Application Context 가져오기
-                val application =
-                    checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
-
-                return MainViewModel(
-                    UserData(application.applicationContext)
-                ) as T
-            }
-        }
-    }
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val userData: UserData,
+    private val kwuRepository: KwuRepository
+): ViewModel() {
 
     var ridField by mutableStateOf("")
     var ridFieldEnabled by mutableStateOf(true)
@@ -75,7 +63,7 @@ class MainViewModel(private val userData: UserData) : ViewModel() {
     private suspend fun fetchQR(rid: String, password: String, tel: String): String {
         Log.i("fetchQR", "INFO rid: $rid, password: ${password.length}자리, tel: $tel")
         val realRid = "0$rid"
-        return Kwu.startProcess(rid = realRid, password = password, tel = tel)
+        return kwuRepository.startProcess(rid = realRid, password = password, tel = tel)
     }
 
     fun saveUserData() {

@@ -23,9 +23,11 @@ import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
+import dagger.hilt.android.AndroidEntryPoint
 import minmul.kwpass.wearos.R
 import minmul.kwpass.wearos.presentation.theme.KWPassTheme
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()

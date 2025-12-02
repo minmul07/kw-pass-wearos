@@ -4,12 +4,14 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 val Context.dataStore by preferencesDataStore(name = "userInfo")
 
-class UserData(private val context: Context) {
+class UserData @Inject constructor(@ApplicationContext private val context: Context) {
     companion object {
         val KEY_RID = stringPreferencesKey("rid") // 학번
         val KEY_PASSWORD = stringPreferencesKey("password") // 비밀번호

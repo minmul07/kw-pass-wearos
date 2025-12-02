@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import minmul.kwpass.R
-import minmul.kwpass.ScreenDestination
+import minmul.kwpass.ui.ScreenDestination
 import minmul.kwpass.main.MainViewModel
 import minmul.kwpass.service.UserData
 
@@ -117,13 +117,13 @@ fun HomeScreen(
     }
 }
 
-@SuppressLint("ViewModelConstructorInComposable")
-@Preview
-@Composable
-fun HomeScreenPreview() {
-    HomeScreen(
-        modifier = Modifier,
-        mainViewModel = MainViewModel(userData = UserData(LocalContext.current)),
-        navController = rememberNavController()
-    )
-}
+//@SuppressLint("ViewModelConstructorInComposable")
+//@Preview
+//@Composable
+//fun HomeScreenPreview() {
+//    HomeScreen(
+//        modifier = Modifier,
+//        mainViewModel = MainViewModel(userData = UserData(LocalContext.current)),
+//        navController = rememberNavController()
+//    )
+//}

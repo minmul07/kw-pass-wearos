@@ -1,4 +1,4 @@
-package minmul.kwpass
+package minmul.kwpass.ui
 
 import kotlinx.serialization.Serializable
 
