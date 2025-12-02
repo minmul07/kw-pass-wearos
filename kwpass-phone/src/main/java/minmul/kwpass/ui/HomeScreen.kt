@@ -1,6 +1,5 @@
 package minmul.kwpass.ui
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,18 +20,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import minmul.kwpass.R
-import minmul.kwpass.ui.ScreenDestination
-import minmul.kwpass.main.MainViewModel
-import minmul.kwpass.service.UserData
+import minmul.kwpass.main.MainUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,7 +56,10 @@ fun HomeScreenAppBar(
 
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier, mainViewModel: MainViewModel, navController: NavController
+    modifier: Modifier = Modifier,
+    uiState: MainUiState,
+    refreshQR: () -> Unit,
+    navController: NavController
 ) {
 
     Scaffold(
@@ -89,11 +86,11 @@ fun HomeScreen(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Text(text = "학번: ${mainViewModel.rid}")
-                    Text(text = "비밀번호: ${mainViewModel.password}")
-                    Text(text = "전화번호: ${mainViewModel.tel}")
+                    Text(text = "학번: ${uiState.savedRid}")
+                    Text(text = "비밀번호: ${uiState.savedPassword}")
+                    Text(text = "전화번호: ${uiState.savedTel}")
                     Text(
-                        text = "QR: ${mainViewModel.qr.replace("    ", " ")}",
+                        text = "QR: ${uiState.savedQR.replace("    ", " ")}",
                         softWrap = true,
                         overflow = TextOverflow.Ellipsis,
                         fontSize = 12.sp
@@ -102,15 +99,13 @@ fun HomeScreen(
             }
 
             Button(
-                onClick = {
-                    mainViewModel.refreshQR()
-                },
-                enabled = mainViewModel.validation && !mainViewModel.fetchingData
+                onClick = refreshQR,
+                enabled = uiState.isAllValid && !uiState.fetchingData
             ) {
-                if (!mainViewModel.fetchingData) {
+                if (!uiState.fetchingData) {
                     Text(text = stringResource(R.string.fetch))
                 } else {
-                    Text(text = stringResource(R.string.checking))
+                    Text(text = stringResource(R.string.fetching))
                 }
             }
         }

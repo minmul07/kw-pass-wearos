@@ -1,16 +1,15 @@
 package minmul.kwpass.main
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import minmul.kwpass.service.KwuRepository
 import minmul.kwpass.service.UserData
@@ -20,40 +19,25 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val userData: UserData,
     private val kwuRepository: KwuRepository
-): ViewModel() {
+) : ViewModel() {
 
-    var ridField by mutableStateOf("")
-    var ridFieldEnabled by mutableStateOf(true)
-    var isRidValid by mutableStateOf(false)
-    var passwordField by mutableStateOf("")
-    var passwordFieldEnabled by mutableStateOf(true)
-    var isPasswordValid by mutableStateOf(false)
-    var telField by mutableStateOf("")
-    var telFieldEnabled by mutableStateOf(true)
-    var isTelValid by mutableStateOf(false)
+    private val _uiState = MutableStateFlow(MainUiState())
+    val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
-    var passwordVisible by mutableStateOf(false)
-    var validation by mutableStateOf(false)
-
-    var rid by mutableStateOf("")
-    var password by mutableStateOf("")
-    var tel by mutableStateOf("")
 
     private val _toastEvent = Channel<String>()
     val toastEvent = _toastEvent.receiveAsFlow()
 
-    var qr: String by mutableStateOf("")
-    var fetchingData by mutableStateOf(false)
-
-
     init {
         viewModelScope.launch {
-            userData.userFlow.collect { (savedRid, savedPass, savedTel) ->
+            userData.userFlow.collect { (ridOnDisk, passwordOnDisk, telOnDisk) ->
 
-                setData(savedRid, savedPass, savedTel)
-                checkAllValidation()
+                setData(ridOnDisk, passwordOnDisk, telOnDisk)
 
-                Log.d("DEBUG_USER", "로드된 정보: 학번=$savedRid, 비번= ${password.length}자리, 전화=$savedTel")
+                Log.d(
+                    "DEBUG_USER",
+                    "로드된 정보: 학번=$ridOnDisk, 비번= ${passwordOnDisk.length}자리, 전화=$telOnDisk"
+                )
 
             }
         }
@@ -67,46 +51,82 @@ class MainViewModel @Inject constructor(
     }
 
     fun saveUserData() {
-        if (!validation) {
+        if (!uiState.value.isAllValid) {
             return
         }
 
         viewModelScope.launch {
+            var result: String = ""
+            _uiState.update { currentState ->
+                currentState.copy(
+                    fetchingData = true
+                )
+            }
             try {
-                fetchingData = true
-                val result = fetchQR(ridField, passwordField, telField)
-
-                rid = ridField
-                password = passwordField
-                tel = telField
-
-                saveDataOnLocal(rid, password, tel)
-                qr = result
+                result = fetchQR(
+                    uiState.value.savedRid,
+                    uiState.value.savedPassword,
+                    uiState.value.savedTel
+                )
+                if (result == "") {
+                    throw Exception("Void QR Response. ")
+                }
+                saveDataOnLocal(
+                    uiState.value.savedRid,
+                    uiState.value.savedPassword,
+                    uiState.value.savedTel
+                )
             } catch (e: Exception) {
                 _toastEvent.send("정보 확인 필요: ${e.message}")
             } finally {
-                fetchingData = false
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        fetchingData = false
+                    )
+                }
             }
-
         }
-
     }
 
     fun refreshQR() {
-        if (!validation) {
+        if (!uiState.value.isAllValid) {
             return
         }
 
         viewModelScope.launch {
+            var result: String = ""
+            _uiState.update { currentState ->
+                currentState.copy(
+                    fetchingData = true
+                )
+            }
             try {
-                fetchingData = true
-                val result = fetchQR(rid, password, tel)
-                qr = result
+                result = fetchQR(
+                    uiState.value.savedRid,
+                    uiState.value.savedPassword,
+                    uiState.value.savedTel
+                )
+                if (result == "") {
+                    throw Exception("Void QR Response. ")
+                }
             } catch (e: Exception) {
                 _toastEvent.send(e.message ?: "알 수 없는 오류가 발생했습니다.")
             } finally {
-                fetchingData = false
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        savedQR = result,
+                        fetchingData = false
+                    )
+                }
             }
+        }
+    }
+
+    fun updatePasswordVisibility() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                passwordVisible = !_uiState.value.passwordVisible,
+            )
         }
     }
 
@@ -116,44 +136,58 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun checkAllValidation() {
-        isRidValid = ridField.length == 10
-        isPasswordValid = validatePassword(passwordField)
-        isTelValid = telField.length == 11
-        validation = isTelValid && isPasswordValid && isRidValid
-    }
-
-    fun updateRid(new: String) {
-        if (new.length <= 10 && new.all { it.isDigit() }) {
-            ridField = new
+    fun updateRidInput(input: String) {
+        val isValid: Boolean = input.length == 10 && input.all { it.isDigit() }
+        if (input.length <= 10 && input.all { it.isDigit() }) {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    ridInput = input,
+                    isRidValid = isValid
+                )
+            }
         }
-        isRidValid = ridField.length == 10
-        checkAllValidation()
     }
 
-    fun updatePassword(new: String) {
-        passwordField = new
-        isPasswordValid = validatePassword(new)
-        Log.i("isPasswordValid", isPasswordValid.toString())
-        checkAllValidation()
-    }
-
-    fun updateTel(new: String) {
-        if (new.length <= 11 && new.all { it.isDigit() }) {
-            telField = new
+    fun updatePasswordInput(input: String) {
+        val isValid: Boolean = validatePassword(input)
+        Log.i("isPasswordValid", isValid.toString())
+        _uiState.update { currentState ->
+            currentState.copy(
+                passwordInput = input,
+                isPasswordValid = isValid
+            )
         }
-        isTelValid = telField.length == 11
-        checkAllValidation()
+    }
+
+    fun updateTelInput(input: String) {
+        val isValid: Boolean = input.length == 11 && input.all { it.isDigit() }
+        if (input.length <= 11 && input.all { it.isDigit() }) {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    telInput = input,
+                    isTelValid = isValid
+                )
+            }
+        }
     }
 
     fun setData(newRid: String, newPassword: String, newTel: String) {
-        ridField = newRid
-        passwordField = newPassword
-        telField = newTel
-
-        rid = newRid
-        password = newPassword
-        tel = newTel
+        _uiState.update { currentState ->
+            currentState.copy(
+                savedRid = newRid,
+                savedPassword = newPassword,
+                savedTel = newTel,
+                savedQR = "",
+                ridInput = newRid,
+                passwordInput = newPassword,
+                telInput = newTel,
+                isRidValid = true, // true 보장됨
+                isPasswordValid = true, // true 보장됨
+                isTelValid = true,  // true 보장됨
+                passwordVisible = false,
+                fetchingData = false
+            )
+        }
     }
 
     fun validatePassword(ps: String): Boolean {

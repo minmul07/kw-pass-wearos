@@ -1,6 +1,5 @@
 package minmul.kwpass.ui
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,19 +24,14 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import minmul.kwpass.R
-import minmul.kwpass.main.MainViewModel
-import minmul.kwpass.service.UserData
+import minmul.kwpass.main.MainUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,10 +59,16 @@ fun SettingScreenAppBar(
 @Composable
 fun SettingScreen(
     modifier: Modifier = Modifier,
-    mainViewModel: MainViewModel,
+    uiState: MainUiState,
+    onRidChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onPasswordVisibilityChange: () -> Unit,
+    onTelChange: (String) -> Unit,
+    onSave: () -> Unit,
     navController: NavController,
     focusManager: FocusManager
 ) {
+
     Scaffold(
         topBar = {
             SettingScreenAppBar(
@@ -84,35 +84,35 @@ fun SettingScreen(
             modifier = modifier.padding(paddingValues)
         ) {
             OutlinedTextField(
-                value = mainViewModel.ridField,
+                value = uiState.ridInput,
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = colorScheme.surface,
                     unfocusedContainerColor = colorScheme.surface,
                     disabledContainerColor = colorScheme.surface,
                 ),
-                onValueChange = { mainViewModel.updateRid(it) },
+                onValueChange = onRidChange,
                 label = {
                     Text(text = stringResource(R.string.rid))
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number).copy(
                     imeAction = ImeAction.Done
                 ),
-                isError = !mainViewModel.isRidValid,
-                enabled = mainViewModel.ridFieldEnabled,
+                isError = !uiState.isRidValid,
+                enabled = !uiState.fetchingData,
                 modifier = modifier.fillMaxWidth(),
             )
 
             OutlinedTextField(
-                value = mainViewModel.passwordField,
+                value = uiState.passwordInput,
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = colorScheme.surface,
                     unfocusedContainerColor = colorScheme.surface,
                     disabledContainerColor = colorScheme.surface,
                 ),
-                onValueChange = { mainViewModel.updatePassword(it) },
-                visualTransformation = if (mainViewModel.passwordVisible) VisualTransformation.None
+                onValueChange = onPasswordChange,
+                visualTransformation = if (uiState.passwordVisible) VisualTransformation.None
                 else PasswordVisualTransformation(),
                 label = {
                     Text(text = stringResource(R.string.password))
@@ -120,42 +120,41 @@ fun SettingScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password).copy(
                     imeAction = ImeAction.Next
                 ),
-                isError = !mainViewModel.isPasswordValid,
                 trailingIcon = {
-                    val image = if (mainViewModel.passwordVisible) Icons.Default.Visibility
+                    val image = if (uiState.passwordVisible) Icons.Default.Visibility
                     else Icons.Default.VisibilityOff
 
-                    val description = if (mainViewModel.passwordVisible) "비밀번호 보기"
+                    val description = if (uiState.passwordVisible) "비밀번호 보기"
                     else "비밀번호 숨기기"
 
-                    IconButton(onClick = {
-                        mainViewModel.passwordVisible = !mainViewModel.passwordVisible
-                    }
+                    IconButton(
+                        onClick = onPasswordVisibilityChange,
+                        enabled = !uiState.fetchingData
                     ) {
                         Icon(imageVector = image, description)
                     }
                 },
-                enabled = mainViewModel.passwordFieldEnabled,
+                isError = !uiState.isPasswordValid,
+                enabled = !uiState.fetchingData,
                 modifier = modifier.fillMaxWidth(),
             )
             OutlinedTextField(
-
-                value = mainViewModel.telField,
+                value = uiState.telInput,
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = colorScheme.surface,
                     unfocusedContainerColor = colorScheme.surface,
                     disabledContainerColor = colorScheme.surface,
                 ),
-                onValueChange = { mainViewModel.updateTel(it) },
+                onValueChange = onTelChange,
                 label = {
                     Text(text = stringResource(R.string.tel))
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number).copy(
                     imeAction = ImeAction.Done
                 ),
-                isError = !mainViewModel.isTelValid,
-                enabled = mainViewModel.telFieldEnabled,
+                isError = !uiState.isTelValid,
+                enabled = !uiState.fetchingData,
                 modifier = modifier.fillMaxWidth(),
             )
 
@@ -165,12 +164,10 @@ fun SettingScreen(
             ) {
 
                 Button(
-                    onClick = {
-                        mainViewModel.saveUserData()
-                    },
-                    enabled = mainViewModel.validation && !mainViewModel.fetchingData
+                    onClick = onSave,
+                    enabled = uiState.isAllValid && !uiState.fetchingData
                 ) {
-                    if (!mainViewModel.fetchingData) {
+                    if (!uiState.fetchingData) {
                         Text(text = stringResource(R.string.apply))
                     } else {
                         Text(text = stringResource(R.string.checking))
@@ -180,27 +177,3 @@ fun SettingScreen(
         }
     }
 }
-
-//@Preview
-//@Composable
-//fun SettingScreenAppBarPreview() {
-//    SettingScreenAppBar(navigateUp = {})
-//}
-//
-//@SuppressLint("ViewModelConstructorInComposable")
-//@Preview
-//@Composable
-//fun SettingScreenPreview() {
-//    val mainViewModel = MainViewModel().apply {
-//        ridField = "test_rid"
-//        passwordField = "test_password"
-//        telField = "010-1234-5678"
-//    }
-//    val navController = rememberNavController()
-//    SettingScreen(
-//        mainViewModel = mainViewModel,
-//        navController = navController,
-//        focusManager = LocalFocusManager.current
-//    )
-//}
-//

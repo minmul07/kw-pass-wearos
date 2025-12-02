@@ -11,7 +11,7 @@
     <string name="goBack">뒤로 가기</string>
     <string name="error_getSecret">시크릿 키를 불러오던 중 문제가 발생했습니다.</string>
     <string name="checking">확인 중</string>
-    <string name="fetching">요청 중</string>
-    <string name="fetch">요청</string>
+    <string name="fetching">QR코드 불러오는 중</string>
+    <string name="fetch">QR코드 요청</string>
 
 </resources>
