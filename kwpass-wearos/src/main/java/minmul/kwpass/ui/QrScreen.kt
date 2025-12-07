@@ -1,0 +1,202 @@
+package minmul.kwpass.ui
+
+import android.app.Activity
+import android.view.WindowManager
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import androidx.wear.compose.material.Scaffold
+import androidx.wear.compose.material.Text
+import androidx.wear.compose.material.TimeText
+import androidx.wear.tooling.preview.devices.WearDevices
+import minmul.kwpass.R
+import minmul.kwpass.main.MainUiState
+import minmul.kwpass.main.MainUiStateProvider
+
+@Composable
+fun QrScreen(
+    modifier: Modifier = Modifier,
+    uiState: MainUiState,
+    onRefresh: () -> Unit,
+    navController: NavController
+) {
+    val qrAlpha by animateFloatAsState(
+        targetValue = if (uiState.isRefreshing) 0.1f else 1.0f,
+        animationSpec = tween(durationMillis = 300)
+    )
+    val infiniteTransition = rememberInfiniteTransition(label = "spin")
+    val angle by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(500, easing = LinearEasing)
+        ), label = "spinAngle"
+    )
+
+    Scaffold(
+        timeText = { TimeText() }
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            if (uiState.status != ScreenStatus.QR_READY) {
+                Text(
+                    text =
+                        when (uiState.status) {
+                            ScreenStatus.START -> stringResource(R.string.welcome)
+                            ScreenStatus.NOT_CONNECTED_TO_PHONE -> stringResource(R.string.no_connected_phone)
+                            ScreenStatus.FAILED_TO_GET_QR -> stringResource(R.string.failed_to_get_qr)
+                            ScreenStatus.NO_ACCOUNT_DATA_ON_DISK -> stringResource(R.string.no_account_data)
+                            ScreenStatus.GENERATING_QR -> stringResource(R.string.loading_qr)
+                            ScreenStatus.FETCHING_QR -> stringResource(R.string.fetching_qr)
+                            ScreenStatus.SYNCING_ACCOUNT_DATA -> stringResource(R.string.loading_account)
+                            ScreenStatus.FAILED_TO_GET_ACCOUNT_DATA_FROM_PHONE -> stringResource(
+                                R.string.failed_to_get_account_from_phone
+                            )
+
+                            else -> ""
+                        },
+                    textAlign = TextAlign.Center,
+                    color = Color.White,
+                    softWrap = true,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                )
+            }
+            if (uiState.savedQrBitmap != null) {
+                if (!uiState.isRefreshing) {
+                    KeepScreenOnAndMaxBrightness()
+                }
+                Image(
+                    bitmap = uiState.savedQrBitmap.asImageBitmap(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxSize(0.65f)
+                        .clip(RoundedCornerShape(4.dp))
+                        .alpha(qrAlpha)
+                        .zIndex(1f)
+
+                )
+            }
+
+
+            if (uiState.isRefreshing || uiState.status in listOf<ScreenStatus>(
+                    ScreenStatus.QR_READY,
+                    ScreenStatus.NOT_CONNECTED_TO_PHONE,
+                    ScreenStatus.FAILED_TO_GET_QR,
+                    ScreenStatus.FETCHING_QR,
+                    ScreenStatus.GENERATING_QR
+                )
+            ) {
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                ) {
+                    IconButton(
+                        modifier = Modifier,
+                        onClick = if (uiState.isRefreshing) {
+                            {}
+                        } else onRefresh
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .rotate(if (uiState.isRefreshing) angle else 0f),
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = null,
+                            tint = if (uiState.isRefreshing) Color.LightGray else Color.White
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Preview(
+    device = WearDevices.SMALL_ROUND,
+    showSystemUi = true,
+    name = "Large Round"
+)
+@Preview(
+    device = WearDevices.LARGE_ROUND,
+    showSystemUi = true,
+    name = "Square"
+)
+@Composable
+fun QrScreenPreview(
+    @PreviewParameter(MainUiStateProvider::class) uiState: MainUiState
+) {
+    val navController = rememberNavController()
+    QrScreen(
+        uiState = uiState,
+        onRefresh = {},
+        navController = navController
+    )
+}
+
+@Composable
+fun KeepScreenOnAndMaxBrightness() {
+    val context = LocalContext.current
+    val window = (context as? Activity)?.window ?: return
+
+    val isInspection = LocalInspectionMode.current
+    if (isInspection) return
+
+    DisposableEffect(Unit) {
+        // 1. 기존 밝기 저장
+        val originalAttributes = window.attributes
+        val originalBrightness = originalAttributes.screenBrightness
+
+        // 2. 화면 켜짐 유지 설정 (FLAG_KEEP_SCREEN_ON)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+        // 3. 밝기 최대 설정 (0.0 ~ 1.0)
+        val newAttributes = window.attributes
+        newAttributes.screenBrightness = 1f // 최대 밝기
+        window.attributes = newAttributes
+
+        onDispose {
+            // 4. 화면을 벗어나면 원래 설정으로 복구
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            newAttributes.screenBrightness = originalBrightness
+            window.attributes = newAttributes
+        }
+    }
+}

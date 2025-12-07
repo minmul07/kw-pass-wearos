@@ -1,4 +1,4 @@
-package minmul.kwpass.service
+package minmul.kwpass.shared
 
 import android.util.Log
 import com.tickaroo.tikxml.annotation.Element

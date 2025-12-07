@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+/.idea/discord.xml
+/.idea/deploymentTargetSelector.xml

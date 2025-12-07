@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 rootProject.name = "KW Pass"
 include(":kwpass-phone")
 include(":kwpass-wearos")
+include(":shared")

@@ -1,4 +1,4 @@
-package minmul.kwpass.service
+package minmul.kwpass.shared
 
 import com.tickaroo.tikxml.TikXml
 import com.tickaroo.tikxml.retrofit.TikXmlConverterFactory

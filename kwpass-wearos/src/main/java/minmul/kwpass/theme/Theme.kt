@@ -1,4 +1,4 @@
-package minmul.kwpass.wearos.presentation.theme
+package minmul.kwpass.theme
 
 import androidx.compose.runtime.Composable
 import androidx.wear.compose.material.MaterialTheme
