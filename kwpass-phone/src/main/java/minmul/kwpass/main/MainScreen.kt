@@ -28,7 +28,7 @@ fun MainScreen(
     navController: NavHostController = rememberNavController()
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentScreen = backStackEntry?.destination?.route ?: ScreenDestination.Home
+    backStackEntry?.destination?.route ?: ScreenDestination.Home
     val focusManager = LocalFocusManager.current
 
     val context = LocalContext.current

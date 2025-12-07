@@ -4,10 +4,18 @@
     <selectionStates>
       <SelectionState runConfigName="kwpass-wearos">
         <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2025-12-07T09:22:41.306105Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\ddddd\.android\avd\Wear_OS_Large_Round.avd" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="kwpass-phone">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-11-30T09:51:16.177183600Z">
+        <DropdownSelection timestamp="2025-12-07T09:22:33.098428800Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\ddddd\.android\avd\Pixel_9_Pro.avd" />

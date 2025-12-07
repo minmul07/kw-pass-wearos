@@ -1,0 +1,13 @@
+package minmul.kwpass.ui
+
+enum class ScreenStatus {
+    QR_READY,
+    NOT_CONNECTED_TO_PHONE,
+    FAILED_TO_GET_QR,
+    NO_ACCOUNT_DATA_ON_DISK,
+    GENERATING_QR,
+    FETCHING_QR,
+    SYNCING_ACCOUNT_DATA,
+    FAILED_TO_GET_ACCOUNT_DATA_FROM_PHONE,
+    START
+}

@@ -1,7 +1,8 @@
-package minmul.kwpass.service
+package minmul.kwpass.shared
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import android.util.Base64
 import java.security.KeyStore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
@@ -51,9 +52,9 @@ object CryptoManager {
         val bytes = plainText.toByteArray(Charsets.UTF_8)
         val cipher = encryptCipher
         val encryptedBytes = cipher.doFinal(bytes)
-        val iv = android.util.Base64.encodeToString(cipher.iv, android.util.Base64.DEFAULT).trim()
+        val iv = Base64.encodeToString(cipher.iv, Base64.DEFAULT).trim()
         val content =
-            android.util.Base64.encodeToString(encryptedBytes, android.util.Base64.DEFAULT).trim()
+            Base64.encodeToString(encryptedBytes, Base64.DEFAULT).trim()
         return "$iv[IV]$content"
     }
 
@@ -62,8 +63,8 @@ object CryptoManager {
             val split = encryptedText.split("[IV]")
             if (split.size != 2) return ""
 
-            val iv = android.util.Base64.decode(split[0], android.util.Base64.DEFAULT)
-            val content = android.util.Base64.decode(split[1], android.util.Base64.DEFAULT)
+            val iv = Base64.decode(split[0], Base64.DEFAULT)
+            val content = Base64.decode(split[1], Base64.DEFAULT)
 
             val cipher = getDecryptCipher(iv)
             return String(cipher.doFinal(content), Charsets.UTF_8)

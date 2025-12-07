@@ -1,4 +1,4 @@
-package minmul.kwpass.service
+package minmul.kwpass.shared
 
 import java.nio.charset.StandardCharsets
 import java.util.Base64

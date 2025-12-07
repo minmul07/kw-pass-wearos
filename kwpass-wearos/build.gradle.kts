@@ -3,17 +3,20 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt.android)
+
+    kotlin("plugin.serialization") version "2.0.0"
+
     kotlin("kapt")
 }
 
 android {
-    namespace = "minmul.kwpass.wearos"
+    namespace = "minmul.kwpass"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "minmul.kwpass.wearos"
+        applicationId = "minmul.kwpass"
         minSdk = 30
         targetSdk = 36
         versionCode = 1
@@ -55,12 +58,23 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.play.services.wearable)
+    implementation(libs.androidx.compose.navigation)
+    implementation(libs.compose.material3)
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.compose.ui.tooling)
+    implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.androidx.material3)
+    implementation(libs.zxing.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
+
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
+
+    implementation(project(":shared"))
 }

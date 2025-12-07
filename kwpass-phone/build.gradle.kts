@@ -70,19 +70,14 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.annotation)
-    implementation(libs.core)
-    implementation(libs.retrofit.converter)
-    implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.compose.material.icons.extended)
-    implementation(libs.retrofit)
-    implementation(libs.androidx.datastore.preferences)
     implementation(libs.zxing.core)
     implementation(libs.play.services.wearable)
+    implementation(libs.kotlinx.coroutines.play.services)
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
-    kapt(libs.processor)
+    implementation(project(":shared"))
 }
