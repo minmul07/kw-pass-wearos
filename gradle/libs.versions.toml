@@ -19,12 +19,15 @@ playServicesWearable = "19.0.0"
 composeMaterial = "1.5.6"
 composeFoundation = "1.5.6"
 retrofit = "3.0.0"
+tiles = "1.5.0"
 wearToolingPreview = "1.0.0"
 coreSplashscreen = "1.2.0"
 navigationRuntimeKtx = "2.9.6"
 navigationCompose = "2.9.6"
 hilt = "2.57.2"
 hiltNavigationCompose = "1.3.0"
+watchfaceComplicationsDataSourceKtx = "1.2.1"
+watchfaceComplicationsData = "1.2.1"
 
 #noinspection NewerVersionAvailable
 annotation = "0.8.13" # 0.8.13
@@ -35,8 +38,6 @@ retrofitConverter = "0.8.13" # 0.8.13
 #noinspection NewerVersionAvailable
 processor = "0.8.13"
 material3 = "1.4.0"
-appcompat = "1.7.1"
-material = "1.13.0" # 0.8.13
 
 [libraries]
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
@@ -44,6 +45,11 @@ androidx-compose-navigation = { module = "androidx.wear.compose:compose-navigati
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
+androidx-tiles = { module = "androidx.wear.tiles:tiles", version.ref = "tiles" }
+androidx-tiles-material = { module = "androidx.wear.tiles:tiles-material", version.ref = "tiles" }
+androidx-tiles-tooling-preview = { module = "androidx.wear.tiles:tiles-tooling-preview", version.ref = "tiles" }
+watchface-complications-data-source-ktx = { group = "androidx.wear.watchface", name = "watchface-complications-data-source-ktx", version.ref = "watchfaceComplicationsDataSourceKtx" }
+watchface-complications-data = { group = "androidx.wear.watchface", name = "watchface-complications-data", version.ref = "watchfaceComplicationsData" }
 annotation = { module = "com.tickaroo.tikxml:annotation", version.ref = "annotation" }
 compose-material3 = { module = "androidx.wear.compose:compose-material3", version.ref = "composeMaterial3" }
 compose-ui-tooling = { module = "androidx.wear.compose:compose-ui-tooling", version.ref = "composeMaterial3" }
@@ -80,8 +86,6 @@ hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

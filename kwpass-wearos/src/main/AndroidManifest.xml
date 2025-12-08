@@ -29,6 +29,10 @@
             android:name="com.google.android.wearable.standalone"
             android:value="true" />
 
+        <meta-data
+            android:name="android.support.wearable.complications.SUPPORTED_TYPES"
+            android:value="SHORT_TEXT,SMALL_IMAGE,MONOCHROMATIC_IMAGE" />
+
         <activity
             android:name=".main.MainActivity"
             android:exported="true"
@@ -47,10 +51,47 @@
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
                 <data
-                    android:scheme="wear"
                     android:host="*"
-                    android:pathPrefix="/account" />
+                    android:pathPrefix="/account"
+                    android:scheme="wear" />
             </intent-filter>
+        </service>
+
+        <service
+            android:name=".service.complication.TextComplicationService"
+            android:exported="true"
+            android:icon="@drawable/qr_icon"
+            android:label="KW Pass"
+            android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER">
+
+            <intent-filter>
+                <action android:name="android.support.wearable.complications.ACTION_COMPLICATION_UPDATE_REQUEST" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.support.wearable.complications.SUPPORTED_TYPES"
+                android:value="SHORT_TEXT,SMALL_IMAGE,MONOCHROMATIC_IMAGE" />
+            <meta-data
+                android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
+                android:value="0" />
+        </service>
+
+        <service
+            android:name=".service.complication.IconComplicationService"
+            android:exported="true"
+            android:icon="@drawable/qr_icon"
+            android:label="KW Pass (아이콘)"
+            android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER">
+            <intent-filter>
+                <action android:name="android.support.wearable.complications.ACTION_COMPLICATION_UPDATE_REQUEST" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.support.wearable.complications.SUPPORTED_TYPES"
+                android:value="SMALL_IMAGE,MONOCHROMATIC_IMAGE" />
+            <meta-data
+                android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
+                android:value="0" />
         </service>
     </application>
 
