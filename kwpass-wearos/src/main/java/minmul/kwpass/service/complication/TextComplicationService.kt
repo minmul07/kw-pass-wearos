@@ -1,5 +1,6 @@
 package minmul.kwpass.service.complication
 
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.drawable.Icon
@@ -101,8 +102,11 @@ open class TextComplicationService : SuspendingComplicationDataSourceService() {
         }
     }
 
+    @SuppressLint("WearRecents")
     protected fun createMainActivityPendingIntent(): PendingIntent {
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
 
         return PendingIntent.getActivity(
             this,
