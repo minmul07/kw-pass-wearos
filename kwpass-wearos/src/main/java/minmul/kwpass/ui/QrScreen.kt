@@ -75,6 +75,14 @@ fun QrScreen(
             modifier = Modifier
                 .fillMaxSize()
         ) {
+            if (uiState.status !in listOf<ScreenStatus>(
+                    ScreenStatus.START,
+                    ScreenStatus.NOT_CONNECTED_TO_PHONE
+                )
+            ) {
+                KeepScreenOn()
+            }
+
             if (uiState.status != ScreenStatus.QR_READY) {
                 Text(
                     text =
@@ -101,7 +109,7 @@ fun QrScreen(
             }
             if (uiState.savedQrBitmap != null) {
                 if (!uiState.isRefreshing) {
-                    KeepScreenOnAndMaxBrightness()
+                    KeepScreenMaxBrightness()
                 }
                 Image(
                     bitmap = uiState.savedQrBitmap.asImageBitmap(),
@@ -172,7 +180,7 @@ fun QrScreenPreview(
 }
 
 @Composable
-fun KeepScreenOnAndMaxBrightness() {
+fun KeepScreenMaxBrightness() {
     val context = LocalContext.current
     val window = (context as? Activity)?.window ?: return
 
@@ -180,23 +188,33 @@ fun KeepScreenOnAndMaxBrightness() {
     if (isInspection) return
 
     DisposableEffect(Unit) {
-        // 1. 기존 밝기 저장
         val originalAttributes = window.attributes
         val originalBrightness = originalAttributes.screenBrightness
 
-        // 2. 화면 켜짐 유지 설정 (FLAG_KEEP_SCREEN_ON)
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-
-        // 3. 밝기 최대 설정 (0.0 ~ 1.0)
         val newAttributes = window.attributes
         newAttributes.screenBrightness = 1f // 최대 밝기
         window.attributes = newAttributes
 
         onDispose {
-            // 4. 화면을 벗어나면 원래 설정으로 복구
-            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             newAttributes.screenBrightness = originalBrightness
             window.attributes = newAttributes
+        }
+    }
+}
+
+@Composable
+fun KeepScreenOn() {
+    val context = LocalContext.current
+    val window = (context as? Activity)?.window ?: return
+
+    val isInspection = LocalInspectionMode.current
+    if (isInspection) return
+
+    DisposableEffect(Unit) {
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+        onDispose {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
     }
 }

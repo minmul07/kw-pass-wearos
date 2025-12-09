@@ -44,11 +44,18 @@ class MainViewModel @Inject constructor(
     private val nodeClient: NodeClient,
     private val kwuRepository: KwuRepository,
 ) : ViewModel() {
+    // UISTATE
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
+    // VIBRATION
+    private val _isErrorVibrationActive = MutableStateFlow(false)
+    val isErrorVibrationActive = _isErrorVibrationActive.asStateFlow()
+
+    // TOAST
     private val _toastEvent = Channel<String>()
     val toastEvent = _toastEvent.receiveAsFlow()
+
     private var refreshJob: Job? = null
 
     init {
@@ -84,6 +91,14 @@ class MainViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun playErrorVibration() {
+        _isErrorVibrationActive.value = true
+    }
+
+    fun stopErrorVibration() {
+        _isErrorVibrationActive.value = false
     }
 
     fun saveDataOnLocal(rid: String, password: String, tel: String) {
@@ -170,6 +185,7 @@ class MainViewModel @Inject constructor(
                     messageClient.sendMessage(phoneNode.id, "/refresh", null).await()
                     Log.d("requestRefresh", "새로고침 요청 전송 완료")
                 } else {
+                    playErrorVibration()
                     _uiState.update { currentState ->
                         currentState.copy(
                             status = ScreenStatus.NOT_CONNECTED_TO_PHONE
@@ -180,6 +196,7 @@ class MainViewModel @Inject constructor(
                 }
 
             } catch (e: Exception) {
+                playErrorVibration()
                 _uiState.update { currentState ->
                     currentState.copy(
                         status = ScreenStatus.FAILED_TO_GET_ACCOUNT_DATA_FROM_PHONE
@@ -246,6 +263,7 @@ class MainViewModel @Inject constructor(
                     Log.i("refreshQR", "작업이 취소되었습니다.")
                     throw e
                 } else {
+                    playErrorVibration()
                     _toastEvent.send(e.message ?: "오류 발생")
                     _uiState.update { currentState ->
                         currentState.copy(
