@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.util.Log
 import androidx.core.graphics.createBitmap
-import androidx.core.graphics.set
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.wearable.DataClient
@@ -56,10 +55,21 @@ class MainViewModel @Inject constructor(
     private val _toastEvent = Channel<String>()
     val toastEvent = _toastEvent.receiveAsFlow()
 
+    // QR
+    private val qrWriter = MultiFormatWriter()
+
     private var refreshJob: Job? = null
 
     init {
         startListeningForAccountSync()
+
+        viewModelScope.launch(Dispatchers.Default) {
+            try {
+                generateQrBitmapInternal("123")
+            } catch (e: Exception) {
+
+            }
+        }
 
         viewModelScope.launch {
             userData.userFlow.distinctUntilChanged().collect { (rid, password, tel) ->
@@ -135,32 +145,15 @@ class MainViewModel @Inject constructor(
     }
 
     fun generateQrBitmap(content: String) {
-        if (content.isEmpty()) return
+        if (content.isEmpty()) {
+            return
+        }
 
         viewModelScope.launch {
-            val bitmap = withContext(Dispatchers.IO) {
-                try {
-                    val bitMatrix: BitMatrix = MultiFormatWriter().encode(
-                        content,
-                        BarcodeFormat.QR_CODE,
-                        512, 512,
-                        mapOf(EncodeHintType.MARGIN to 1)
-                    )
-                    val width = bitMatrix.width
-                    val height = bitMatrix.height
-                    val bmp = createBitmap(width, height, Bitmap.Config.RGB_565)
+            // UI 상태 변경 (로딩 시작) 등은 필요하다면 여기서 처리
 
-                    for (x in 0 until width) {
-                        for (y in 0 until height) {
-                            // QR 픽셀이 있으면 검은색, 없으면 흰색
-                            bmp[x, y] = if (bitMatrix[x, y]) Color.BLACK else Color.WHITE
-                        }
-                    }
-                    bmp
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    null
-                }
+            val bitmap: Bitmap? = withContext(Dispatchers.Default) {
+                generateQrBitmapInternal(content)
             }
 
             if (bitmap != null) {
@@ -172,6 +165,37 @@ class MainViewModel @Inject constructor(
                     )
                 }
             }
+        }
+    }
+
+    private fun generateQrBitmapInternal(content: String): Bitmap? {
+        return try {
+            val hint = mapOf(
+                EncodeHintType.MARGIN to 1
+            )
+            val bitMatrix: BitMatrix = qrWriter.encode(
+                content,
+                BarcodeFormat.QR_CODE,
+                1, 1,
+                hint
+            )
+            val width = bitMatrix.width
+            val height = bitMatrix.height
+
+            val pixels = IntArray(width * height)
+
+            for (y in 0 until height) {
+                val offset = y * width
+                for (x in 0 until width) {
+                    pixels[offset + x] = if (bitMatrix[x, y]) Color.BLACK else Color.WHITE
+                }
+            }
+            val bmp = createBitmap(width, height, Bitmap.Config.RGB_565)
+            bmp.setPixels(pixels, 0, width, 0, 0, width, height)
+            bmp
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 
