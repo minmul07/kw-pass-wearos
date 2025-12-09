@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -118,7 +119,8 @@ fun QrScreen(
                         .fillMaxSize(0.65f)
                         .clip(RoundedCornerShape(4.dp))
                         .alpha(qrAlpha)
-                        .zIndex(1f)
+                        .zIndex(1f),
+                    filterQuality = FilterQuality.None
 
                 )
             }
