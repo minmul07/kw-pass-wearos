@@ -150,8 +150,6 @@ class MainViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            // UI 상태 변경 (로딩 시작) 등은 필요하다면 여기서 처리
-
             val bitmap: Bitmap? = withContext(Dispatchers.Default) {
                 generateQrBitmapInternal(content)
             }
