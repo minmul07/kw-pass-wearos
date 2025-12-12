@@ -9,6 +9,12 @@ Wear OS를 지원하는 광운대학교 도서관 qr코드 인증 어플리케�
 <img width="240" height="240" alt="Screenshot_20251208_222021_One UI Watch Home" src="https://github.com/user-attachments/assets/5f42e6d0-25e9-4678-9f62-b0c72c4c535b" />
 <img width="240" height="240" alt="Screenshot_20251208_222043_kwpass" src="https://github.com/user-attachments/assets/c7971b9f-4313-4409-8344-83e1f3fda558" />
 
+# 기능
+## Phone
+- 위젯을 통한 빠른 QR코드 보기
+- 도서관 주변에서 잠금해제 없이 잠금화면에서 QR코드 보기 (개발 중)
+## Watch
+- 컴플리케이션을 통해 빠른 QR코드 확인
 
 # 기술 스택
 - Kotlin
