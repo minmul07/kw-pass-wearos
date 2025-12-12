@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">KW Pass for Wear OS</string>
+    <string name="setting">設定</string>
+
+    <string name="rid">学籍番号</string>
+    <string name="password">パスワード</string>
+    <string name="tel">電話番号</string>
+    <string name="apply">適用</string>
+    <string name="login">ログイン</string>
+    <string name="next">次へ</string>
+
+    <string name="initial_account_setup">アカウント登録</string>
+    <string name="initial_account_setup_desc">始める前に、光云大学図書館のアカウント情報を入力してください。</string>
+    <string name="verifying_account">ログイン試行中</string>
+    <string name="error_verifying_account">あ、ログインに失敗しました！入力内容をもう一度確認してください。</string>
+    <string name="field_not_satisfied">入力を確認してください。</string>
+    <string name="login_success">ログイン成功！ :D</string>
+
+    <string name="goBack">戻る</string>
+    <string name="error_getSecret">シークレットキーの取得中に問題が発生しました。</string>
+    <string name="checking">確認中</string>
+    <string name="fetching">QRコード読込中</string>
+    <string name="fetch">QRコードリクエスト</string>
+
+    <string name="welcome">ようこそ！</string>
+    <string name="start">始める</string>
+    <string name="welcome_description">光云大学図書館のQR認証をウォッチとスマホで便利に使ってみましょう！</string>
+
+    <string name="introduce_phone_title">スマホ：使い方</string>
+    <string name="introduce_phone_widget">ホーム画面にウィジェットを追加して、QRコードを素早く確認できます。</string>
+    <string name="introduce_phone_lockscreen">ロック画面でもQRコードを確認できます。\nロック解除なしでQRアイコンをタップしてください。(開発中)</string>
+
+    <string name="introduce_watch_title">ウォッチ：使い方</string>
+    <string name="introduce_watch_app">ポケットからスマホを出さずに、手首の上でQRコードを確認できます。</string>
+    <string name="introduce_watch_complication">ウォッチフェイスにQRショートカットを追加できます。</string>
+</resources>

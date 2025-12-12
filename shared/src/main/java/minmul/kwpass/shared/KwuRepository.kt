@@ -58,15 +58,26 @@ class KwuRepository @Inject constructor(
         rid: String, password: String, tel: String
     ): String {
         try {
-            getSecretKey(rid) ?: throw Exception("시크릿 키를 가져오는데 실패했습니다.")
+            val secret = getSecretKey(rid)
+            if (secret.isNullOrBlank()) {
+                throw Exception("시크릿 키를 가져오는데 실패했습니다.")
+            }
 
-            getAuthKey(rid, password, tel) ?: throw Exception("로그인 인증에 실패했습니다.")
+            val auth = getAuthKey(rid, password, tel)
+            if (auth.isNullOrBlank()) {
+                throw Exception("로그인 인증에 실패했습니다.")
+            }
 
-            getQR(rid) ?: throw Exception("QR 데이터를 받아오지 못했습니다.")
+
+            val qr = getQR(rid)
+            if (qr.isNullOrBlank()) {
+                throw Exception("QR 데이터를 받아오지 못했습니다.")
+            }
 
             return qrData
 
         } catch (e: Exception) {
+            Log.d("startProcess", "QR 코드 데이터를 가져오는데 실패했습니다:", e)
             throw Exception("QR 코드 데이터를 가져오는데 실패했습니다: ${e.message}")
         }
     }
@@ -82,7 +93,7 @@ class KwuRepository @Inject constructor(
                     rid.encode()
                 })
             secretKey = keyResponse.item.secret ?: throw Exception("Secret Key is null")
-            Log.i("getSecretKey", "   >> Secret Key: $secretKey")
+            Log.i("getSecretKey", "   >> Secret Key: $secretKey (${secretKey.length})")
             return secretKey
         } catch (e: Exception) {
             Log.e("getSecretKey", e.toString())
@@ -106,7 +117,7 @@ class KwuRepository @Inject constructor(
                 password.encrypt(secretKey)
             })
             authKey = loginResponse.item.authKey ?: throw Exception("Auth Key is null")
-            Log.i("getAuthKey", "   >> Auth Key: $authKey")
+            Log.i("getAuthKey", "   >> Auth Key: $authKey (${authKey.length})")
             return authKey
         } catch (e: Exception) {
             Log.e("getAuthKey", e.toString())
@@ -129,7 +140,7 @@ class KwuRepository @Inject constructor(
             qrData = qrResponse.item.qrCode ?: throw Exception("QR Code is null")
 
             Log.i("getQR", "===============================")
-            Log.i("getQR", "QR Code Data: $qrData")
+            Log.i("getQR", "QR Code Data: $qrData (${qrData.length})")
             Log.i("getQR", "===============================")
             return qrData
         } catch (e: Exception) {

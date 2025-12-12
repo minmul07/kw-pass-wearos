@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">KW Pass for Wear OS</string>
+    <string name="setting">Настройки</string>
+
+    <string name="rid">Студенческий билет</string>
+    <string name="password">Пароль</string>
+    <string name="tel">Номер телефона</string>
+    <string name="apply">Применить</string>
+    <string name="login">Войти</string>
+    <string name="next">Далее</string>
+
+    <string name="initial_account_setup">Регистрация аккаунта</string>
+    <string name="initial_account_setup_desc">Пожалуйста, введите данные аккаунта библиотеки Университета Квангун, чтобы начать.</string>
+    <string name="verifying_account">Попытка входа...</string>
+    <string name="error_verifying_account">Ой, не удалось войти! Пожалуйста, проверьте введенные данные.</string>
+    <string name="field_not_satisfied">Проверьте ввод.</string>
+    <string name="login_success">Вход выполнен! :D</string>
+
+    <string name="goBack">Назад</string>
+    <string name="error_getSecret">Проблема при получении секретного ключа.</string>
+    <string name="checking">Проверка...</string>
+    <string name="fetching">Загрузка QR-кода...</string>
+    <string name="fetch">Запросить QR-код</string>
+
+    <string name="welcome">Добро пожаловать!</string>
+    <string name="start">Начать</string>
+    <string name="welcome_description">Используйте QR-код библиотеки Университета Квангун на часах и телефоне!</string>
+
+    <string name="introduce_phone_title">Телефон: Как использовать</string>
+    <string name="introduce_phone_widget">Добавьте виджет на главный экран для быстрого доступа к QR-коду.</string>
+    <string name="introduce_phone_lockscreen">Вы можете просмотреть QR-код с экрана блокировки.\nНажмите на иконку QR без разблокировки. (В разработке)</string>
+
+    <string name="introduce_watch_title">Часы: Как использовать</string>
+    <string name="introduce_watch_app">Проверяйте QR-код прямо на запястье, не доставая телефон из кармана.</string>
+    <string name="introduce_watch_complication">Вы можете добавить ярлык QR прямо на циферблат.</string>
+</resources>

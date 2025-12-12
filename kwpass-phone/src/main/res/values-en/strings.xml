@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">KW Pass for Wear OS</string>
+    <string name="setting">Settings</string>
+
+    <string name="rid">Student ID</string>
+    <string name="password">Password</string>
+    <string name="tel">Phone Number</string>
+    <string name="apply">Apply</string>
+    <string name="login">Log In</string>
+    <string name="next">Next</string>
+
+    <string name="initial_account_setup">Register Account</string>
+    <string name="initial_account_setup_desc">Please enter your Kwangwoon University library account info to get started.</string>
+    <string name="verifying_account">Attempting to log in...</string>
+    <string name="error_verifying_account">Oops, login failed! Please check your input and try again.</string>
+    <string name="field_not_satisfied">Please check your input.</string>
+    <string name="login_success">Login successful! :D</string>
+
+    <string name="goBack">Back</string>
+    <string name="error_getSecret">There was a problem retrieving the secret key.</string>
+    <string name="checking">Checking...</string>
+    <string name="fetching">Loading QR Code...</string>
+    <string name="fetch">Request QR Code</string>
+
+    <string name="welcome">Welcome!</string>
+    <string name="start">Get Started</string>
+    <string name="welcome_description">Use your Kwangwoon University Library QR pass conveniently on your watch and phone!</string>
+
+    <string name="introduce_phone_title">Phone: How to use</string>
+    <string name="introduce_phone_widget">Add the widget to your home screen for quick access to your QR code.</string>
+    <string name="introduce_phone_lockscreen">You can view the QR code from the lock screen.\nClick the QR icon without unlocking. (In development)</string>
+
+    <string name="introduce_watch_title">Watch: How to use</string>
+    <string name="introduce_watch_app">Check your QR code right from your wrist without taking out your phone.</string>
+    <string name="introduce_watch_complication">You can add a QR shortcut directly to your watch face.</string>
+</resources>

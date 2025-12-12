@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">KW Pass for Wear OS</string>
+    <string name="setting">设置</string>
+
+    <string name="rid">学号</string>
+    <string name="password">密码</string>
+    <string name="tel">电话号码</string>
+    <string name="apply">应用</string>
+    <string name="login">登录</string>
+    <string name="next">下一步</string>
+
+    <string name="initial_account_setup">注册帐户</string>
+    <string name="initial_account_setup_desc">开始前，请输入光云大学图书馆帐户信息。</string>
+    <string name="verifying_account">正在尝试登录</string>
+    <string name="error_verifying_account">哎呀，登录失败！请重新确认输入内容。</string>
+    <string name="field_not_satisfied">请检查输入内容。</string>
+    <string name="login_success">登录成功！:D</string>
+
+    <string name="goBack">返回</string>
+    <string name="error_getSecret">获取密钥时发生问题。</string>
+    <string name="checking">确认中</string>
+    <string name="fetching">正在加载二维码</string>
+    <string name="fetch">请求二维码</string>
+
+    <string name="welcome">欢迎！</string>
+    <string name="start">开始使用</string>
+    <string name="welcome_description">在手表和手机上便捷地使用光云大学图书馆二维码认证！</string>
+
+    <string name="introduce_phone_title">手机：使用方法</string>
+    <string name="introduce_phone_widget">在主屏幕添加小部件，快速查看二维码。</string>
+    <string name="introduce_phone_lockscreen">可以在锁屏界面查看二维码。\n无需解锁，直接点击二维码图标。(开发中)</string>
+
+    <string name="introduce_watch_title">手表：使用方法</string>
+    <string name="introduce_watch_app">无需从口袋拿出手机，在手腕上即可查看二维码。</string>
+    <string name="introduce_watch_complication">可以在表盘上添加二维码快捷方式。</string>
+</resources>

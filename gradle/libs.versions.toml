@@ -1,6 +1,7 @@
 [versions]
-agp = "8.13.1"
+agp = "8.13.2"
 composeMaterial3 = "1.5.6"
+coreSplashscreenVersion = "1.2.0"
 coreVersion = "3.5.4"
 datastorePreferences = "1.2.0"
 kotlin = "2.2.21"
@@ -38,15 +39,15 @@ retrofitConverter = "0.8.13" # 0.8.13
 #noinspection NewerVersionAvailable
 processor = "0.8.13"
 material3 = "1.4.0"
+animationGraphics = "1.10.0"
 
 [libraries]
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-compose-navigation = { module = "androidx.wear.compose:compose-navigation", version.ref = "composeMaterial3" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-splashscreen-v101 = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreenVersion" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
-androidx-tiles = { module = "androidx.wear.tiles:tiles", version.ref = "tiles" }
-androidx-tiles-material = { module = "androidx.wear.tiles:tiles-material", version.ref = "tiles" }
 androidx-tiles-tooling-preview = { module = "androidx.wear.tiles:tiles-tooling-preview", version.ref = "tiles" }
 watchface-complications-data-source-ktx = { group = "androidx.wear.watchface", name = "watchface-complications-data-source-ktx", version.ref = "watchfaceComplicationsDataSourceKtx" }
 watchface-complications-data = { group = "androidx.wear.watchface", name = "watchface-complications-data", version.ref = "watchfaceComplicationsData" }
@@ -86,6 +87,7 @@ hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+androidx-compose-animation-graphics = { group = "androidx.compose.animation", name = "animation-graphics", version.ref = "animationGraphics" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

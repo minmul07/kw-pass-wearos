@@ -1,4 +1,4 @@
-package minmul.kwpass.main
+package minmul.kwpass.ui.main
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -10,10 +10,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -36,13 +38,21 @@ class MainViewModel @Inject constructor(
     private val _toastEvent = Channel<String>()
     val toastEvent = _toastEvent.receiveAsFlow()
 
+    val isFirstRun: StateFlow<Boolean?> = userData.initialSetupFinished
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
+
+
     init {
         startListeningForForcedAccountSync()
 
         viewModelScope.launch {
             userData.userFlow.collect { (ridOnDisk, passwordOnDisk, telOnDisk) ->
 
-                setData(ridOnDisk, passwordOnDisk, telOnDisk)
+                setDataOnUiState(ridOnDisk, passwordOnDisk, telOnDisk)
 
                 Log.d(
                     "DEBUG_USER",
@@ -107,31 +117,13 @@ class MainViewModel @Inject constructor(
         }
     }
 
-//    fun startListeningForRefresh() {
-//        viewModelScope.launch {
-//            callbackFlow {
-//                val listener = MessageClient.OnMessageReceivedListener { messageEvent ->
-//                    if (messageEvent.path == "/refresh_qr") {
-//                        trySend(Unit)
-//                    }
-//                }
-//                messageClient.addListener(listener)
-//                awaitClose { messageClient.removeListener(listener) }
-//            }.collect {
-//                refreshQR()
-//            }
-//        }
-//    }
-
-
-    private suspend fun fetchQR(rid: String, password: String, tel: String): String {
-        Log.i("fetchQR", "INFO rid: $rid, password: ${password.length}자리, tel: $tel")
-        val realRid = "0$rid"
-        return kwuRepository.startProcess(rid = realRid, password = password, tel = tel)
-    }
-
-    fun saveUserData() {
-        if (!uiState.value.isAllValid) {
+    fun setAccountData() {
+        if (!uiState.value.isAllValidInput) {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    fieldErrorStatus = true
+                )
+            }
             return
         }
 
@@ -139,34 +131,54 @@ class MainViewModel @Inject constructor(
             var result: String = ""
             _uiState.update { currentState ->
                 currentState.copy(
-                    fetchingData = true
+                    fetchingData = true,
+                    initialStatus = false,
+                    failedForAccountVerification = false,
+                    succeededForAccountVerification = false,
+                    fieldErrorStatus = false
                 )
             }
             try {
                 result = fetchQR(
-                    uiState.value.savedRid,
-                    uiState.value.savedPassword,
-                    uiState.value.savedTel
+                    uiState.value.ridInput,
+                    uiState.value.passwordInput,
+                    uiState.value.telInput
                 )
-                if (result == "") {
+                if (result.isEmpty()) {
+                    Log.d("fetchQR", "result = $result")
                     throw Exception("Void QR Response. ")
                 }
+
+                // 성공!
                 saveDataOnLocal(
-                    uiState.value.savedRid,
-                    uiState.value.savedPassword,
-                    uiState.value.savedTel
+                    uiState.value.ridInput,
+                    uiState.value.passwordInput,
+                    uiState.value.telInput
                 )
                 sendAccountDataToWatch(
-                    uiState.value.savedRid,
-                    uiState.value.savedPassword,
-                    uiState.value.savedTel
+                    uiState.value.ridInput,
+                    uiState.value.passwordInput,
+                    uiState.value.telInput
                 )
-            } catch (e: Exception) {
-                _toastEvent.send("정보 확인 필요: ${e.message}")
-            } finally {
+
                 _uiState.update { currentState ->
                     currentState.copy(
-                        fetchingData = false
+                        fetchingData = false,
+                        savedRid = uiState.value.ridInput,
+                        savedTel = uiState.value.telInput,
+                        savedPassword = uiState.value.passwordInput,
+                        failedForAccountVerification = false,
+                        succeededForAccountVerification = true
+                    )
+                }
+            } catch (e: Exception) {
+                _toastEvent.send("정보 확인 필요: ${e.message}")
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        fetchingData = false,
+                        failedForAccountVerification = true,
+                        succeededForAccountVerification = false,
+                        fieldErrorStatus = true,
                     )
                 }
             }
@@ -174,7 +186,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun refreshQR() {
-        if (!uiState.value.isAllValid) {
+        if (!uiState.value.isAllValidInput) {
             return
         }
 
@@ -208,12 +220,11 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun updatePasswordVisibility() {
-        _uiState.update { currentState ->
-            currentState.copy(
-                passwordVisible = !_uiState.value.passwordVisible,
-            )
-        }
+    // qr 코드 반환
+    private suspend fun fetchQR(rid: String, password: String, tel: String): String {
+        Log.i("fetchQR", "INFO rid: $rid, password: ${password.length}자리, tel: $tel")
+        val realRid = "0$rid"
+        return kwuRepository.startProcess(rid = realRid, password = password, tel = tel)
     }
 
     fun saveDataOnLocal(rid: String, password: String, tel: String) {
@@ -222,13 +233,29 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun updatePasswordVisibility() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                passwordVisible = !_uiState.value.passwordVisible,
+            )
+        }
+    }
+
+    fun completeInitialSetup() {
+        viewModelScope.launch {
+            userData.finishedInitialSetupProcessedStatus()
+        }
+    }
+
+
     fun updateRidInput(input: String) {
         val isValid: Boolean = input.length == 10 && input.all { it.isDigit() }
         if (input.length <= 10 && input.all { it.isDigit() }) {
             _uiState.update { currentState ->
                 currentState.copy(
                     ridInput = input,
-                    isRidValid = isValid
+                    isRidValid = isValid,
+                    fieldErrorStatus = false
                 )
             }
         }
@@ -240,7 +267,8 @@ class MainViewModel @Inject constructor(
         _uiState.update { currentState ->
             currentState.copy(
                 passwordInput = input,
-                isPasswordValid = isValid
+                isPasswordValid = isValid,
+                fieldErrorStatus = false
             )
         }
     }
@@ -251,13 +279,14 @@ class MainViewModel @Inject constructor(
             _uiState.update { currentState ->
                 currentState.copy(
                     telInput = input,
-                    isTelValid = isValid
+                    isTelValid = isValid,
+                    fieldErrorStatus = false
                 )
             }
         }
     }
 
-    fun setData(newRid: String, newPassword: String, newTel: String) {
+    fun setDataOnUiState(newRid: String, newPassword: String, newTel: String) {
         _uiState.update { currentState ->
             currentState.copy(
                 savedRid = newRid,
@@ -270,7 +299,6 @@ class MainViewModel @Inject constructor(
                 isRidValid = true, // true 보장됨
                 isPasswordValid = true, // true 보장됨
                 isTelValid = true,  // true 보장됨
-                passwordVisible = false,
                 fetchingData = false
             )
         }

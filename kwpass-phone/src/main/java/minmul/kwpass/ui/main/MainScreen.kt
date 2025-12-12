@@ -1,6 +1,11 @@
-package minmul.kwpass.main
+package minmul.kwpass.ui.main
 
 import android.widget.Toast
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -8,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -17,15 +23,16 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import minmul.kwpass.ui.HomeScreen
 import minmul.kwpass.ui.InformationScreen
-import minmul.kwpass.ui.LandingScreen
 import minmul.kwpass.ui.ScreenDestination
 import minmul.kwpass.ui.SettingScreen
+import minmul.kwpass.ui.landing.LandingScreen
 
 
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    startDestination: ScreenDestination
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     backStackEntry?.destination?.route ?: ScreenDestination.Home
@@ -33,6 +40,8 @@ fun MainScreen(
 
     val context = LocalContext.current
     val uiState by mainViewModel.uiState.collectAsStateWithLifecycle()
+
+    val animSpec = tween<IntOffset>(durationMillis = 400)
 
     LaunchedEffect(key1 = true) {
         mainViewModel.toastEvent.collect { message ->
@@ -43,14 +52,45 @@ fun MainScreen(
 
     NavHost(
         navController = navController,
-        startDestination = ScreenDestination.Home,
+        startDestination = startDestination,
         modifier = Modifier.fillMaxSize()
     ) {
-        composable<ScreenDestination.Landing> {
-            LandingScreen()
+        composable<ScreenDestination.Landing>(
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(300)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(300)
+                )
+            }
+        ) {
+            LandingScreen(
+                onFinished = {
+                    mainViewModel.completeInitialSetup()
+                    navController.navigate(ScreenDestination.Home) {
+                        popUpTo<ScreenDestination.Landing> {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
         }
 
-        composable<ScreenDestination.Home> {
+        composable<ScreenDestination.Home>(
+            exitTransition = {
+                slideOutHorizontally(targetOffsetX = { -it / 3 }, animationSpec = animSpec) +
+                        fadeOut(animationSpec = tween(400)) // 살짝 어두워지거나 투명해짐
+            },
+            popEnterTransition = {
+                slideInHorizontally(initialOffsetX = { -it / 3 }, animationSpec = animSpec) +
+                        fadeIn(animationSpec = tween(200))
+            }
+        ) {
             HomeScreen(
                 uiState = uiState,
                 refreshQR = { mainViewModel.refreshQR() },
@@ -58,7 +98,14 @@ fun MainScreen(
             )
         }
 
-        composable<ScreenDestination.Setting> {
+        composable<ScreenDestination.Setting>(
+            enterTransition = {
+                slideInHorizontally(initialOffsetX = { it }, animationSpec = animSpec)
+            },
+            popExitTransition = {
+                slideOutHorizontally(targetOffsetX = { it }, animationSpec = animSpec)
+            }
+        ) {
             SettingScreen(
                 uiState = uiState,
                 navController = navController,
@@ -67,7 +114,7 @@ fun MainScreen(
                 onPasswordChange = { mainViewModel.updatePasswordInput(it) },
                 onPasswordVisibilityChange = { mainViewModel.updatePasswordVisibility() },
                 onTelChange = { mainViewModel.updateTelInput(it) },
-                onSave = { mainViewModel.saveUserData() },
+                onSave = { mainViewModel.setAccountData() },
             )
         }
 

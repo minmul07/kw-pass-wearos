@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">KW Pass for Wear OS</string>
+    <string name="setting">Cài đặt</string>
+
+    <string name="rid">Mã số sinh viên</string>
+    <string name="password">Mật khẩu</string>
+    <string name="tel">Số điện thoại</string>
+    <string name="apply">Áp dụng</string>
+    <string name="login">Đăng nhập</string>
+    <string name="next">Tiếp theo</string>
+
+    <string name="initial_account_setup">Đăng ký tài khoản</string>
+    <string name="initial_account_setup_desc">Vui lòng nhập thông tin tài khoản thư viện Đại học Kwangwoon để bắt đầu.</string>
+    <string name="verifying_account">Đang thử đăng nhập</string>
+    <string name="error_verifying_account">Rất tiếc, đăng nhập thất bại! Vui lòng kiểm tra lại thông tin đã nhập.</string>
+    <string name="field_not_satisfied">Vui lòng kiểm tra dữ liệu nhập.</string>
+    <string name="login_success">Đăng nhập thành công! :D</string>
+
+    <string name="goBack">Quay lại</string>
+    <string name="error_getSecret">Đã xảy ra lỗi khi lấy Secret Key.</string>
+    <string name="checking">Đang kiểm tra</string>
+    <string name="fetching">Đang tải mã QR</string>
+    <string name="fetch">Yêu cầu mã QR</string>
+
+    <string name="welcome">Chào mừng!</string>
+    <string name="start">Bắt đầu</string>
+    <string name="welcome_description">Sử dụng xác thực QR thư viện Đại học Kwangwoon tiện lợi trên đồng hồ và điện thoại!</string>
+
+    <string name="introduce_phone_title">Điện thoại: Cách sử dụng</string>
+    <string name="introduce_phone_widget">Thêm tiện ích (widget) vào màn hình chính để xem mã QR nhanh chóng.</string>
+    <string name="introduce_phone_lockscreen">Bạn có thể xem mã QR ngay từ màn hình khóa.\nNhấn vào biểu tượng QR mà không cần mở khóa. (Đang phát triển)</string>
+
+    <string name="introduce_watch_title">Đồng hồ: Cách sử dụng</string>
+    <string name="introduce_watch_app">Xem mã QR ngay trên cổ tay mà không cần lấy điện thoại ra khỏi túi.</string>
+    <string name="introduce_watch_complication">Bạn có thể thêm lối tắt QR vào mặt đồng hồ của mình.</string>
+</resources>

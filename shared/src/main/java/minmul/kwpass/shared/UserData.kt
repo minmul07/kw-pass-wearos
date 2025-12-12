@@ -1,6 +1,7 @@
 package minmul.kwpass.shared
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -16,7 +17,9 @@ class UserData @Inject constructor(@ApplicationContext private val context: Cont
         val KEY_RID = stringPreferencesKey("rid") // 학번
         val KEY_PASSWORD = stringPreferencesKey("password") // 비밀번호
         val KEY_TEL = stringPreferencesKey("tel") // 전화번호
+        val KEY_IS_FIRST_RUN = booleanPreferencesKey("is_first_run")
     }
+
 
     suspend fun saveUserCredentials(rid: String, pass: String, tel: String) {
         val encryptedRid = CryptoManager.encrypt(rid)
@@ -42,5 +45,16 @@ class UserData @Inject constructor(@ApplicationContext private val context: Cont
                 if (encryptedTel.isNotEmpty()) CryptoManager.decrypt(encryptedTel) else "",
             )
         }
+
+    val initialSetupFinished: Flow<Boolean> = context.dataStore.data
+        .map { preferences ->
+            preferences[KEY_IS_FIRST_RUN] ?: true
+        }
+
+    suspend fun finishedInitialSetupProcessedStatus() {
+        context.dataStore.edit { preferences ->
+            preferences[KEY_IS_FIRST_RUN] = false
+        }
+    }
 
 }

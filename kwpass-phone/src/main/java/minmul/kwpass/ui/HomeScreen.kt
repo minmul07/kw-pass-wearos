@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import minmul.kwpass.R
-import minmul.kwpass.main.MainUiState
+import minmul.kwpass.ui.main.MainUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,7 +100,7 @@ fun HomeScreen(
 
             Button(
                 onClick = refreshQR,
-                enabled = uiState.isAllValid && !uiState.fetchingData
+                enabled = uiState.isAllValidInput && !uiState.fetchingData
             ) {
                 if (!uiState.fetchingData) {
                     Text(text = stringResource(R.string.fetch))

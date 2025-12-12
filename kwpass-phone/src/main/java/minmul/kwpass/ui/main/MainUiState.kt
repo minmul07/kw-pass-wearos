@@ -1,4 +1,4 @@
-package minmul.kwpass.main
+package minmul.kwpass.ui.main
 
 data class MainUiState(
     // 저장된 사용자 정보
@@ -11,15 +11,18 @@ data class MainUiState(
     val ridInput: String = "",
     val passwordInput: String = "",
     val telInput: String = "",
-
-    // UI상태
     val isRidValid: Boolean = false,
     val isPasswordValid: Boolean = false,
     val isTelValid: Boolean = false,
+
+    // UI상태
+    val fieldErrorStatus: Boolean = false,
     val passwordVisible: Boolean = false,
     val fetchingData: Boolean = false,
+    val initialStatus: Boolean = true,
+    val failedForAccountVerification: Boolean = false,
+    val succeededForAccountVerification: Boolean = false
 ) {
-    val isAllValid: Boolean
+    val isAllValidInput: Boolean
         get() = isRidValid && isPasswordValid && isTelValid
-
 }
