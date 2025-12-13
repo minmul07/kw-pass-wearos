@@ -46,7 +46,7 @@ class UserData @Inject constructor(@ApplicationContext private val context: Cont
             )
         }
 
-    val initialSetupFinished: Flow<Boolean> = context.dataStore.data
+    val isFirstRun: Flow<Boolean> = context.dataStore.data
         .map { preferences ->
             preferences[KEY_IS_FIRST_RUN] ?: true
         }

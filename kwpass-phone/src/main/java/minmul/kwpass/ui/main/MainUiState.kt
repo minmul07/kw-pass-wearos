@@ -1,5 +1,7 @@
 package minmul.kwpass.ui.main
 
+import android.graphics.Bitmap
+
 data class MainUiState(
     // 저장된 사용자 정보
     val savedRid: String = "",
@@ -14,6 +16,11 @@ data class MainUiState(
     val isRidValid: Boolean = false,
     val isPasswordValid: Boolean = false,
     val isTelValid: Boolean = false,
+
+    //QR
+    val qrBitmap: Bitmap? = null,
+    val failedToGetQr: Boolean = false,
+
 
     // UI상태
     val fieldErrorStatus: Boolean = false,

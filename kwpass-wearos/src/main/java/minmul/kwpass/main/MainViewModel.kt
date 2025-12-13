@@ -1,9 +1,7 @@
 package minmul.kwpass.main
 
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.util.Log
-import androidx.core.graphics.createBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.wearable.DataClient
@@ -11,10 +9,6 @@ import com.google.android.gms.wearable.DataEvent
 import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.NodeClient
-import com.google.zxing.BarcodeFormat
-import com.google.zxing.EncodeHintType
-import com.google.zxing.MultiFormatWriter
-import com.google.zxing.common.BitMatrix
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -31,6 +25,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import minmul.kwpass.shared.KwuRepository
+import minmul.kwpass.shared.QrGenerator
 import minmul.kwpass.shared.UserData
 import minmul.kwpass.ui.ScreenStatus
 import javax.inject.Inject
@@ -56,7 +51,6 @@ class MainViewModel @Inject constructor(
     val toastEvent = _toastEvent.receiveAsFlow()
 
     // QR
-    private val qrWriter = MultiFormatWriter()
 
     private var refreshJob: Job? = null
 
@@ -65,7 +59,7 @@ class MainViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.Default) {
             try {
-                generateQrBitmapInternal("123")
+                QrGenerator.generateQrBitmapInternal("123")
             } catch (e: Exception) {
 
             }
@@ -151,7 +145,7 @@ class MainViewModel @Inject constructor(
 
         viewModelScope.launch {
             val bitmap: Bitmap? = withContext(Dispatchers.Default) {
-                generateQrBitmapInternal(content)
+                QrGenerator.generateQrBitmapInternal(content)
             }
 
             if (bitmap != null) {
@@ -166,36 +160,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun generateQrBitmapInternal(content: String): Bitmap? {
-        return try {
-            val hint = mapOf(
-                EncodeHintType.MARGIN to 1
-            )
-            val bitMatrix: BitMatrix = qrWriter.encode(
-                content,
-                BarcodeFormat.QR_CODE,
-                1, 1,
-                hint
-            )
-            val width = bitMatrix.width
-            val height = bitMatrix.height
-
-            val pixels = IntArray(width * height)
-
-            for (y in 0 until height) {
-                val offset = y * width
-                for (x in 0 until width) {
-                    pixels[offset + x] = if (bitMatrix[x, y]) Color.BLACK else Color.WHITE
-                }
-            }
-            val bmp = createBitmap(width, height, Bitmap.Config.RGB_565)
-            bmp.setPixels(pixels, 0, width, 0, 0, width, height)
-            bmp
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
 
     fun requestForcedAccountDataSync() {
         viewModelScope.launch {

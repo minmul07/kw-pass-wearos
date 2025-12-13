@@ -1,5 +1,6 @@
 package minmul.kwpass.ui.main
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,6 +8,7 @@ import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.PutDataMapRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +21,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import minmul.kwpass.shared.KwuRepository
+import minmul.kwpass.shared.QrGenerator
 import minmul.kwpass.shared.UserData
 import javax.inject.Inject
 
@@ -38,12 +42,14 @@ class MainViewModel @Inject constructor(
     private val _toastEvent = Channel<String>()
     val toastEvent = _toastEvent.receiveAsFlow()
 
-    val isFirstRun: StateFlow<Boolean?> = userData.initialSetupFinished
+    val isFirstRun: StateFlow<Boolean?> = userData.isFirstRun
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
             initialValue = null
         )
+
+    private var isAppReadyToRefresh = true
 
 
     init {
@@ -51,14 +57,15 @@ class MainViewModel @Inject constructor(
 
         viewModelScope.launch {
             userData.userFlow.collect { (ridOnDisk, passwordOnDisk, telOnDisk) ->
-
                 setDataOnUiState(ridOnDisk, passwordOnDisk, telOnDisk)
-
                 Log.d(
                     "DEBUG_USER",
                     "로드된 정보: 학번=$ridOnDisk, 비번= ${passwordOnDisk.length}자리, 전화=$telOnDisk"
                 )
-
+                if (isAppReadyToRefresh && isFirstRun.value == false) {
+                    isAppReadyToRefresh = false
+                    refreshQR()
+                }
             }
         }
     }
@@ -82,20 +89,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun sendQrToWatch(qrData: String) {
-        viewModelScope.launch {
-            try {
-                PutDataMapRequest.create("/qr_code").apply {
-                    dataMap.putString("qr_data", qrData)
-                    dataMap.putLong("timeStamp", System.currentTimeMillis())
-                }.asPutDataRequest().setUrgent()
-                Log.d("MainViewModel", "QR 전송 성공: $qrData")
-            } catch (e: Exception) {
-                Log.e("MainViewModel()", "QR 전송 실패", e)
-            }
-        }
-    }
-
 
     fun startListeningForForcedAccountSync() {
         viewModelScope.launch {
@@ -113,6 +106,26 @@ class MainViewModel @Inject constructor(
                     uiState.value.savedPassword,
                     uiState.value.savedTel
                 )
+            }
+        }
+    }
+
+    fun generateQrBitmap(content: String) {
+        if (content.isEmpty()) {
+            return
+        }
+
+        viewModelScope.launch {
+            val bitmap: Bitmap? = withContext(Dispatchers.Default) {
+                QrGenerator.generateQrBitmapInternal(content = content, margin = 2)
+            }
+
+            if (bitmap != null) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        qrBitmap = bitmap
+                    )
+                }
             }
         }
     }
@@ -206,13 +219,25 @@ class MainViewModel @Inject constructor(
                 if (result == "") {
                     throw Exception("Void QR Response. ")
                 }
-                sendQrToWatch(result)
-            } catch (e: Exception) {
-                _toastEvent.send(e.message ?: "알 수 없는 오류가 발생했습니다.")
-            } finally {
+
+                generateQrBitmap(content = result)
+
                 _uiState.update { currentState ->
                     currentState.copy(
                         savedQR = result,
+                        failedToGetQr = false
+                    )
+                }
+            } catch (e: Exception) {
+                _toastEvent.send(e.message ?: "알 수 없는 오류가 발생했습니다.")
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        failedToGetQr = true
+                    )
+                }
+            } finally {
+                _uiState.update { currentState ->
+                    currentState.copy(
                         fetchingData = false
                     )
                 }
@@ -249,12 +274,11 @@ class MainViewModel @Inject constructor(
 
 
     fun updateRidInput(input: String) {
-        val isValid: Boolean = input.length == 10 && input.all { it.isDigit() }
         if (input.length <= 10 && input.all { it.isDigit() }) {
             _uiState.update { currentState ->
                 currentState.copy(
                     ridInput = input,
-                    isRidValid = isValid,
+                    isRidValid = isValidRid(input),
                     fieldErrorStatus = false
                 )
             }
@@ -262,24 +286,22 @@ class MainViewModel @Inject constructor(
     }
 
     fun updatePasswordInput(input: String) {
-        val isValid: Boolean = validatePassword(input)
-        Log.i("isPasswordValid", isValid.toString())
+        Log.i("isPasswordValid", isValidPassword(input).toString())
         _uiState.update { currentState ->
             currentState.copy(
                 passwordInput = input,
-                isPasswordValid = isValid,
+                isPasswordValid = isValidPassword(input),
                 fieldErrorStatus = false
             )
         }
     }
 
     fun updateTelInput(input: String) {
-        val isValid: Boolean = input.length == 11 && input.all { it.isDigit() }
         if (input.length <= 11 && input.all { it.isDigit() }) {
             _uiState.update { currentState ->
                 currentState.copy(
                     telInput = input,
-                    isTelValid = isValid,
+                    isTelValid = isValidTel(input),
                     fieldErrorStatus = false
                 )
             }
@@ -296,15 +318,15 @@ class MainViewModel @Inject constructor(
                 ridInput = newRid,
                 passwordInput = newPassword,
                 telInput = newTel,
-                isRidValid = true, // true 보장됨
-                isPasswordValid = true, // true 보장됨
-                isTelValid = true,  // true 보장됨
+                isRidValid = isValidRid(newRid), // true 보장됨
+                isPasswordValid = isValidPassword(newPassword), // true 보장됨
+                isTelValid = isValidTel(newTel),  // true 보장됨
                 fetchingData = false
             )
         }
     }
 
-    fun validatePassword(ps: String): Boolean {
+    private fun isValidPassword(ps: String): Boolean {
         //첫문자를 영문자로 입력하세요.
         //영대문자(A~Z), 영소문자(a~z), 숫자(0~9) 및 특수문자(32개)
         //중 3종류 이상으로 입력하세요. 8자리 이상
@@ -321,5 +343,13 @@ class MainViewModel @Inject constructor(
         return ps.all { char ->
             char.isLetterOrDigit() || specialChars.contains(char)
         }
+    }
+
+    private fun isValidRid(input: String): Boolean {
+        return input.length == 10 && input.all { it.isDigit() }
+    }
+
+    private fun isValidTel(input: String): Boolean {
+        return input.length == 11 && input.all { it.isDigit() }
     }
 }

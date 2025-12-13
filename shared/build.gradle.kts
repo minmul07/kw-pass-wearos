@@ -51,6 +51,7 @@ dependencies {
     api(libs.kotlinx.serialization.json)
 
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.zxing.core)
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
