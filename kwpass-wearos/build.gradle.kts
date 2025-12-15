@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt.android)
 
+    id("com.google.android.gms.oss-licenses-plugin")
+
     kotlin("plugin.serialization") version "2.0.0"
 
     kotlin("kapt")
@@ -74,6 +76,7 @@ dependencies {
     debugImplementation(libs.androidx.tiles.tooling.preview)
     implementation(libs.watchface.complications.data.source.ktx)
     implementation(libs.watchface.complications.data)
+    implementation(libs.play.services.oss.licenses)
 
 
     implementation(libs.hilt.android)

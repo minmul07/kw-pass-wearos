@@ -34,4 +34,18 @@
     <string name="introduce_watch_title">워치: 이렇게 사용해보세요</string>
     <string name="introduce_watch_app">주머니에 있는 폰을 꺼내지 않고 손목 위에서 QR코드를 확인할 수 있어요.</string>
     <string name="introduce_watch_complication">내 워치페이스에서 QR 바로가기를 추가할 수 있어요.</string>
+
+    <string name="account_info">계정 정보</string>
+    <string name="language">언어</string>
+    <string name="app_version">앱 버전</string>
+    <string name="github" translatable="false">KW Pass for WearOS Github</string>
+    <string name="opensource_licence">오픈소스 라이선스</string>
+
+    <string name="korean">한국어</string>
+    <string name="english">English</string>
+    <string name="japanese">日本語</string>
+    <string name="vietnamese">Tiếng Việt</string>
+    <string name="russian">ру́сский язы́к</string>
+    <string name="chinese_traditional">简体中文</string>
+    <string name="chinese_simplified">繁體中文</string>
 </resources>

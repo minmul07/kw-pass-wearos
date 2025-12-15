@@ -1,13 +1,25 @@
 package minmul.kwpass.ui
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.filled.Android
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -15,21 +27,32 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import minmul.kwpass.R
 import minmul.kwpass.ui.components.AccountInputFieldSet
+import minmul.kwpass.ui.components.SingleMenu
 import minmul.kwpass.ui.main.MainUiState
+import minmul.kwpass.ui.main.goToGithub
+import minmul.kwpass.ui.theme.KWPassTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingScreenAppBar(
-    navigateUp: () -> Unit, modifier: Modifier = Modifier
+    navigateUp: () -> Unit, modifier: Modifier = Modifier.Companion
 ) {
     TopAppBar(
         title = { Text(text = stringResource(R.string.setting)) },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = colorScheme.primaryContainer
+            containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
         modifier = modifier,
         navigationIcon = {
@@ -45,8 +68,8 @@ fun SettingScreenAppBar(
 }
 
 @Composable
-fun SettingScreen(
-    modifier: Modifier = Modifier,
+fun SettingMainScreen(
+    modifier: Modifier = Modifier.Companion,
     uiState: MainUiState,
     onRidChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
@@ -54,7 +77,8 @@ fun SettingScreen(
     onTelChange: (String) -> Unit,
     onSave: () -> Unit,
     navController: NavController,
-    focusManager: FocusManager
+    focusManager: FocusManager,
+    context: Context
 ) {
 
     Scaffold(
@@ -63,24 +87,98 @@ fun SettingScreen(
                 navigateUp = {
                     navController.navigateUp()
                     focusManager.clearFocus()
-                }, modifier = Modifier
+                }, modifier = Modifier.Companion
             )
         }
 
     ) { paddingValues ->
         Column(
-            modifier = modifier.padding(paddingValues)
+            modifier = modifier
+                .padding(paddingValues)
         ) {
-            AccountInputFieldSet(
-                uiState = uiState,
-                onRidChange = onRidChange,
-                onPasswordChange = onPasswordChange,
-                onPasswordVisibilityChange = onPasswordVisibilityChange,
-                onTelChange = onTelChange,
-                onButtonClicked = onSave,
-                buttonLabel = stringResource(R.string.login),
-                buttonOnWork = stringResource(R.string.checking),
+
+            Card(
+                modifier = Modifier.Companion
+                    .padding(12.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.inverseOnSurface
+                ),
+                shape = RoundedCornerShape(24.dp)
+            ) {
+                Column(
+                    modifier = Modifier.Companion.padding(horizontal = 12.dp, vertical = 12.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.account_info),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = Color.Companion.Gray,
+                        modifier = Modifier.Companion.padding(top = 4.dp)
+                    )
+                    Spacer(modifier = Modifier.Companion.height(4.dp))
+                    AccountInputFieldSet(
+                        uiState = uiState,
+                        onRidChange = onRidChange,
+                        onPasswordChange = onPasswordChange,
+                        onPasswordVisibilityChange = onPasswordVisibilityChange,
+                        onTelChange = onTelChange,
+                        onButtonClicked = onSave,
+                        buttonLabel = stringResource(R.string.login),
+                        buttonOnWork = stringResource(R.string.checking),
+                    )
+                }
+            }
+
+            SingleMenu(
+                imageVector = Icons.Default.Language,
+                title = stringResource(R.string.language),
+                subTitle = "한국어어어ㅓ"
             )
+
+            SingleMenu(
+                imageVector = Icons.Default.Android,
+                title = stringResource(R.string.app_version),
+                subTitle = "v1.0",
+                bottom = false
+            )
+            SingleMenu(
+                painter = painterResource(R.drawable.github_mark),
+                title = stringResource(R.string.github),
+                onclick = { context.goToGithub() },
+                bottom = false,
+                top = false,
+                trailingIcon = Icons.AutoMirrored.Filled.OpenInNew
+            )
+            SingleMenu(
+                imageVector = Icons.Default.Code,
+                title = stringResource(R.string.opensource_licence),
+                top = false,
+                onclick = {
+                    val intent = Intent(context, OssLicensesMenuActivity::class.java)
+                    // 앱의 타이틀을 변경하고 싶다면 추가
+                    intent.putExtra("title", "오픈소스 라이선스")
+                    context.startActivity(intent)
+                },
+                trailingIcon = Icons.AutoMirrored.Filled.ArrowForwardIos
+            )
+
         }
+    }
+}
+
+@Preview
+@Composable
+fun SettingMainScreenPreview() {
+    KWPassTheme {
+        SettingMainScreen(
+            uiState = MainUiState(),
+            onRidChange = { },
+            onPasswordChange = { },
+            onPasswordVisibilityChange = { },
+            onTelChange = { },
+            onSave = {},
+            navController = rememberNavController(),
+            focusManager = LocalFocusManager.current,
+            context = LocalContext.current
+        )
     }
 }

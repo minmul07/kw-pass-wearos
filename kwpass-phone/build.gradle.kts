@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt.android)
 
+    id("com.google.android.gms.oss-licenses-plugin")
+
     kotlin("plugin.serialization") version "2.0.0"
 
     kotlin("kapt")
@@ -62,6 +64,7 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.compose.animation.graphics)
+    implementation(libs.play.services.oss.licenses)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -76,6 +79,8 @@ dependencies {
     implementation(libs.play.services.wearable)
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.androidx.core.splashscreen.v101)
+
+    implementation(libs.androidx.compose.ui.text.google.fonts)
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)

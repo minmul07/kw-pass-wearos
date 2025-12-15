@@ -1,5 +1,7 @@
 package minmul.kwpass.ui.main
 
+import android.content.Context
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -14,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.IntOffset
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -22,9 +25,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import minmul.kwpass.ui.HomeScreen
-import minmul.kwpass.ui.InformationScreen
 import minmul.kwpass.ui.ScreenDestination
-import minmul.kwpass.ui.SettingScreen
+import minmul.kwpass.ui.SettingMainScreen
 import minmul.kwpass.ui.landing.LandingScreen
 
 
@@ -106,7 +108,7 @@ fun MainScreen(
                 slideOutHorizontally(targetOffsetX = { it }, animationSpec = animSpec)
             }
         ) {
-            SettingScreen(
+            SettingMainScreen(
                 uiState = uiState,
                 navController = navController,
                 focusManager = focusManager,
@@ -115,11 +117,23 @@ fun MainScreen(
                 onPasswordVisibilityChange = { mainViewModel.updatePasswordVisibility() },
                 onTelChange = { mainViewModel.updateTelInput(it) },
                 onSave = { mainViewModel.setAccountData() },
+                context = context
             )
         }
-
-        composable<ScreenDestination.Information> {
-            InformationScreen()
-        }
     }
+}
+
+fun Modifier.conditional(condition: Boolean, modifier: Modifier.() -> Modifier): Modifier {
+    return if (condition) {
+        then(modifier(Modifier))
+    } else {
+        this
+    }
+}
+
+fun Context.goToGithub() {
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        data = "https://github.com/minmul07/kw-pass-wearos".toUri()
+    }
+    startActivity(intent)
 }

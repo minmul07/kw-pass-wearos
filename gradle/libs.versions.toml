@@ -16,11 +16,13 @@ lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.12.1"
 composeBom = "2025.12.00"
 materialIconsExtended = "1.7.8"
+playServicesOssLicenses = "17.3.0"
 playServicesWearable = "19.0.0"
 composeMaterial = "1.5.6"
 composeFoundation = "1.5.6"
 retrofit = "3.0.0"
 tiles = "1.5.0"
+uiTextGoogleFonts = "1.10.0"
 wearToolingPreview = "1.0.0"
 coreSplashscreen = "1.2.0"
 navigationRuntimeKtx = "2.9.6"
@@ -44,11 +46,13 @@ animationGraphics = "1.10.0"
 [libraries]
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-compose-navigation = { module = "androidx.wear.compose:compose-navigation", version.ref = "composeMaterial3" }
+androidx-compose-ui-text-google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen-v101 = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreenVersion" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 androidx-tiles-tooling-preview = { module = "androidx.wear.tiles:tiles-tooling-preview", version.ref = "tiles" }
+play-services-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version.ref = "playServicesOssLicenses" }
 watchface-complications-data-source-ktx = { group = "androidx.wear.watchface", name = "watchface-complications-data-source-ktx", version.ref = "watchfaceComplicationsDataSourceKtx" }
 watchface-complications-data = { group = "androidx.wear.watchface", name = "watchface-complications-data", version.ref = "watchfaceComplicationsData" }
 annotation = { module = "com.tickaroo.tikxml:annotation", version.ref = "annotation" }

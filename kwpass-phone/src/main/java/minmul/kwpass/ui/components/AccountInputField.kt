@@ -3,7 +3,9 @@ package minmul.kwpass.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -59,6 +61,8 @@ fun AccountInputFieldSet(
             enabled = !uiState.fetchingData && !uiState.succeededForAccountVerification,
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
         // 비밀번호
         AccountInputField(
             value = uiState.passwordInput,
@@ -86,6 +90,8 @@ fun AccountInputFieldSet(
             enabled = !uiState.fetchingData && !uiState.succeededForAccountVerification,
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
         // 전화번호
         AccountInputField(
             value = uiState.telInput,
@@ -97,6 +103,8 @@ fun AccountInputFieldSet(
             isError = uiState.fieldErrorStatus,
             enabled = !uiState.fetchingData && !uiState.succeededForAccountVerification,
         )
+
+        Spacer(modifier = Modifier.height(12.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -133,6 +141,8 @@ fun AccountInputFieldSet(
     }
 }
 
+
+// TODO(): supportingText 적용하기
 @Composable
 fun AccountInputField(
     modifier: Modifier = Modifier,
@@ -149,10 +159,10 @@ fun AccountInputField(
         value = value,
         singleLine = true,
         colors = TextFieldDefaults.colors(
-            focusedContainerColor = colorScheme.surface,
-            unfocusedContainerColor = colorScheme.surface,
-            disabledContainerColor = colorScheme.surface,
-            errorContainerColor = colorScheme.surface
+            focusedContainerColor = colorScheme.inverseOnSurface,
+            unfocusedContainerColor = colorScheme.inverseOnSurface,
+            disabledContainerColor = colorScheme.inverseOnSurface,
+            errorContainerColor = colorScheme.inverseOnSurface
         ),
         onValueChange = onValueChange,
         visualTransformation = visualTransformationStatus,
@@ -163,7 +173,6 @@ fun AccountInputField(
         enabled = enabled,
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
     )
 }
 

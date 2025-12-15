@@ -26,6 +26,14 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+
+        <activity
+            android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+
         <service
             android:name=".service.DataListenerService"
             android:exported="true">
@@ -37,6 +45,9 @@
                     android:pathPrefix="/refresh" />
             </intent-filter>
         </service>
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

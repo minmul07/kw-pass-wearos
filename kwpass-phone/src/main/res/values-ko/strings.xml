@@ -34,4 +34,11 @@
     <string name="introduce_watch_title">워치: 이렇게 사용해보세요</string>
     <string name="introduce_watch_app">주머니에 있는 폰을 꺼내지 않고 손목 위에서 QR코드를 확인할 수 있어요.</string>
     <string name="introduce_watch_complication">내 워치페이스에서 QR 바로가기를 추가할 수 있어요.</string>
+    <string name="korean">한국어</string>
+    <string name="english">영어</string>
+    <string name="japanese">일본어</string>
+    <string name="vietnamese">베트남어</string>
+    <string name="russian">러시아어</string>
+    <string name="chinese_traditional">중국어 (번체)</string>
+    <string name="chinese_simplified">중국어 (간체)</string>
 </resources>

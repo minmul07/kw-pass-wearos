@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-
+import minmul.kwpass.R
 
 
 private val lightScheme = lightColorScheme(
@@ -270,9 +270,15 @@ fun KWPassTheme(
         else -> lightScheme
     }
 
+    val githubLogo = if (isSystemInDarkTheme()) {
+        R.drawable.github_mark_white
+    } else {
+        R.drawable.github_mark
+    }
+
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = AppTypography,
         content = content
     )
 }
