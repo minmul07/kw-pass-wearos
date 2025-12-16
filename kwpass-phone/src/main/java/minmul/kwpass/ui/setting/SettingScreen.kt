@@ -1,4 +1,4 @@
-package minmul.kwpass.ui
+package minmul.kwpass.ui.setting
 
 import android.content.Context
 import android.content.Intent
@@ -38,6 +38,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import minmul.kwpass.R
+import minmul.kwpass.service.KwPassLanguageService
+import minmul.kwpass.ui.ScreenDestination
 import minmul.kwpass.ui.components.AccountInputFieldSet
 import minmul.kwpass.ui.components.SingleMenu
 import minmul.kwpass.ui.main.MainUiState
@@ -47,11 +49,12 @@ import minmul.kwpass.ui.theme.KWPassTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingScreenAppBar(
-    navigateUp: () -> Unit, modifier: Modifier = Modifier.Companion
+    navigateUp: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     TopAppBar(
         title = { Text(text = stringResource(R.string.setting)) },
-        colors = TopAppBarDefaults.mediumTopAppBarColors(
+        colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
         modifier = modifier,
@@ -64,7 +67,8 @@ fun SettingScreenAppBar(
                     )
                 )
             }
-        })
+        }
+    )
 }
 
 @Composable
@@ -87,7 +91,7 @@ fun SettingMainScreen(
                 navigateUp = {
                     navController.navigateUp()
                     focusManager.clearFocus()
-                }, modifier = Modifier.Companion
+                }
             )
         }
 
@@ -98,7 +102,7 @@ fun SettingMainScreen(
         ) {
 
             Card(
-                modifier = Modifier.Companion
+                modifier = Modifier
                     .padding(12.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.inverseOnSurface
@@ -106,15 +110,15 @@ fun SettingMainScreen(
                 shape = RoundedCornerShape(24.dp)
             ) {
                 Column(
-                    modifier = Modifier.Companion.padding(horizontal = 12.dp, vertical = 12.dp)
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp)
                 ) {
                     Text(
                         text = stringResource(R.string.account_info),
                         style = MaterialTheme.typography.titleSmall,
-                        color = Color.Companion.Gray,
-                        modifier = Modifier.Companion.padding(top = 4.dp)
+                        color = Color.Gray,
+                        modifier = Modifier.padding(top = 4.dp)
                     )
-                    Spacer(modifier = Modifier.Companion.height(4.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
                     AccountInputFieldSet(
                         uiState = uiState,
                         onRidChange = onRidChange,
@@ -131,7 +135,10 @@ fun SettingMainScreen(
             SingleMenu(
                 imageVector = Icons.Default.Language,
                 title = stringResource(R.string.language),
-                subTitle = "한국어어어ㅓ"
+                subTitle = KwPassLanguageService.getCurrentLanguageDisplayName(), // io block?
+                onclick = {
+                    navController.navigate(ScreenDestination.Language)
+                }
             )
 
             SingleMenu(

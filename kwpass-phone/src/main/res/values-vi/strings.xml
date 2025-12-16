@@ -33,5 +33,13 @@
 
     <string name="introduce_watch_title">Đồng hồ: Cách sử dụng</string>
     <string name="introduce_watch_app">Xem mã QR ngay trên cổ tay mà không cần lấy điện thoại ra khỏi túi.</string>
-    <string name="introduce_watch_complication">Bạn có thể thêm lối tắt QR vào mặt đồng hồ của mình.</string>
+    <string name="introduce_watch_complication">Bạn có thể thêm phím tắt QR vào mặt đồng hồ của mình.</string>
+
+    <string name="widget_title">QR Thư viện</string>
+
+    <string name="account_info">Thông tin tài khoản</string>
+    <string name="language">Ngôn ngữ</string>
+    <string name="app_version">Phiên bản ứng dụng</string>
+    <string name="github" translatable="false">KW Pass for WearOS GitHub</string>
+    <string name="opensource_licence">Giấy phép mã nguồn mở</string>
 </resources>

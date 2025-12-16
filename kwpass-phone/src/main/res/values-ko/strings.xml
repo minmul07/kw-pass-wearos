@@ -10,7 +10,7 @@
     <string name="login">로그인</string>
     <string name="next">다음</string>
 
-    <string name="initial_account_setup">계정 등륵하기</string>
+    <string name="initial_account_setup">계정 등록하기</string>
     <string name="initial_account_setup_desc">시작하기 전에 광운대학교 도서관 계정 정보를 입력해주세요.</string>
     <string name="verifying_account">로그인 시도 중</string>
     <string name="error_verifying_account">앗, 로그인에 실패했어요! 입력하신 내용을 다시 한번 확인해주세요.</string>
@@ -34,11 +34,12 @@
     <string name="introduce_watch_title">워치: 이렇게 사용해보세요</string>
     <string name="introduce_watch_app">주머니에 있는 폰을 꺼내지 않고 손목 위에서 QR코드를 확인할 수 있어요.</string>
     <string name="introduce_watch_complication">내 워치페이스에서 QR 바로가기를 추가할 수 있어요.</string>
-    <string name="korean">한국어</string>
-    <string name="english">영어</string>
-    <string name="japanese">일본어</string>
-    <string name="vietnamese">베트남어</string>
-    <string name="russian">러시아어</string>
-    <string name="chinese_traditional">중국어 (번체)</string>
-    <string name="chinese_simplified">중국어 (간체)</string>
+
+    <string name="widget_title">도서관 QR</string>
+
+    <string name="account_info">계정 정보</string>
+    <string name="language">언어</string>
+    <string name="app_version">앱 버전</string>
+    <string name="github" translatable="false">KW Pass for WearOS GitHub</string>
+    <string name="opensource_licence">오픈소스 라이선스</string>
 </resources>

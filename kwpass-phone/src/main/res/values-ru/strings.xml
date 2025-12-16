@@ -3,7 +3,7 @@
     <string name="app_name" translatable="false">KW Pass for Wear OS</string>
     <string name="setting">Настройки</string>
 
-    <string name="rid">Студенческий билет</string>
+    <string name="rid">Номер студенческого билета</string>
     <string name="password">Пароль</string>
     <string name="tel">Номер телефона</string>
     <string name="apply">Применить</string>
@@ -34,4 +34,12 @@
     <string name="introduce_watch_title">Часы: Как использовать</string>
     <string name="introduce_watch_app">Проверяйте QR-код прямо на запястье, не доставая телефон из кармана.</string>
     <string name="introduce_watch_complication">Вы можете добавить ярлык QR прямо на циферблат.</string>
+
+    <string name="widget_title">QR-код библиотеки</string>
+
+    <string name="account_info">Информация об аккаунте</string>
+    <string name="language">Язык</string>
+    <string name="app_version">Версия приложения</string>
+    <string name="github" translatable="false">KW Pass for WearOS GitHub</string>
+    <string name="opensource_licence">Лицензии открытого ПО</string>
 </resources>

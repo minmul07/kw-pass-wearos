@@ -16,10 +16,12 @@
         android:localeConfig="@xml/locales_config"
         android:theme="@style/Theme.KWPass">
 
+
     <activity
             android:name=".ui.main.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
+        android:configChanges="locale|layoutDirection|screenSize|screenLayout|orientation|keyboardHidden|keyboard"
             android:theme="@style/Theme.KWPass">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

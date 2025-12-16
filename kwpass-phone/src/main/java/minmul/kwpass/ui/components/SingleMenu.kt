@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import minmul.kwpass.ui.main.conditional
@@ -65,26 +66,22 @@ fun SingleMenu(
                 .fillMaxWidth()
                 .height(72.dp), verticalAlignment = Alignment.CenterVertically
         ) {
-            if (imageVector != null) {
+            val iconPainter = imageVector?.let { rememberVectorPainter(it) } ?: painter
+
+            if (iconPainter != null) {
                 Icon(
-                    imageVector = imageVector,
+                    painter = iconPainter,
                     contentDescription = null,
                     modifier = Modifier
-                        .padding(18.dp)
-                        .size(36.dp)
-                )
-            } else if (painter != null) {
-                Icon(
-                    painter = painter,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(18.dp)
+                        .padding(start = 18.dp)
                         .size(36.dp)
                 )
             }
+
             Column(
                 modifier = Modifier
                     .weight(1f)
+                    .padding(start = 18.dp)
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.Start
             ) {
@@ -118,7 +115,6 @@ fun SingleMenuPreview() {
         SingleMenu(
             title = "Sample Title",
             subTitle = "Subtitle below main title.",
-            imageVector = Icons.Default.Language
         )
     }
 }

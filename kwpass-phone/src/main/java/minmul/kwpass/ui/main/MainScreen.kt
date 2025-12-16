@@ -26,8 +26,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import minmul.kwpass.ui.HomeScreen
 import minmul.kwpass.ui.ScreenDestination
-import minmul.kwpass.ui.SettingMainScreen
 import minmul.kwpass.ui.landing.LandingScreen
+import minmul.kwpass.ui.setting.LanguageScreen
+import minmul.kwpass.ui.setting.SettingMainScreen
 
 
 @Composable
@@ -104,6 +105,14 @@ fun MainScreen(
             enterTransition = {
                 slideInHorizontally(initialOffsetX = { it }, animationSpec = animSpec)
             },
+            exitTransition = {
+                slideOutHorizontally(targetOffsetX = { -it / 3 }, animationSpec = animSpec) +
+                        fadeOut(animationSpec = tween(400)) // 살짝 어두워지거나 투명해짐
+            },
+            popEnterTransition = {
+                slideInHorizontally(initialOffsetX = { -it / 3 }, animationSpec = animSpec) +
+                        fadeIn(animationSpec = tween(200))
+            },
             popExitTransition = {
                 slideOutHorizontally(targetOffsetX = { it }, animationSpec = animSpec)
             }
@@ -119,6 +128,20 @@ fun MainScreen(
                 onSave = { mainViewModel.setAccountData() },
                 context = context
             )
+        }
+
+        composable<ScreenDestination.Language>(
+            enterTransition = {
+                slideInHorizontally(initialOffsetX = { it }, animationSpec = animSpec)
+            },
+            popExitTransition = {
+                slideOutHorizontally(targetOffsetX = { it }, animationSpec = animSpec)
+            }
+        ) {
+            LanguageScreen(
+                navController = navController,
+            )
+
         }
     }
 }

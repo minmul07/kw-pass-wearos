@@ -12,8 +12,8 @@
 
     <string name="initial_account_setup">アカウント登録</string>
     <string name="initial_account_setup_desc">始める前に、光云大学図書館のアカウント情報を入力してください。</string>
-    <string name="verifying_account">ログイン試行中</string>
-    <string name="error_verifying_account">あ、ログインに失敗しました！入力内容をもう一度確認してください。</string>
+    <string name="verifying_account">ログインしています...</string>
+    <string name="error_verifying_account">おっと、ログインに失敗しました！</string>
     <string name="field_not_satisfied">入力を確認してください。</string>
     <string name="login_success">ログイン成功！ :D</string>
 
@@ -21,7 +21,7 @@
     <string name="error_getSecret">シークレットキーの取得中に問題が発生しました。</string>
     <string name="checking">確認中</string>
     <string name="fetching">QRコード読込中</string>
-    <string name="fetch">QRコードリクエスト</string>
+    <string name="fetch">QRコードを取得</string>
 
     <string name="welcome">ようこそ！</string>
     <string name="start">始める</string>
@@ -32,6 +32,14 @@
     <string name="introduce_phone_lockscreen">ロック画面でもQRコードを確認できます。\nロック解除なしでQRアイコンをタップしてください。(開発中)</string>
 
     <string name="introduce_watch_title">ウォッチ：使い方</string>
-    <string name="introduce_watch_app">ポケットからスマホを出さずに、手首の上でQRコードを確認できます。</string>
+    <string name="introduce_watch_app">ポケットからスマホを出さずに、手元でQRコードを確認できます。</string>
     <string name="introduce_watch_complication">ウォッチフェイスにQRショートカットを追加できます。</string>
+
+    <string name="widget_title">図書館QR</string>
+
+    <string name="account_info">アカウント情報</string>
+    <string name="language">言語</string>
+    <string name="app_version">アプリバージョン</string>
+    <string name="github" translatable="false">KW Pass for WearOS GitHub</string>
+    <string name="opensource_licence">オープンソースライセンス</string>
 </resources>
