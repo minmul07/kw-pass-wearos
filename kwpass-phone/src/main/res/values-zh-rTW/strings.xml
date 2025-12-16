@@ -34,4 +34,12 @@
     <string name="introduce_watch_title">手錶：使用方法</string>
     <string name="introduce_watch_app">無需從口袋拿出手機，在手腕上即可查看 QR Code。</string>
     <string name="introduce_watch_complication">可以在錶面上新增 QR 捷徑。</string>
+
+    <string name="widget_title">圖書館 QR</string>
+
+    <string name="account_info">帳戶資訊</string>
+    <string name="language">語言</string>
+    <string name="app_version">應用程式版本</string>
+    <string name="github" translatable="false">KW Pass for WearOS GitHub</string>
+    <string name="opensource_licence">開放原始碼授權</string>
 </resources>

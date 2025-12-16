@@ -11,4 +11,7 @@ sealed interface ScreenDestination {
 
     @Serializable
     data object Setting : ScreenDestination
+
+    @Serializable
+    data object Language : ScreenDestination
 }
