@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -56,17 +57,23 @@ class MainViewModel @Inject constructor(
         startListeningForForcedAccountSync()
 
         viewModelScope.launch {
-            userData.userFlow.collect { (ridOnDisk, passwordOnDisk, telOnDisk) ->
-                setDataOnUiState(ridOnDisk, passwordOnDisk, telOnDisk)
+            combine(userData.userFlow, userData.isFirstRun) { user, firstRun ->
+                Pair(user, firstRun)
+            }.collect { (user, firstRun) ->
+                val (rid, password, tel) = user
+
                 Log.d(
                     "DEBUG_USER",
-                    "로드된 정보: 학번=$ridOnDisk, 비번= ${passwordOnDisk.length}자리, 전화=$telOnDisk"
+                    "로드된 정보: 학번=$rid, 비번= ${password.length}자리, 전화=$tel"
                 )
-                if (isAppReadyToRefresh && isFirstRun.value == false) {
+                setDataOnUiState(rid, password, tel)
+
+                if (isAppReadyToRefresh && !firstRun && isValidRid(rid)) {
                     isAppReadyToRefresh = false
                     refreshQR()
                 }
             }
+
         }
     }
 
@@ -110,26 +117,14 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun generateQrBitmap(content: String) {
+    private suspend fun generateQrBitmap(content: String): Bitmap? {
         if (content.isEmpty()) {
-            return
+            return null
         }
-
-        viewModelScope.launch {
-            val bitmap: Bitmap? = withContext(Dispatchers.Default) {
-                QrGenerator.generateQrBitmapInternal(content = content, margin = 2)
-            }
-
-            if (bitmap != null) {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        qrBitmap = bitmap
-                    )
-                }
-            }
+        return withContext(Dispatchers.Default) {
+            QrGenerator.generateQrBitmapInternal(content = content, margin = 2)
         }
     }
-
     fun setAccountData() {
         if (!uiState.value.isAllValidInput) {
             _uiState.update { currentState ->
@@ -220,11 +215,12 @@ class MainViewModel @Inject constructor(
                     throw Exception("Void QR Response. ")
                 }
 
-                generateQrBitmap(content = result)
+                val qrBitmap = generateQrBitmap(content = result)
 
                 _uiState.update { currentState ->
                     currentState.copy(
                         savedQR = result,
+                        qrBitmap = qrBitmap,
                         failedToGetQr = false
                     )
                 }

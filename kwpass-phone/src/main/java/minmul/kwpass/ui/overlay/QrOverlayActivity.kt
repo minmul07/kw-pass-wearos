@@ -51,8 +51,10 @@ class QrOverlayActivity : ComponentActivity() {
                     uiState.qrBitmap?.let { createNonFilteredBitmap(it, 400) }
                 }
 
-                LaunchedEffect(Unit) {
+                LaunchedEffect(uiState.isAllValidInput) {
+                    if (uiState.isAllValidInput && !uiState.fetchingData && uiState.qrBitmap == null) {
                     viewModel.refreshQR()
+                    }
                 }
 
                 // 전체 화면 반투명 박스
