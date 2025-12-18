@@ -11,6 +11,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -46,13 +47,16 @@ class QrOverlayActivity : ComponentActivity() {
 
         setContent {
             KWPassTheme {
+                val interactionSource = remember { MutableInteractionSource() }
                 val uiState by viewModel.uiState.collectAsStateWithLifecycle()
                 val scaledQrBitmap = remember(uiState.qrBitmap) {
                     uiState.qrBitmap?.let { createNonFilteredBitmap(it, 400) }
                 }
 
-                LaunchedEffect(Unit) {
-                    viewModel.refreshQR()
+                LaunchedEffect(uiState.isAllValidInput) {
+                    if (uiState.isAllValidInput && !uiState.fetchingData && uiState.qrBitmap == null) {
+                        viewModel.refreshQR()
+                    }
                 }
 
                 // 전체 화면 반투명 박스
@@ -60,8 +64,13 @@ class QrOverlayActivity : ComponentActivity() {
                     modifier = Modifier
                         .fillMaxSize()
                         .background(Color.Black.copy(alpha = 0.6f))
-                        .clickable { finish() },
-                    contentAlignment = Alignment.Center
+                        .clickable(
+                            onClick = {
+                                if (viewModel.backAction()) {
+                                    finish()
+                                }
+                            }, indication = null, interactionSource = interactionSource
+                        ), contentAlignment = Alignment.Center
                 ) {
                     if (uiState.fetchingData) {
                         CircularProgressIndicator(color = Color.White)
