@@ -126,7 +126,6 @@ class MainViewModel @Inject constructor(
             QrGenerator.generateQrBitmapInternal(content = content, margin = 2)
         }
     }
-
     fun setAccountData() {
         if (!uiState.value.isAllValidInput) {
             _uiState.update { currentState ->
