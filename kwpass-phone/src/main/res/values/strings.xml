@@ -35,7 +35,7 @@
     <string name="introduce_watch_app">주머니에 있는 폰을 꺼내지 않고 손목 위에서 QR코드를 확인할 수 있어요.</string>
     <string name="introduce_watch_complication">내 워치페이스에서 QR 바로가기를 추가할 수 있어요.</string>
 
-    <string name="widget_title">도서관 QR</string>
+    <string name="widget_title" translatable="false">KW Pass</string>
 
     <string name="account_info">계정 정보</string>
     <string name="language">언어</string>

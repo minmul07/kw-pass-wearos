@@ -35,7 +35,7 @@
     <string name="introduce_watch_app">无需从口袋拿出手机，在手腕上即可查看二维码。</string>
     <string name="introduce_watch_complication">可以在表盘上添加二维码快捷方式。</string>
 
-    <string name="widget_title">图书馆 QR</string>
+    <string name="widget_title">KW Pass</string>
 
     <string name="account_info">账户信息</string>
     <string name="language">语言</string>

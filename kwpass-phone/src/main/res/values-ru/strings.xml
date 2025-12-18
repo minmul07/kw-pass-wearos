@@ -35,7 +35,7 @@
     <string name="introduce_watch_app">Проверяйте QR-код прямо на запястье, не доставая телефон из кармана.</string>
     <string name="introduce_watch_complication">Вы можете добавить ярлык QR прямо на циферблат.</string>
 
-    <string name="widget_title">QR-код библиотеки</string>
+    <string name="widget_title">KW Pass</string>
 
     <string name="account_info">Информация об аккаунте</string>
     <string name="language">Язык</string>

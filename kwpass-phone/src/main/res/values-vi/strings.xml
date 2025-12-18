@@ -35,7 +35,7 @@
     <string name="introduce_watch_app">Xem mã QR ngay trên cổ tay mà không cần lấy điện thoại ra khỏi túi.</string>
     <string name="introduce_watch_complication">Bạn có thể thêm phím tắt QR vào mặt đồng hồ của mình.</string>
 
-    <string name="widget_title">QR Thư viện</string>
+    <string name="widget_title">KW Pass</string>
 
     <string name="account_info">Thông tin tài khoản</string>
     <string name="language">Ngôn ngữ</string>

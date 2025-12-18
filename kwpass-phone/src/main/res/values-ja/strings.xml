@@ -35,7 +35,7 @@
     <string name="introduce_watch_app">ポケットからスマホを出さずに、手元でQRコードを確認できます。</string>
     <string name="introduce_watch_complication">ウォッチフェイスにQRショートカットを追加できます。</string>
 
-    <string name="widget_title">図書館QR</string>
+    <string name="widget_title">KW Pass</string>
 
     <string name="account_info">アカウント情報</string>
     <string name="language">言語</string>
