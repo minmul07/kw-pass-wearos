@@ -9,6 +9,7 @@ import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.PutDataMapRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,6 +53,8 @@ class MainViewModel @Inject constructor(
 
     private var isAppReadyToRefresh = true
     private var backActionCount = 0
+
+    private var refreshJob: Job? = null
 
 
     init {
@@ -118,12 +121,16 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private suspend fun generateQrBitmap(content: String): Bitmap? {
+    private suspend fun generateQrBitmap(content: String, scaled: Boolean): Bitmap? {
         if (content.isEmpty()) {
             return null
         }
         return withContext(Dispatchers.Default) {
-            QrGenerator.generateQrBitmapInternal(content = content, margin = 2)
+            QrGenerator.generateQrBitmapInternal(
+                content = content,
+                margin = 2,
+                size = if (scaled) 400 else 1
+            )
         }
     }
 
@@ -195,12 +202,14 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun refreshQR() {
+    fun refreshQR(scaled: Boolean = false) {
         if (!uiState.value.isAllValidInput) {
             return
         }
 
-        viewModelScope.launch {
+        refreshJob?.cancel()
+
+        refreshJob = viewModelScope.launch {
             var result: String = ""
             _uiState.update { currentState ->
                 currentState.copy(
@@ -217,7 +226,7 @@ class MainViewModel @Inject constructor(
                     throw Exception("Void QR Response. ")
                 }
 
-                val qrBitmap = generateQrBitmap(content = result)
+                val qrBitmap = generateQrBitmap(content = result, scaled = scaled)
 
                 _uiState.update { currentState ->
                     currentState.copy(
@@ -227,6 +236,10 @@ class MainViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
+                if (e is kotlinx.coroutines.CancellationException) {
+                    Log.d("refreshQR", "Job Canceled")
+                    throw e
+                }
                 _toastEvent.send(e.message ?: "알 수 없는 오류가 발생했습니다.")
                 _uiState.update { currentState ->
                     currentState.copy(
