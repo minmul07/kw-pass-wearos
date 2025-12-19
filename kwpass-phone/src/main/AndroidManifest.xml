@@ -32,7 +32,8 @@
             android:theme="@style/Theme.KWPass.Transparent"
             android:exported="false"
             android:excludeFromRecents="true"
-            android:taskAffinity="" />
+            android:taskAffinity=""
+            android:launchMode="singleInstance" />
 
         <activity
             android:name=".ui.main.MainActivity"

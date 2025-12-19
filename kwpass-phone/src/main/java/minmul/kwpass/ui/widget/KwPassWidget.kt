@@ -6,8 +6,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.glance.ColorFilter
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
+import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
@@ -27,7 +29,6 @@ import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
-import androidx.glance.text.FontFamily
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
@@ -37,10 +38,19 @@ import minmul.kwpass.ui.theme.KWPassTheme
 
 class KwPassWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        provideContent {
-            WidgetContent(
-                context = context
-            )
+        try {
+            provideContent {
+                GlanceTheme(colors = GlanceTheme.colors) {
+                    WidgetContent(
+                        context = context
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            provideContent {
+                Text("ERROR")
+            }
         }
     }
 
@@ -73,10 +83,12 @@ class KwPassWidget : GlanceAppWidget() {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
                 Image(
-                    provider = ImageProvider(R.drawable.qr_icon_72),
+                    provider = ImageProvider(R.drawable.qr_icon_72_white),
                     contentDescription = null,
-                    modifier = GlanceModifier.size(iconSize)
+                    modifier = GlanceModifier.size(iconSize),
+                    colorFilter = ColorFilter.tint(GlanceTheme.colors.onSurface)
                 )
                 Spacer(modifier = GlanceModifier.height(spacerHeight))
                 Text(
@@ -84,7 +96,6 @@ class KwPassWidget : GlanceAppWidget() {
                     style = TextStyle(
                         color = ColorProvider(day = Color.Black, night = Color.White),
                         fontSize = textSize,
-                        fontFamily = FontFamily("Noto Sans"),
                         textAlign = TextAlign.Center
                     ),
                 )

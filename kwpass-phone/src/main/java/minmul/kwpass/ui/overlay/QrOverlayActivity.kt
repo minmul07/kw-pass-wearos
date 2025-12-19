@@ -1,9 +1,8 @@
 package minmul.kwpass.ui.overlay
 
 import android.app.Activity
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
+import android.app.ComponentCaller
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -32,7 +31,6 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.createBitmap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import minmul.kwpass.ui.main.MainViewModel
@@ -42,6 +40,12 @@ import minmul.kwpass.ui.theme.KWPassTheme
 class QrOverlayActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
 
+    override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
+        super.onNewIntent(intent, caller)
+
+        viewModel.refreshQR(scaled = true)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -49,13 +53,10 @@ class QrOverlayActivity : ComponentActivity() {
             KWPassTheme {
                 val interactionSource = remember { MutableInteractionSource() }
                 val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-                val scaledQrBitmap = remember(uiState.qrBitmap) {
-                    uiState.qrBitmap?.let { createNonFilteredBitmap(it, 400) }
-                }
 
                 LaunchedEffect(uiState.isAllValidInput) {
-                    if (uiState.isAllValidInput && !uiState.fetchingData && uiState.qrBitmap == null) {
-                        viewModel.refreshQR()
+                    if (uiState.isAllValidInput) {
+                        viewModel.refreshQR(scaled = true)
                     }
                 }
 
@@ -74,10 +75,10 @@ class QrOverlayActivity : ComponentActivity() {
                 ) {
                     if (uiState.fetchingData) {
                         CircularProgressIndicator(color = Color.White)
-                    } else if (scaledQrBitmap != null) {
+                    } else if (uiState.qrBitmap != null) {
                         KeepScreenMaxBrightness()
                         Image(
-                            bitmap = scaledQrBitmap.asImageBitmap(),
+                            bitmap = uiState.qrBitmap!!.asImageBitmap(),
                             contentDescription = "QR Code",
                             modifier = Modifier
                                 .size(250.dp)
@@ -104,21 +105,6 @@ class QrOverlayActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    private fun createNonFilteredBitmap(source: Bitmap, size: Int): Bitmap {
-        val dest = createBitmap(size, size)
-        val canvas = Canvas(dest)
-        val paint = Paint().apply {
-            isFilterBitmap = false
-            isAntiAlias = false
-        }
-
-        val srcRect = android.graphics.Rect(0, 0, source.width, source.height)
-        val destRect = android.graphics.Rect(0, 0, size, size)
-
-        canvas.drawBitmap(source, srcRect, destRect, paint)
-        return dest
     }
 }
 
