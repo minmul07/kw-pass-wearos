@@ -9,6 +9,7 @@ import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.PutDataMapRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -50,23 +52,32 @@ class MainViewModel @Inject constructor(
         )
 
     private var isAppReadyToRefresh = true
+    private var backActionCount = 0
+
+    private var refreshJob: Job? = null
 
 
     init {
         startListeningForForcedAccountSync()
 
         viewModelScope.launch {
-            userData.userFlow.collect { (ridOnDisk, passwordOnDisk, telOnDisk) ->
-                setDataOnUiState(ridOnDisk, passwordOnDisk, telOnDisk)
+            combine(userData.userFlow, userData.isFirstRun) { user, firstRun ->
+                Pair(user, firstRun)
+            }.collect { (user, firstRun) ->
+                val (rid, password, tel) = user
+
                 Log.d(
                     "DEBUG_USER",
-                    "로드된 정보: 학번=$ridOnDisk, 비번= ${passwordOnDisk.length}자리, 전화=$telOnDisk"
+                    "로드된 정보: 학번=$rid, 비번= ${password.length}자리, 전화=$tel"
                 )
-                if (isAppReadyToRefresh && isFirstRun.value == false) {
+                setDataOnUiState(rid, password, tel)
+
+                if (isAppReadyToRefresh && !firstRun && isValidRid(rid)) {
                     isAppReadyToRefresh = false
                     refreshQR()
                 }
             }
+
         }
     }
 
@@ -110,23 +121,16 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun generateQrBitmap(content: String) {
+    private suspend fun generateQrBitmap(content: String, scaled: Boolean): Bitmap? {
         if (content.isEmpty()) {
-            return
+            return null
         }
-
-        viewModelScope.launch {
-            val bitmap: Bitmap? = withContext(Dispatchers.Default) {
-                QrGenerator.generateQrBitmapInternal(content = content, margin = 2)
-            }
-
-            if (bitmap != null) {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        qrBitmap = bitmap
-                    )
-                }
-            }
+        return withContext(Dispatchers.Default) {
+            QrGenerator.generateQrBitmapInternal(
+                content = content,
+                margin = 2,
+                size = if (scaled) 400 else 1
+            )
         }
     }
 
@@ -198,12 +202,14 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun refreshQR() {
+    fun refreshQR(scaled: Boolean = false) {
         if (!uiState.value.isAllValidInput) {
             return
         }
 
-        viewModelScope.launch {
+        refreshJob?.cancel()
+
+        refreshJob = viewModelScope.launch {
             var result: String = ""
             _uiState.update { currentState ->
                 currentState.copy(
@@ -220,15 +226,20 @@ class MainViewModel @Inject constructor(
                     throw Exception("Void QR Response. ")
                 }
 
-                generateQrBitmap(content = result)
+                val qrBitmap = generateQrBitmap(content = result, scaled = scaled)
 
                 _uiState.update { currentState ->
                     currentState.copy(
                         savedQR = result,
+                        qrBitmap = qrBitmap,
                         failedToGetQr = false
                     )
                 }
             } catch (e: Exception) {
+                if (e is kotlinx.coroutines.CancellationException) {
+                    Log.d("refreshQR", "Job Canceled")
+                    throw e
+                }
                 _toastEvent.send(e.message ?: "알 수 없는 오류가 발생했습니다.")
                 _uiState.update { currentState ->
                     currentState.copy(
@@ -351,5 +362,14 @@ class MainViewModel @Inject constructor(
 
     private fun isValidTel(input: String): Boolean {
         return input.length == 11 && input.all { it.isDigit() }
+    }
+
+    fun backAction(): Boolean {
+        if (backActionCount == 1) {
+            return true
+        } else {
+            backActionCount++
+            return false
+        }
     }
 }
