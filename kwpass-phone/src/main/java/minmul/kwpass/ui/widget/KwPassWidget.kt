@@ -33,7 +33,6 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import minmul.kwpass.R
-import minmul.kwpass.ui.overlay.QrOverlayActivity
 import minmul.kwpass.ui.theme.KWPassTheme
 
 class KwPassWidget : GlanceAppWidget() {

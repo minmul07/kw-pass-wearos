@@ -1,4 +1,4 @@
-package minmul.kwpass.ui
+package minmul.kwpass.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import minmul.kwpass.R
+import minmul.kwpass.ui.ScreenDestination
 import minmul.kwpass.ui.components.QrView
 import minmul.kwpass.ui.main.MainUiState
 
@@ -45,7 +46,7 @@ fun HomeScreenAppBar(
                 )
             }
         },
-        colors = TopAppBarDefaults.mediumTopAppBarColors(
+        colors = TopAppBarDefaults.topAppBarColors(
             containerColor = colorScheme.primaryContainer
         ),
         modifier = modifier,
@@ -60,7 +61,6 @@ fun HomeScreen(
     refreshQR: () -> Unit,
     navController: NavController
 ) {
-
     Scaffold(
         topBar = {
             HomeScreenAppBar(

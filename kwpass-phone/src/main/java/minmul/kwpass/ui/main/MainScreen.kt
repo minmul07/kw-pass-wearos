@@ -24,8 +24,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import minmul.kwpass.ui.HomeScreen
 import minmul.kwpass.ui.ScreenDestination
+import minmul.kwpass.ui.home.HomeScreen
 import minmul.kwpass.ui.landing.LandingScreen
 import minmul.kwpass.ui.setting.LanguageScreen
 import minmul.kwpass.ui.setting.SettingMainScreen

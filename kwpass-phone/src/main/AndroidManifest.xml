@@ -28,7 +28,7 @@
         </receiver>
 
         <activity
-            android:name=".ui.overlay.QrOverlayActivity"
+            android:name=".ui.widget.QrOverlayActivity"
             android:theme="@style/Theme.KWPass.Transparent"
             android:exported="false"
             android:excludeFromRecents="true"

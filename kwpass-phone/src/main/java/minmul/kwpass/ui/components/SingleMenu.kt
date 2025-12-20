@@ -47,10 +47,7 @@ fun SingleMenu(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 2.dp)
-            .conditional(onclick != null) {
-                clickable { onclick?.invoke() }
-            },
+            .padding(horizontal = 12.dp, vertical = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = colorScheme.inverseOnSurface
         ),
@@ -64,7 +61,11 @@ fun SingleMenu(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(72.dp), verticalAlignment = Alignment.CenterVertically
+                .height(72.dp)
+                .conditional(onclick != null) {
+                    clickable { onclick?.invoke() }
+                }, verticalAlignment = Alignment.CenterVertically
+
         ) {
             val iconPainter = imageVector?.let { rememberVectorPainter(it) } ?: painter
 

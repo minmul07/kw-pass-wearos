@@ -21,7 +21,6 @@ data class MainUiState(
     val qrBitmap: Bitmap? = null,
     val failedToGetQr: Boolean = false,
 
-
     // UI상태
     val fieldErrorStatus: Boolean = false,
     val passwordVisible: Boolean = false,

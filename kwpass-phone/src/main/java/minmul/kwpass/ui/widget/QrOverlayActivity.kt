@@ -1,4 +1,4 @@
-package minmul.kwpass.ui.overlay
+package minmul.kwpass.ui.widget
 
 import android.app.Activity
 import android.app.ComponentCaller
@@ -31,8 +31,13 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle.Event
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import minmul.kwpass.ui.main.MainViewModel
 import minmul.kwpass.ui.theme.KWPassTheme
 
@@ -53,6 +58,30 @@ class QrOverlayActivity : ComponentActivity() {
             KWPassTheme {
                 val interactionSource = remember { MutableInteractionSource() }
                 val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+                val lifecycleOwner = LocalLifecycleOwner.current
+
+                DisposableEffect(lifecycleOwner) {
+                    val observer = LifecycleEventObserver { _, event ->
+                        if (event == Event.ON_RESUME) {
+                            if (uiState.isAllValidInput) {
+                                viewModel.refreshQR(scaled = true)
+                            }
+                        }
+                    }
+
+                    lifecycleOwner.lifecycle.addObserver(observer)
+                    onDispose {
+                        lifecycleOwner.lifecycle.removeObserver(observer)
+                    }
+                }
+
+                LaunchedEffect(Unit) {
+                    while (isActive) {
+                        delay(50000L)
+                        viewModel.refreshQR(scaled = true)
+                    }
+                }
 
                 LaunchedEffect(uiState.isAllValidInput) {
                     if (uiState.isAllValidInput) {
