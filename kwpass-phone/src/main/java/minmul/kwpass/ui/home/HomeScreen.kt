@@ -1,5 +1,10 @@
 package minmul.kwpass.ui.home
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -88,12 +93,20 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(24.dp))
             Button(
                 onClick = refreshQR,
-                enabled = uiState.isAllValidInput && !uiState.fetchingData
+                enabled = uiState.isAllValidInput && !uiState.fetchingData,
             ) {
-                if (!uiState.fetchingData) {
-                    Text(text = stringResource(R.string.fetch))
-                } else {
-                    Text(text = stringResource(R.string.fetching))
+                AnimatedContent(
+                    targetState = uiState.fetchingData,
+                    transitionSpec = {
+                        fadeIn(animationSpec = tween(durationMillis = 300)) togetherWith
+                                fadeOut(animationSpec = tween(durationMillis = 300))
+                    }
+                ) { isFetching ->
+                    if (!isFetching) {
+                        Text(text = stringResource(R.string.fetch))
+                    } else {
+                        Text(text = stringResource(R.string.fetching))
+                    }
                 }
             }
         }

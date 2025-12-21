@@ -1,5 +1,6 @@
 package minmul.kwpass.ui.landing
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,7 +27,7 @@ fun IntroducePhoneScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 24.dp)
     ) {
         Text(
             text = stringResource(R.string.introduce_phone_title),
@@ -61,6 +62,15 @@ fun IntroducePhoneScreen(
 @Preview
 @Composable
 fun IntroducePhoneScreenPreview() {
+    KWPassTheme {
+        IntroducePhoneScreen(
+            onNextClicked = {}
+        )
+    }
+}
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun DarkIntroducePhoneScreenPreview() {
     KWPassTheme {
         IntroducePhoneScreen(
             onNextClicked = {}

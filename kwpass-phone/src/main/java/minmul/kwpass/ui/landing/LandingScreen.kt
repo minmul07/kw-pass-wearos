@@ -1,5 +1,6 @@
 package minmul.kwpass.ui.landing
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.fillMaxSize
@@ -98,6 +99,15 @@ fun LandingContent(
 @Preview
 @Composable
 fun LandingScreenPreview() {
+    KWPassTheme {
+        LandingScreen(
+            onFinished = {})
+    }
+}
+
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun DarkLandingScreenPreview() {
     KWPassTheme {
         LandingScreen(
             onFinished = {})

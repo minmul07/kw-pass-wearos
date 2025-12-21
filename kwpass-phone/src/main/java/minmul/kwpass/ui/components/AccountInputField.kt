@@ -35,6 +35,7 @@ import minmul.kwpass.ui.theme.KWPassTheme
 
 @Composable
 fun AccountInputFieldSet(
+    modifier: Modifier = Modifier,
     uiState: MainUiState,
     onRidChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
@@ -43,11 +44,16 @@ fun AccountInputFieldSet(
     onButtonClicked: () -> Unit,
     buttonLabel: String,
     buttonOnWork: String,
-    modifier: Modifier = Modifier
+    isInitialSetup: Boolean = false,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
+        val fieldEnabled = !uiState.fetchingData && if (isInitialSetup) {
+            !uiState.succeededForAccountVerification
+        } else {
+            true
+        }
 
         // 학번
         AccountInputField(
@@ -58,7 +64,7 @@ fun AccountInputFieldSet(
                 imeAction = ImeAction.Done
             ),
             isError = uiState.fieldErrorStatus,
-            enabled = !uiState.fetchingData && !uiState.succeededForAccountVerification,
+            enabled = fieldEnabled
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -87,7 +93,7 @@ fun AccountInputFieldSet(
                 }
             },
             isError = uiState.fieldErrorStatus,
-            enabled = !uiState.fetchingData && !uiState.succeededForAccountVerification,
+            enabled = fieldEnabled,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -101,7 +107,7 @@ fun AccountInputFieldSet(
                 imeAction = ImeAction.Done
             ),
             isError = uiState.fieldErrorStatus,
-            enabled = !uiState.fetchingData && !uiState.succeededForAccountVerification,
+            enabled = fieldEnabled,
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -111,13 +117,12 @@ fun AccountInputFieldSet(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val message: String =
-                if (uiState.initialStatus) " "
-                else if (uiState.fetchingData) stringResource(R.string.verifying_account)
-                else if (uiState.failedForAccountVerification) stringResource(R.string.error_verifying_account)
-                else if (uiState.succeededForAccountVerification) stringResource(R.string.login_success)
-                else if (!uiState.isAllValidInput) stringResource(R.string.field_not_satisfied) // TODO() not working
-                else " "
+            val message: String = if (uiState.initialStatus) " "
+            else if (uiState.fetchingData) stringResource(R.string.verifying_account)
+            else if (uiState.failedForAccountVerification) stringResource(R.string.error_verifying_account)
+            else if (uiState.succeededForAccountVerification) stringResource(R.string.login_success)
+            else if (!uiState.isAllValidInput) stringResource(R.string.field_not_satisfied) // TODO() not working
+            else " "
 
             Text(
                 text = message,
@@ -171,8 +176,7 @@ fun AccountInputField(
         trailingIcon = trailingIcon,
         isError = isError,
         enabled = enabled,
-        modifier = modifier
-            .fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     )
 }
 

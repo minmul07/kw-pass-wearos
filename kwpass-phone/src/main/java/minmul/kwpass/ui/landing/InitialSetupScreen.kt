@@ -1,7 +1,10 @@
 package minmul.kwpass.ui.landing
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,15 +32,20 @@ fun InitialSetupScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 24.dp)
     ) {
         Text(
             text = stringResource(R.string.initial_account_setup),
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(top = 16.dp)
         )
+        Spacer(
+            modifier = Modifier.height(8.dp)
+        )
         Text(text = stringResource(R.string.initial_account_setup_desc))
-        GentleHorizontalDivider()
+        GentleHorizontalDivider(
+            modifier = Modifier.padding(vertical = 8.dp)
+        )
 
         AccountInputFieldSet(
             uiState = uiState,
@@ -49,6 +57,7 @@ fun InitialSetupScreen(
             buttonLabel = if (!uiState.succeededForAccountVerification) stringResource(R.string.login)
             else stringResource(R.string.start),
             buttonOnWork = stringResource(R.string.checking),
+            isInitialSetup = true
         )
     }
 }
@@ -56,6 +65,39 @@ fun InitialSetupScreen(
 @Preview
 @Composable
 fun InitialSetupScreenPreview() {
+    KWPassTheme {
+        InitialSetupScreen(
+            onNextClicked = { },
+            uiState = MainUiState(
+                savedRid = "2023203000",
+                savedPassword = "abcdef12345678",
+                savedTel = "01012345678",
+                savedQR = "asdasdasd",
+                ridInput = "2023203000",
+                passwordInput = "abcdef12345678",
+                telInput = "01012345678",
+                isRidValid = true,
+                isPasswordValid = true,
+                isTelValid = true,
+                passwordVisible = false,
+                fetchingData = false,
+                fieldErrorStatus = false,
+                initialStatus = false,
+                failedForAccountVerification = false,
+                succeededForAccountVerification = false,
+            ),
+            onRidChange = { },
+            onPasswordChange = { },
+            onPasswordVisibilityChange = { },
+            onTelChange = { },
+            onSave = {}
+        )
+    }
+}
+
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun DarkInitialSetupScreenPreview() {
     KWPassTheme {
         InitialSetupScreen(
             onNextClicked = { },

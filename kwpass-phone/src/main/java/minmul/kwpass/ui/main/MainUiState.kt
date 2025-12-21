@@ -27,7 +27,8 @@ data class MainUiState(
     val fetchingData: Boolean = false,
     val initialStatus: Boolean = true,
     val failedForAccountVerification: Boolean = false,
-    val succeededForAccountVerification: Boolean = false
+    val succeededForAccountVerification: Boolean = false,
+    val setupFinished: Boolean = false
 ) {
     val isAllValidInput: Boolean
         get() = isRidValid && isPasswordValid && isTelValid

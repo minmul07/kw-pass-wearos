@@ -56,28 +56,33 @@ fun QrView(
             }
         }
     }
+    val animatedQrBlur: Dp by animateDpAsState(
+        if (isFetching || unavailable) 4.dp else 0.dp,
+        animationSpec = tween(durationMillis = 200)
+    )
+
+    val animatedQrSize by animateDpAsState(
+        targetValue = if (isFetching || unavailable) 234.dp else 256.dp,
+        animationSpec = tween(durationMillis = 400)
+    )
+
+
+    val qrAlpha by animateFloatAsState(
+        targetValue = if (isFetching || unavailable) 0.5f else 1.0f,
+        animationSpec = tween(durationMillis = 200)
+    )
+
+    val errorIconAlpha by animateFloatAsState(
+        targetValue = if (unavailable) 0f else 1f, animationSpec = tween(durationMillis = 200)
+    )
 
     Box(
         modifier = Modifier
-            .size(256.dp)
+            .size(animatedQrSize)
             .clickable(
                 onClick = onClick, indication = null, interactionSource = interactionSource
             ), contentAlignment = Alignment.Center
     ) {
-        val animatedQrBlur: Dp by animateDpAsState(
-            if (isFetching || unavailable) 4.dp else 0.dp,
-            animationSpec = tween(durationMillis = 200)
-        )
-
-
-        val qrAlpha by animateFloatAsState(
-            targetValue = if (isFetching || unavailable) 0.5f else 1.0f,
-            animationSpec = tween(durationMillis = 200)
-        )
-
-        val errorIconAlpha by animateFloatAsState(
-            targetValue = if (unavailable) 0f else 1f, animationSpec = tween(durationMillis = 200)
-        )
 
         if (unavailable) {
             Icon(

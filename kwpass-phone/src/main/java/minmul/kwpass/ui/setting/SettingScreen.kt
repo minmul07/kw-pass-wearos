@@ -2,6 +2,7 @@ package minmul.kwpass.ui.setting
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -73,7 +74,7 @@ fun SettingScreenAppBar(
 
 @Composable
 fun SettingMainScreen(
-    modifier: Modifier = Modifier.Companion,
+    modifier: Modifier = Modifier,
     uiState: MainUiState,
     onRidChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
@@ -128,6 +129,7 @@ fun SettingMainScreen(
                         onButtonClicked = onSave,
                         buttonLabel = stringResource(R.string.login),
                         buttonOnWork = stringResource(R.string.checking),
+                        isInitialSetup = false
                     )
                 }
             }
@@ -175,6 +177,24 @@ fun SettingMainScreen(
 @Preview
 @Composable
 fun SettingMainScreenPreview() {
+    KWPassTheme {
+        SettingMainScreen(
+            uiState = MainUiState(),
+            onRidChange = { },
+            onPasswordChange = { },
+            onPasswordVisibilityChange = { },
+            onTelChange = { },
+            onSave = {},
+            navController = rememberNavController(),
+            focusManager = LocalFocusManager.current,
+            context = LocalContext.current
+        )
+    }
+}
+
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun DarkSettingMainScreenPreview() {
     KWPassTheme {
         SettingMainScreen(
             uiState = MainUiState(),
