@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,22 +39,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import minmul.kwpass.R
 import minmul.kwpass.main.MainUiState
 import minmul.kwpass.main.MainUiStateProvider
 
 @Composable
 fun QrScreen(
-    modifier: Modifier = Modifier,
     uiState: MainUiState,
     onRefresh: () -> Unit,
-    navController: NavController
 ) {
     val qrAlpha by animateFloatAsState(
         targetValue = if (uiState.isRefreshing) 0.1f else 1.0f,
@@ -67,6 +67,13 @@ fun QrScreen(
             animation = tween(500, easing = LinearEasing)
         ), label = "spinAngle"
     )
+
+    LaunchedEffect(uiState.savedQrBitmap) {
+        while (isActive) {
+            delay(50000L)
+            onRefresh()
+        }
+    }
 
     Scaffold(
         timeText = { TimeText() }
@@ -91,7 +98,6 @@ fun QrScreen(
                             ScreenStatus.START -> stringResource(R.string.welcome)
                             ScreenStatus.NOT_CONNECTED_TO_PHONE -> stringResource(R.string.no_connected_phone)
                             ScreenStatus.FAILED_TO_GET_QR -> stringResource(R.string.failed_to_get_qr)
-                            ScreenStatus.NO_ACCOUNT_DATA_ON_DISK -> stringResource(R.string.no_account_data)
                             ScreenStatus.GENERATING_QR -> stringResource(R.string.loading_qr)
                             ScreenStatus.FETCHING_QR -> stringResource(R.string.fetching_qr)
                             ScreenStatus.SYNCING_ACCOUNT_DATA -> stringResource(R.string.loading_account)
@@ -173,12 +179,9 @@ fun QrScreen(
 fun QrScreenPreview(
     @PreviewParameter(MainUiStateProvider::class) uiState: MainUiState
 ) {
-    val navController = rememberNavController()
     QrScreen(
         uiState = uiState,
-        onRefresh = {},
-        navController = navController
-    )
+        onRefresh = {})
 }
 
 @Composable

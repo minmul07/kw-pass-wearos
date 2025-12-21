@@ -49,13 +49,27 @@ object CryptoManager {
     }
 
     fun encrypt(plainText: String): String {
-        val bytes = plainText.toByteArray(Charsets.UTF_8)
-        val cipher = encryptCipher
-        val encryptedBytes = cipher.doFinal(bytes)
-        val iv = Base64.encodeToString(cipher.iv, Base64.DEFAULT).trim()
-        val content =
-            Base64.encodeToString(encryptedBytes, Base64.DEFAULT).trim()
-        return "$iv[IV]$content"
+        try {
+            val bytes = plainText.toByteArray(Charsets.UTF_8)
+            val cipher = encryptCipher
+            val encryptedBytes = cipher.doFinal(bytes)
+            val iv = Base64.encodeToString(cipher.iv, Base64.DEFAULT).trim()
+            val content =
+                Base64.encodeToString(encryptedBytes, Base64.DEFAULT).trim()
+            return "$iv[IV]$content"
+        } catch (e: Exception) { // 문제 발생 시 재시도
+            if (e is android.security.keystore.KeyPermanentlyInvalidatedException || e is java.security.UnrecoverableKeyException) {
+                keyStore.deleteEntry(ALIAS)
+
+                val bytes = plainText.toByteArray(Charsets.UTF_8)
+                val newCipher = encryptCipher // 이 시점에서 createKey()가 다시 호출되어 새 키 생성됨
+                val encryptedBytes = newCipher.doFinal(bytes)
+                val iv = Base64.encodeToString(newCipher.iv, Base64.DEFAULT).trim()
+                val content = Base64.encodeToString(encryptedBytes, Base64.DEFAULT).trim()
+                return "$iv[IV]$content"
+            }
+            throw e
+        }
     }
 
     fun decrypt(encryptedText: String): String {

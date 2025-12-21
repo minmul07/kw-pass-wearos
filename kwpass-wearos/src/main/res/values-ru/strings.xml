@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">KW Pass</string>
+    <string name="loading_qr">Генерация QR-кода…</string>
+    <string name="fetching_qr">Получение QR-кода…</string>
+    <string name="loading_account">Синхронизация аккаунта…</string>
+    <string name="no_connected_phone">Нет связи с телефоном.</string>
+    <string name="failed_to_get_account_from_phone">Не удалось привязать аккаунт.</string>
+    <string name="failed_to_get_qr">Не удалось получить QR-код.</string>
+    <string name="welcome">Добро пожаловать!\nПожалуйста, зарегистрируйте аккаунт в приложении KW Pass на телефоне.</string>
+</resources>

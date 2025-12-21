@@ -41,7 +41,6 @@ import kotlinx.coroutines.isActive
 
 @Composable
 fun QrView(
-    modifier: Modifier = Modifier,
     isFetching: Boolean,
     unavailable: Boolean,
     qrBitmap: Bitmap?,
@@ -49,10 +48,12 @@ fun QrView(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
-    LaunchedEffect(Unit) {
-        while (isActive) {
-            delay(50000L)
-            onClick()
+    LaunchedEffect(qrBitmap) {
+        if (qrBitmap != null) {
+            while (isActive) {
+                delay(50000L)
+                onClick()
+            }
         }
     }
 

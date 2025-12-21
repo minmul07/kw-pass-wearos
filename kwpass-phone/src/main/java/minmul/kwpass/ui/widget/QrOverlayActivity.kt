@@ -76,10 +76,12 @@ class QrOverlayActivity : ComponentActivity() {
                     }
                 }
 
-                LaunchedEffect(Unit) {
-                    while (isActive) {
-                        delay(50000L)
-                        viewModel.refreshQR(scaled = true)
+                LaunchedEffect(uiState.qrBitmap) {
+                    if (uiState.qrBitmap != null) {
+                        while (isActive) {
+                            delay(50000L)
+                            viewModel.refreshQR(scaled = true)
+                        }
                     }
                 }
 

@@ -4,22 +4,22 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.DataEvent
 import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.NodeClient
+import com.google.android.gms.wearable.WearableStatusCodes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -46,12 +46,7 @@ class MainViewModel @Inject constructor(
     private val _isErrorVibrationActive = MutableStateFlow(false)
     val isErrorVibrationActive = _isErrorVibrationActive.asStateFlow()
 
-    // TOAST
-    private val _toastEvent = Channel<String>()
-    val toastEvent = _toastEvent.receiveAsFlow()
-
     // QR
-
     private var refreshJob: Job? = null
 
     init {
@@ -66,32 +61,27 @@ class MainViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            userData.userFlow.distinctUntilChanged().collect { (rid, password, tel) ->
-                if (rid.isNotEmpty() && password.isNotEmpty() && tel.isNotEmpty()) {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            savedRid = rid,
-                            savedPassword = password,
-                            savedTel = tel,
-                            accountDataLoaded = true,
-                        )
-                    }
-                    Log.d(
-                        "DEBUG_USER",
-                        "로드된 정보: 학번=$rid, 비번= ${password.length}자리, 전화=$tel"
-                    )
+            combine(userData.userFlow, userData.isFirstRun) { user, firstRun ->
+                Pair(user, firstRun)
+            }.collect { (user, firstRun) ->
+                val (rid, password, tel) = user
+
+                Log.d(
+                    "DEBUG_USER",
+                    "로드된 정보: 학번=$rid, 비번= ${password.length}자리, 전화=$tel"
+                )
+
+                if (rid.isNotEmpty() && password.isNotEmpty() && tel.isNotEmpty()) { // 데이터 로드 성공
+                    setUserDataOnUiState(rid, password, tel)
                     refreshQR()
-                } else {
+                } else { // 최초 실행, 휴대폰에 계정 설정 완료되지 않음
                     _uiState.update { currentState ->
                         currentState.copy(
-                            status = ScreenStatus.NO_ACCOUNT_DATA_ON_DISK
+                            status = ScreenStatus.START
                         )
                     }
-                    requestForcedAccountDataSync()
-                    Log.d(
-                        "DEBUG_USER",
-                        "저장된 정보 없음"
-                    )
+                    requestForcedAccountDataSync(silent = true)
+                    Log.d("DEBUG_USER", "최초 실행")
                 }
             }
         }
@@ -108,9 +98,20 @@ class MainViewModel @Inject constructor(
     fun saveDataOnLocal(rid: String, password: String, tel: String) {
         viewModelScope.launch {
             userData.saveUserCredentials(rid, password, tel)
+            setUserDataOnUiState(rid, password, tel)
         }
     }
 
+    fun setUserDataOnUiState(rid: String, password: String, tel: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                savedRid = rid,
+                savedPassword = password,
+                savedTel = tel,
+                accountDataLoaded = true
+            )
+        }
+    }
 
     fun startListeningForAccountSync() {
         viewModelScope.launch {
@@ -161,7 +162,7 @@ class MainViewModel @Inject constructor(
     }
 
 
-    fun requestForcedAccountDataSync() {
+    fun requestForcedAccountDataSync(silent: Boolean) {
         viewModelScope.launch {
             try {
                 val nodes = nodeClient.connectedNodes.await()
@@ -170,7 +171,7 @@ class MainViewModel @Inject constructor(
                 if (phoneNode != null) {
                     messageClient.sendMessage(phoneNode.id, "/refresh", null).await()
                     Log.d("requestRefresh", "새로고침 요청 전송 완료")
-                } else {
+                } else if (!silent) {
                     playErrorVibration()
                     _uiState.update { currentState ->
                         currentState.copy(
@@ -183,12 +184,24 @@ class MainViewModel @Inject constructor(
 
             } catch (e: Exception) {
                 playErrorVibration()
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        status = ScreenStatus.FAILED_TO_GET_ACCOUNT_DATA_FROM_PHONE
-                    )
+                if (e is ApiException && e.statusCode == WearableStatusCodes.TARGET_NODE_NOT_CONNECTED) {
+                    Log.d("requestRefresh", "phone과 연결되어 있지 않음")
+                    if (!silent) {
+                        playErrorVibration()
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                status = ScreenStatus.NOT_CONNECTED_TO_PHONE
+                            )
+                        }
+                    }
+                } else {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            status = ScreenStatus.FAILED_TO_GET_ACCOUNT_DATA_FROM_PHONE
+                        )
+                    }
+                    Log.e("requestRefresh", "데이터 로드 실패", e)
                 }
-                Log.e("requestRefresh", "데이터 로드 실패", e)
             }
 
         }
@@ -204,7 +217,7 @@ class MainViewModel @Inject constructor(
         if (!uiState.value.accountDataLoaded) {
             _uiState.update { currentState ->
                 currentState.copy(
-                    status = ScreenStatus.NO_ACCOUNT_DATA_ON_DISK
+                    status = ScreenStatus.START
                 )
             }
         }
@@ -250,7 +263,6 @@ class MainViewModel @Inject constructor(
                     throw e
                 } else {
                     playErrorVibration()
-                    _toastEvent.send(e.message ?: "오류 발생")
                     _uiState.update { currentState ->
                         currentState.copy(
                             status = ScreenStatus.FAILED_TO_GET_QR,
@@ -261,6 +273,4 @@ class MainViewModel @Inject constructor(
             }
         }
     }
-
-
 }
