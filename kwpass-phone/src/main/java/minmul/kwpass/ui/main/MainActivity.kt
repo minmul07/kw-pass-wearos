@@ -9,9 +9,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.glance.appwidget.updateAll
+import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import minmul.kwpass.ui.ScreenDestination
 import minmul.kwpass.ui.theme.KWPassTheme
+import minmul.kwpass.ui.widget.KwPassWidget
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -21,6 +25,10 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        lifecycleScope.launch {
+            KwPassWidget().updateAll(applicationContext)
+        }
 
         splashScreen.setKeepOnScreenCondition {
             mainViewModel.isFirstRun.value == null

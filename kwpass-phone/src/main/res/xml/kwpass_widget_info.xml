@@ -4,4 +4,5 @@
     android:description="@string/app_name"
     android:resizeMode="horizontal|vertical"
     android:previewImage="@drawable/ic_launcher_foreground"
+    android:updatePeriodMillis="1800000"
     android:widgetCategory="home_screen" />
