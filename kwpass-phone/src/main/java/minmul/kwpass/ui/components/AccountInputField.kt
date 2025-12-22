@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -45,9 +46,15 @@ fun AccountInputFieldSet(
     buttonLabel: String,
     buttonOnWork: String,
     isInitialSetup: Boolean = false,
+    colors : TextFieldColors = TextFieldDefaults.colors(
+        focusedContainerColor = colorScheme.inverseOnSurface,
+        unfocusedContainerColor = colorScheme.inverseOnSurface,
+        disabledContainerColor = colorScheme.inverseOnSurface,
+        errorContainerColor = colorScheme.inverseOnSurface
+    )
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         val fieldEnabled = !uiState.fetchingData && if (isInitialSetup) {
             !uiState.succeededForAccountVerification
@@ -64,7 +71,8 @@ fun AccountInputFieldSet(
                 imeAction = ImeAction.Done
             ),
             isError = uiState.fieldErrorStatus,
-            enabled = fieldEnabled
+            enabled = fieldEnabled,
+            colors = colors
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -94,6 +102,7 @@ fun AccountInputFieldSet(
             },
             isError = uiState.fieldErrorStatus,
             enabled = fieldEnabled,
+            colors = colors
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -108,6 +117,7 @@ fun AccountInputFieldSet(
             ),
             isError = uiState.fieldErrorStatus,
             enabled = fieldEnabled,
+            colors = colors
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -159,16 +169,12 @@ fun AccountInputField(
     trailingIcon: @Composable (() -> Unit)? = null,
     isError: Boolean,
     enabled: Boolean,
+    colors : TextFieldColors
 ) {
     OutlinedTextField(
         value = value,
         singleLine = true,
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = colorScheme.inverseOnSurface,
-            unfocusedContainerColor = colorScheme.inverseOnSurface,
-            disabledContainerColor = colorScheme.inverseOnSurface,
-            errorContainerColor = colorScheme.inverseOnSurface
-        ),
+        colors = colors,
         onValueChange = onValueChange,
         visualTransformation = visualTransformationStatus,
         label = { Text(text = label) },

@@ -27,11 +27,11 @@
     <string name="start">시작하기</string>
     <string name="welcome_description">광운대학교 도서관 QR 인증을 워치와 폰에서 편리하게 사용해보세요!</string>
 
-    <string name="introduce_phone_title">폰: 이렇게 사용해보세요</string>
+    <string name="introduce_title">이렇게 사용해보세요</string>
+
     <string name="introduce_phone_widget">홈 화면에 위젯을 추가해 QR코드를 빠르게 확인하세요.</string>
     <string name="introduce_phone_lockscreen">잠금 화면에서도 QR코드를 확인할 수 있어요.\n잠금 해제 없이 바로 QR 아이콘을 클릭하세요. (개발중)</string>
 
-    <string name="introduce_watch_title">워치: 이렇게 사용해보세요</string>
     <string name="introduce_watch_app">주머니에 있는 폰을 꺼내지 않고 손목 위에서 QR코드를 확인할 수 있어요.</string>
     <string name="introduce_watch_complication">내 워치페이스에서 QR 바로가기를 추가할 수 있어요.</string>
 

@@ -104,14 +104,14 @@ fun SettingMainScreen(
 
             Card(
                 modifier = Modifier
-                    .padding(12.dp),
+                    .padding(16.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.inverseOnSurface
                 ),
                 shape = RoundedCornerShape(24.dp)
             ) {
                 Column(
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp)
+                    modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
                         text = stringResource(R.string.account_info),

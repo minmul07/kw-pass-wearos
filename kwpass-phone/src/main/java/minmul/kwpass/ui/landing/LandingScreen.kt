@@ -1,10 +1,10 @@
 package minmul.kwpass.ui.landing
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Scaffold
@@ -39,6 +39,7 @@ fun LandingScreen(
     )
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LandingContent(
     onFinished: () -> Unit,
@@ -49,7 +50,7 @@ fun LandingContent(
     onTelChange: (String) -> Unit,
     onAccountSave: () -> Unit
 ) {
-    val pageCount = 4
+    val pageCount = 3
     val pagerState = rememberPagerState(pageCount = { pageCount })
     val scope = rememberCoroutineScope()
 
@@ -62,27 +63,22 @@ fun LandingContent(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {}
-    ) { paddingValues ->
+    ) {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
         ) { page ->
             when (page) {
                 0 -> WelcomeScreen(
                     onStartClicked = { onNextClicked() }
                 )
 
-                1 -> IntroducePhoneScreen(
+                1 -> IntroduceScreen(
                     onNextClicked = { onNextClicked() }
                 )
 
-                2 -> IntroduceWatchScreen(
-                    onNextClicked = { onNextClicked() }
-                )
-
-                3 -> InitialSetupScreen(
+                2 -> InitialSetupScreen(
                     onNextClicked = onFinished,
                     uiState = uiState,
                     onRidChange = onRidChange,

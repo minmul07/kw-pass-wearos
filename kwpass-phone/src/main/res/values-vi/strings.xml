@@ -27,11 +27,11 @@
     <string name="start">Bắt đầu</string>
     <string name="welcome_description">Sử dụng xác thực QR thư viện Đại học Kwangwoon tiện lợi trên đồng hồ và điện thoại!</string>
 
-    <string name="introduce_phone_title">Điện thoại: Cách sử dụng</string>
+    <string name="introduce_title">Hướng dẫn sử dụng</string>
+
     <string name="introduce_phone_widget">Thêm tiện ích (widget) vào màn hình chính để xem mã QR nhanh chóng.</string>
     <string name="introduce_phone_lockscreen">Bạn có thể xem mã QR ngay từ màn hình khóa.\nNhấn vào biểu tượng QR mà không cần mở khóa. (Đang phát triển)</string>
 
-    <string name="introduce_watch_title">Đồng hồ: Cách sử dụng</string>
     <string name="introduce_watch_app">Xem mã QR ngay trên cổ tay mà không cần lấy điện thoại ra khỏi túi.</string>
     <string name="introduce_watch_complication">Bạn có thể thêm phím tắt QR vào mặt đồng hồ của mình.</string>
 

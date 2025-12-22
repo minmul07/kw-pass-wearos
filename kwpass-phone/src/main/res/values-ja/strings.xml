@@ -12,7 +12,7 @@
 
     <string name="initial_account_setup">アカウント登録</string>
     <string name="initial_account_setup_desc">始める前に、光云大学図書館のアカウント情報を入力してください。</string>
-    <string name="verifying_account">ログインしています...</string>
+    <string name="verifying_account">ログインしています…</string>
     <string name="error_verifying_account">おっと、ログインに失敗しました！</string>
     <string name="field_not_satisfied">入力を確認してください。</string>
     <string name="login_success">ログイン成功！ :D</string>
@@ -27,11 +27,11 @@
     <string name="start">始める</string>
     <string name="welcome_description">光云大学図書館のQR認証をウォッチとスマホで便利に使ってみましょう！</string>
 
-    <string name="introduce_phone_title">スマホ：使い方</string>
+    <string name="introduce_title">活用のヒント</string>
+
     <string name="introduce_phone_widget">ホーム画面にウィジェットを追加して、QRコードを素早く確認できます。</string>
     <string name="introduce_phone_lockscreen">ロック画面でもQRコードを確認できます。\nロック解除なしでQRアイコンをタップしてください。(開発中)</string>
 
-    <string name="introduce_watch_title">ウォッチ：使い方</string>
     <string name="introduce_watch_app">ポケットからスマホを出さずに、手元でQRコードを確認できます。</string>
     <string name="introduce_watch_complication">ウォッチフェイスにQRショートカットを追加できます。</string>
 

@@ -47,7 +47,7 @@ fun SingleMenu(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 2.dp),
+            .padding(horizontal = 16.dp, vertical = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = colorScheme.inverseOnSurface
         ),
