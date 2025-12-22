@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">KW Pass for Wear OS</string>
+    <string name="app_name" translatable="false">KW Pass</string>
     <string name="setting">Cài đặt</string>
 
     <string name="rid">Mã số sinh viên</string>
