@@ -1,4 +1,6 @@
 # KW Pass for WearOS
+<img src="https://github.com/user-attachments/assets/7932c20b-f93e-4d05-8ef9-95df19d6ba69" width="240">
+
 Wear OS를 지원하는 광운대학교 도서관 qr코드 인증 어플리케이션
 
 현재 개발 중 입니다. In development.
