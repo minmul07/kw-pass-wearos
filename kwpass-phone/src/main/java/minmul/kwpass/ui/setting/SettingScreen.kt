@@ -15,6 +15,7 @@ import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import minmul.kwpass.BuildConfig
 import minmul.kwpass.R
 import minmul.kwpass.service.KwPassLanguageService
 import minmul.kwpass.ui.ScreenDestination
@@ -170,6 +172,15 @@ fun SettingMainScreen(
                 trailingIcon = Icons.AutoMirrored.Filled.ArrowForwardIos
             )
 
+            if (BuildConfig.DEBUG) {
+                Button(
+                    onClick = {
+                        throw RuntimeException("Test Crash")
+                    }
+                ) {
+                    Text("Crashlytics 테스트")
+                }
+            }
         }
     }
 }
