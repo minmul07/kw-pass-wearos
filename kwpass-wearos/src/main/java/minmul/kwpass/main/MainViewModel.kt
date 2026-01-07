@@ -1,7 +1,6 @@
 package minmul.kwpass.main
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.common.api.ApiException
@@ -12,6 +11,7 @@ import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.NodeClient
 import com.google.android.gms.wearable.WearableStatusCodes
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.awaitClose
@@ -28,6 +28,7 @@ import minmul.kwpass.shared.KwuRepository
 import minmul.kwpass.shared.QrGenerator
 import minmul.kwpass.shared.UserData
 import minmul.kwpass.ui.ScreenStatus
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -66,10 +67,7 @@ class MainViewModel @Inject constructor(
             }.collect { (user, firstRun) ->
                 val (rid, password, tel) = user
 
-                Log.d(
-                    "DEBUG_USER",
-                    "로드된 정보: 학번=$rid, 비번= ${password.length}자리, 전화=$tel"
-                )
+                Timber.d("로드된 정보: 학번=$rid, 비번= ${password.length}자리, 전화=$tel")
 
                 if (rid.isNotEmpty() && password.isNotEmpty() && tel.isNotEmpty()) { // 데이터 로드 성공
                     setUserDataOnUiState(rid, password, tel)
@@ -81,7 +79,7 @@ class MainViewModel @Inject constructor(
                         )
                     }
                     requestForcedAccountDataSync(silent = true)
-                    Log.d("DEBUG_USER", "최초 실행")
+                    Timber.d("최초 실행")
                 }
             }
         }
@@ -133,7 +131,7 @@ class MainViewModel @Inject constructor(
                 dataClient.addListener(listener)
                 awaitClose { dataClient.removeListener(listener) }
             }.collect { (newRid, newPassword, newTel) ->
-                Log.d("MainViewModel", "startListeningForAccountSync()")
+                Timber.d("startListeningForAccountSync()")
                 saveDataOnLocal(newRid, newPassword, newTel)
             }
         }
@@ -170,7 +168,7 @@ class MainViewModel @Inject constructor(
 
                 if (phoneNode != null) {
                     messageClient.sendMessage(phoneNode.id, "/refresh", null).await()
-                    Log.d("requestRefresh", "새로고침 요청 전송 완료")
+                    Timber.tag("requestRefresh").d("새로고침 요청 전송 완료")
                 } else if (!silent) {
                     playErrorVibration()
                     _uiState.update { currentState ->
@@ -178,14 +176,14 @@ class MainViewModel @Inject constructor(
                             status = ScreenStatus.NOT_CONNECTED_TO_PHONE
                         )
                     }
-                    Log.i("requestRefresh", "연결된 phone 없음")
+                    Timber.tag("requestRefresh").i("연결된 phone 없음")
 
                 }
 
             } catch (e: Exception) {
                 playErrorVibration()
                 if (e is ApiException && e.statusCode == WearableStatusCodes.TARGET_NODE_NOT_CONNECTED) {
-                    Log.d("requestRefresh", "phone과 연결되어 있지 않음")
+                    Timber.tag("requestRefresh").d("phone과 연결되어 있지 않음")
                     if (!silent) {
                         playErrorVibration()
                         _uiState.update { currentState ->
@@ -200,7 +198,7 @@ class MainViewModel @Inject constructor(
                             status = ScreenStatus.FAILED_TO_GET_ACCOUNT_DATA_FROM_PHONE
                         )
                     }
-                    Log.e("requestRefresh", "데이터 로드 실패", e)
+                    Timber.tag("requestRefresh").e(e, "데이터 로드 실패")
                 }
             }
 
@@ -208,7 +206,7 @@ class MainViewModel @Inject constructor(
     }
 
     private suspend fun fetchQR(rid: String, password: String, tel: String): String {
-        Log.i("fetchQR", "INFO rid: $rid, password: ${password.length}자리, tel: $tel")
+        Timber.tag("fetchQR").i("INFO rid: $rid, password: ${password.length}자리, tel: $tel")
         val realRid = "0$rid"
         return kwuRepository.startProcess(rid = realRid, password = password, tel = tel)
     }
@@ -222,19 +220,19 @@ class MainViewModel @Inject constructor(
             }
         }
 
-        Log.i("refreshQR()", "refreshQR()")
+        Timber.i("refreshQR()")
         if (!uiState.value.accountDataLoaded) {
-            Log.w("refreshQR()", "데이터 로드 안됨")
+            Timber.w("데이터 로드 안됨")
             return
         }
 
         if (refreshJob?.isActive == true) {
-            Log.i("refreshQR", "이전 작업 취소")
+            Timber.i("이전 작업 취소")
             refreshJob?.cancel()
         }
 
         refreshJob = viewModelScope.launch {
-            var result: String = ""
+            var result: String
             _uiState.update { currentState ->
                 currentState.copy(
                     isRefreshing = true,
@@ -258,8 +256,8 @@ class MainViewModel @Inject constructor(
                 }
                 generateQrBitmap(result)
             } catch (e: Exception) {
-                if (e is kotlinx.coroutines.CancellationException) {
-                    Log.i("refreshQR", "작업이 취소되었습니다.")
+                if (e is CancellationException) {
+                    Timber.i("작업이 취소되었습니다.")
                     throw e
                 } else {
                     playErrorVibration()

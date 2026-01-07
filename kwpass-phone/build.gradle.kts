@@ -49,6 +49,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -79,7 +80,7 @@ dependencies {
     implementation(libs.zxing.core)
     implementation(libs.play.services.wearable)
     implementation(libs.kotlinx.coroutines.play.services)
-    implementation(libs.androidx.core.splashscreen.v101)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.androidx.glance.material3)
     implementation(libs.material)
@@ -89,6 +90,8 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
+
+    implementation(libs.timber)
 
     implementation(project(":shared"))
 }

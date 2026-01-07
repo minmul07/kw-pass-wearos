@@ -45,6 +45,7 @@ android {
     }
     useLibrary("wear-sdk")
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 }
@@ -82,6 +83,8 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
+
+    implementation(libs.timber)
 
     implementation(project(":shared"))
 }

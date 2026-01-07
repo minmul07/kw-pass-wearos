@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.drawable.Icon
-import android.util.Log
 import androidx.wear.watchface.complications.data.ComplicationData
 import androidx.wear.watchface.complications.data.ComplicationType
 import androidx.wear.watchface.complications.data.MonochromaticImage
@@ -18,10 +17,11 @@ import androidx.wear.watchface.complications.datasource.ComplicationRequest
 import androidx.wear.watchface.complications.datasource.SuspendingComplicationDataSourceService
 import minmul.kwpass.R
 import minmul.kwpass.main.MainActivity
+import timber.log.Timber
 
 open class TextComplicationService : SuspendingComplicationDataSourceService() {
     override suspend fun onComplicationRequest(request: ComplicationRequest): ComplicationData? {
-        Log.d("Complication", "onComplicationRequest: id ${request.complicationInstanceId}")
+        Timber.d("onComplicationRequest: id ${request.complicationInstanceId}")
         val tapAction = createMainActivityPendingIntent()
 
         val complicationText = PlainComplicationText.Builder("KW Pass").build()

@@ -1,6 +1,5 @@
 package minmul.kwpass.service
 
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Composable
@@ -9,6 +8,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.os.ConfigurationCompat
 import androidx.core.os.LocaleListCompat
 import minmul.kwpass.R
+import timber.log.Timber
 import java.util.Locale
 
 object KwPassLanguageService {
@@ -88,7 +88,7 @@ object KwPassLanguageService {
 
 
     fun changeAppLanguage(languageTag: String) {
-        Log.d("KwPassLanguageService", "app language set to $languageTag")
+        Timber.tag("KwPassLanguageService").d("app language set to $languageTag")
         val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags(languageTag)
         AppCompatDelegate.setApplicationLocales(appLocale)
     }

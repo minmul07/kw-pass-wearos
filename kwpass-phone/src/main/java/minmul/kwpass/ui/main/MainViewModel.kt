@@ -1,13 +1,13 @@
 package minmul.kwpass.ui.main
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.PutDataMapRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -27,6 +27,7 @@ import kotlinx.coroutines.withContext
 import minmul.kwpass.shared.KwuRepository
 import minmul.kwpass.shared.QrGenerator
 import minmul.kwpass.shared.UserData
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -66,10 +67,7 @@ class MainViewModel @Inject constructor(
             }.collect { (user, firstRun) ->
                 val (rid, password, tel) = user
 
-                Log.d(
-                    "DEBUG_USER",
-                    "로드된 정보: 학번=$rid, 비번= ${password.length}자리, 전화=$tel"
-                )
+                Timber.tag("DEBUG_USER").d("로드된 정보: 학번=$rid, 비번= ${password.length}자리, 전화=$tel")
                 setDataOnUiState(rid, password, tel)
 
                 if (isAppReadyToRefresh && !firstRun && isValidRid(rid)) {
@@ -93,9 +91,9 @@ class MainViewModel @Inject constructor(
 
                 dataClient.putDataItem(request).await()
 
-                Log.d("MainViewModel", "계정 정보 전송 성공. rid=$rid")
+                Timber.d("계정 정보 전송 성공. rid=$rid")
             } catch (e: Exception) {
-                Log.e("MainViewModel", "계정 정보 전송 실패", e)
+                Timber.tag("계정 정보 전송 실패").e(e)
             }
         }
     }
@@ -145,7 +143,7 @@ class MainViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            var result: String = ""
+            var result: String
             _uiState.update { currentState ->
                 currentState.copy(
                     fetchingData = true,
@@ -162,7 +160,7 @@ class MainViewModel @Inject constructor(
                     uiState.value.telInput
                 )
                 if (result.isEmpty()) {
-                    Log.d("fetchQR", "result = $result")
+                    Timber.tag("fetchQR").d("result = $result")
                     throw Exception("Void QR Response. ")
                 }
 
@@ -210,7 +208,7 @@ class MainViewModel @Inject constructor(
         refreshJob?.cancel()
 
         refreshJob = viewModelScope.launch {
-            var result: String = ""
+            var result: String
             _uiState.update { currentState ->
                 currentState.copy(
                     fetchingData = true
@@ -236,8 +234,8 @@ class MainViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                if (e is kotlinx.coroutines.CancellationException) {
-                    Log.d("refreshQR", "Job Canceled")
+                if (e is CancellationException) {
+                    Timber.tag("refreshQR").d("Job Canceled")
                     throw e
                 }
                 _toastEvent.send(e.message ?: "알 수 없는 오류가 발생했습니다.")
@@ -258,7 +256,7 @@ class MainViewModel @Inject constructor(
 
     // qr 코드 반환
     private suspend fun fetchQR(rid: String, password: String, tel: String): String {
-        Log.i("fetchQR", "INFO rid: $rid, password: ${password.length}자리, tel: $tel")
+        Timber.tag("fetchQR").i("INFO rid: $rid, password: ${password.length}자리, tel: $tel")
         val realRid = "0$rid"
         return kwuRepository.startProcess(rid = realRid, password = password, tel = tel)
     }
@@ -297,7 +295,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun updatePasswordInput(input: String) {
-        Log.i("isPasswordValid", isValidPassword(input).toString())
+        Timber.tag("isPasswordValid").i(isValidPassword(input).toString())
         _uiState.update { currentState ->
             currentState.copy(
                 passwordInput = input,

@@ -1,12 +1,12 @@
 package minmul.kwpass.shared
 
-import android.util.Log
 import com.tickaroo.tikxml.annotation.Element
 import com.tickaroo.tikxml.annotation.PropertyElement
 import com.tickaroo.tikxml.annotation.Xml
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
+import timber.log.Timber
 import javax.inject.Inject
 
 @Xml(name = "root")
@@ -77,7 +77,7 @@ class KwuRepository @Inject constructor(
             return qrData
 
         } catch (e: Exception) {
-            Log.d("startProcess", "QR 코드 데이터를 가져오는데 실패했습니다:", e)
+            Timber.d(e, "QR 코드 데이터를 가져오는데 실패했습니다:")
             throw Exception("QR 코드 데이터를 가져오는데 실패했습니다: ${e.message}")
         }
     }
@@ -87,16 +87,16 @@ class KwuRepository @Inject constructor(
         rid: String,
     ): String? {
         try {
-            Log.i("getSecretKey", "1. 시크릿 키 요청 중...")
+            Timber.tag("getSecretKey").i("1. 시크릿 키 요청 중...")
             val keyResponse = api.getSecretKey(
                 userId = with(Encryption) {
                     rid.encode()
                 })
             secretKey = keyResponse.item.secret ?: throw Exception("Secret Key is null")
-            Log.i("getSecretKey", "   >> Secret Key: $secretKey (${secretKey.length})")
+            Timber.tag("getSecretKey").i("   >> Secret Key: $secretKey (${secretKey.length})")
             return secretKey
         } catch (e: Exception) {
-            Log.e("getSecretKey", e.toString())
+            Timber.tag("getSecretKey").e(e.toString())
             e.printStackTrace()
             return null
         }
@@ -108,7 +108,7 @@ class KwuRepository @Inject constructor(
         tel: String,
     ): String? {
         try {
-            Log.i("getAuthKey", "2. 로그인 요청 중...")
+            Timber.tag("getAuthKey").i("2. 로그인 요청 중...")
             val loginResponse = api.getAuthKey(realId = with(Encryption) {
                 rid.encode()
             }, rid = with(Encryption) {
@@ -117,10 +117,10 @@ class KwuRepository @Inject constructor(
                 password.encrypt(secretKey)
             })
             authKey = loginResponse.item.authKey ?: throw Exception("Auth Key is null")
-            Log.i("getAuthKey", "   >> Auth Key: $authKey (${authKey.length})")
+            Timber.tag("getAuthKey").i("   >> Auth Key: $authKey (${authKey.length})")
             return authKey
         } catch (e: Exception) {
-            Log.e("getAuthKey", e.toString())
+            Timber.tag("getAuthKey").e(e.toString())
             e.printStackTrace()
             return null
         }
@@ -131,7 +131,7 @@ class KwuRepository @Inject constructor(
     ): String? {
         val encryption = Encryption
         try {
-            Log.i("getQR", "3. QR코드 데이터 요청 중...")
+            Timber.tag("getQR").i("3. QR코드 데이터 요청 중...")
             val qrResponse = api.getQrCode(
                 realId = with(encryption) {
                     rid.encode()
@@ -139,12 +139,12 @@ class KwuRepository @Inject constructor(
             )
             qrData = qrResponse.item.qrCode ?: throw Exception("QR Code is null")
 
-            Log.i("getQR", "===============================")
-            Log.i("getQR", "QR Code Data: $qrData (${qrData.length})")
-            Log.i("getQR", "===============================")
+            Timber.tag("getQR").i("===============================")
+            Timber.tag("getQR").i("QR Code Data: $qrData (${qrData.length})")
+            Timber.tag("getQR").i("===============================")
             return qrData
         } catch (e: Exception) {
-            Log.e("getQR", e.toString())
+            Timber.tag("getQR").e(e.toString())
             e.printStackTrace()
             return null
         }

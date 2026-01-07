@@ -38,8 +38,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import minmul.kwpass.BuildConfig
 import minmul.kwpass.ui.main.MainViewModel
 import minmul.kwpass.ui.theme.KWPassTheme
+import timber.log.Timber
 
 @AndroidEntryPoint
 class QrOverlayActivity : ComponentActivity() {
@@ -53,6 +55,10 @@ class QrOverlayActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
 
         setContent {
             KWPassTheme {

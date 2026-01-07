@@ -1,6 +1,5 @@
 package minmul.kwpass.service
 
-import android.util.Log
 import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.PutDataMapRequest
@@ -14,6 +13,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import minmul.kwpass.shared.UserData
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -44,9 +44,9 @@ class DataListenerService : WearableListenerService() {
                         }.asPutDataRequest().setUrgent()
 
                         dataClient.putDataItem(request).await()
-                        Log.d("PhoneService", "백그라운드 데이터 전송 완료")
+                        Timber.d("백그라운드 데이터 전송 완료")
                     } catch (e: Exception) {
-                        Log.e("PhoneService", "백그라운드 데이터 전송 실패", e)
+                        Timber.e(e, "백그라운드 데이터 전송 실패")
                         e.printStackTrace()
                     }
                 }

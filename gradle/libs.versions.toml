@@ -24,6 +24,7 @@ composeMaterial = "1.5.6"
 composeFoundation = "1.5.6"
 retrofit = "3.0.0"
 tiles = "1.5.0"
+timber = "5.0.1"
 uiTextGoogleFonts = "1.10.0"
 wearToolingPreview = "1.0.0"
 coreSplashscreen = "1.2.0"
@@ -51,7 +52,6 @@ androidx-compose-material-icons-extended = { module = "androidx.compose.material
 androidx-compose-navigation = { module = "androidx.wear.compose:compose-navigation", version.ref = "composeMaterial3" }
 androidx-compose-ui-text-google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-core-splashscreen-v101 = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreenVersion" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glanceAppwidget" }
 androidx-glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glanceAppwidget" }
@@ -92,6 +92,7 @@ retrofit-converter = { module = "com.tickaroo.tikxml:retrofit-converter", versio
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 zxing-core = { module = "com.google.zxing:core", version.ref = "coreVersion" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }

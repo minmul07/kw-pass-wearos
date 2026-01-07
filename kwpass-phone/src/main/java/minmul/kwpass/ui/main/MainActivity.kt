@@ -1,7 +1,6 @@
 package minmul.kwpass.ui.main
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -13,9 +12,11 @@ import androidx.glance.appwidget.updateAll
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import minmul.kwpass.BuildConfig
 import minmul.kwpass.ui.ScreenDestination
 import minmul.kwpass.ui.theme.KWPassTheme
 import minmul.kwpass.ui.widget.KwPassWidget
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -25,6 +26,10 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
 
         lifecycleScope.launch {
             KwPassWidget().updateAll(applicationContext)
@@ -38,7 +43,7 @@ class MainActivity : AppCompatActivity() {
                 val isFirstRun by mainViewModel.isFirstRun.collectAsState()
 
                 if (isFirstRun != null) {
-                    Log.d("isFirstRun", "$isFirstRun")
+                    Timber.tag("isFirstRun").d("$isFirstRun")
                     val startDestination = if (isFirstRun == true) {
                         ScreenDestination.Landing
                     } else {
