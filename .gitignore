@@ -16,3 +16,5 @@ local.properties
 
 /.idea/discord.xml
 /.idea/deploymentTargetSelector.xml
+google-services.json
+*.aab
