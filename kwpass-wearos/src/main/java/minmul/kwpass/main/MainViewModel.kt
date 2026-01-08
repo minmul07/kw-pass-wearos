@@ -27,6 +27,7 @@ import kotlinx.coroutines.withContext
 import minmul.kwpass.shared.KwuRepository
 import minmul.kwpass.shared.QrGenerator
 import minmul.kwpass.shared.UserData
+import minmul.kwpass.shared.analystics.KwPassLogger
 import minmul.kwpass.ui.ScreenStatus
 import timber.log.Timber
 import javax.inject.Inject
@@ -38,6 +39,7 @@ class MainViewModel @Inject constructor(
     private val dataClient: DataClient,
     private val nodeClient: NodeClient,
     private val kwuRepository: KwuRepository,
+    private val kwPassLogger: KwPassLogger
 ) : ViewModel() {
     // UISTATE
     private val _uiState = MutableStateFlow(MainUiState())
@@ -142,6 +144,7 @@ class MainViewModel @Inject constructor(
             return
         }
 
+        kwPassLogger.logQrGenerated("wear")
         viewModelScope.launch {
             val bitmap: Bitmap? = withContext(Dispatchers.Default) {
                 QrGenerator.generateQrBitmapInternal(content)

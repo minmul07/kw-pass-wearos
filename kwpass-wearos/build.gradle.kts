@@ -81,7 +81,10 @@ dependencies {
     implementation(libs.watchface.complications.data.source.ktx)
     implementation(libs.watchface.complications.data)
     implementation(libs.play.services.oss.licenses)
-
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)

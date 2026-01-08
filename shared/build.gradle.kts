@@ -48,6 +48,7 @@ dependencies {
 
     implementation(libs.core)
     api(libs.annotation)
+    implementation(libs.play.services.measurement.api)
     kapt(libs.processor)
 
     api(libs.kotlinx.serialization.json)
@@ -59,4 +60,7 @@ dependencies {
     kapt(libs.hilt.compiler)
 
     implementation(libs.timber)
+
+    implementation(platform(libs.firebase.bom))
+    api(libs.firebase.analytics)
 }
