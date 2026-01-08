@@ -36,6 +36,9 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
@@ -127,17 +130,35 @@ fun KeepScreenMaxBrightness() {
     val isInspection = LocalInspectionMode.current
     if (isInspection) return
 
-    DisposableEffect(Unit) {
-        val originalAttributes = window.attributes
-        val originalBrightness = originalAttributes.screenBrightness
+    val lifecycleOwner = LocalLifecycleOwner.current
 
-        val newAttributes = window.attributes
-        newAttributes.screenBrightness = 1f // 최대 밝기
-        window.attributes = newAttributes
+    DisposableEffect(lifecycleOwner) {
+        val originalBrightness = window.attributes.screenBrightness
+
+        val observer = LifecycleEventObserver { _, event ->
+            val layoutParams = window.attributes
+
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> {
+                    layoutParams.screenBrightness = 1f
+                    window.attributes = layoutParams
+                }
+                Lifecycle.Event.ON_PAUSE -> {
+                    layoutParams.screenBrightness = originalBrightness
+                    window.attributes = layoutParams
+                }
+                else -> {}
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
 
         onDispose {
-            newAttributes.screenBrightness = originalBrightness
-            window.attributes = newAttributes
+            lifecycleOwner.lifecycle.removeObserver(observer)
+
+            val layoutParams = window.attributes
+            layoutParams.screenBrightness = originalBrightness
+            window.attributes = layoutParams
         }
     }
 }
