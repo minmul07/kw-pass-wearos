@@ -35,11 +35,15 @@ android {
 
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("debug") // release 시 삭제
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            ndk {
+                debugSymbolLevel = "SYMBOL_TABLE" // "FULL"?
+            }
         }
     }
     compileOptions {

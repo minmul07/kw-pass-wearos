@@ -23,19 +23,23 @@ android {
         applicationId = "minmul.kwpass"
         minSdk = 30
         targetSdk = 36
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0"
 
     }
 
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("debug") // release 시 삭제
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            ndk {
+                debugSymbolLevel = "SYMBOL_TABLE" // "FULL"?
+            }
         }
     }
     compileOptions {
