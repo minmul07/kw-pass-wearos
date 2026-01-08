@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import minmul.kwpass.BuildConfig
 import minmul.kwpass.R
 import minmul.kwpass.ui.ScreenDestination
 import minmul.kwpass.ui.components.QrView
@@ -107,6 +108,16 @@ fun HomeScreen(
                     } else {
                         Text(text = stringResource(R.string.fetching))
                     }
+                }
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+            if (BuildConfig.DEBUG) {
+                Button(
+                    onClick = {
+                        throw RuntimeException("Test Crash")
+                    }
+                ) {
+                    Text("Crashlytics 테스트")
                 }
             }
         }

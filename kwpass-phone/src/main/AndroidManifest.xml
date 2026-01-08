@@ -3,6 +3,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
     <application
         android:name=".KWPassApplication"
@@ -39,10 +40,10 @@
         <activity
             android:name=".ui.widget.QrOverlayActivity"
             android:theme="@style/Theme.KWPass.Transparent"
-            android:exported="false"
+            android:exported="true"
             android:excludeFromRecents="true"
             android:taskAffinity=""
-            android:launchMode="singleInstance" />
+            android:launchMode="singleTop" />
 
         <activity
             android:name=".ui.main.MainActivity"
@@ -55,6 +56,12 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+
+
         </activity>
 
         <activity

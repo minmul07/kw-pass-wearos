@@ -37,6 +37,10 @@
 
     <string name="widget_title" translatable="false">KW Pass</string>
 
+    <string name="shortcut_short_label">QR 열기</string>
+    <string name="shortcut_long_label">QR 코드 바로 열기</string>
+    <string name="shortcut_disabled_message">바로가기를 사용할 수 없어요,</string>
+
     <string name="account_info">계정 정보</string>
     <string name="language">언어</string>
     <string name="app_version">앱 버전</string>
