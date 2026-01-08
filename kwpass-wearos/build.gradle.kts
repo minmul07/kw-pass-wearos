@@ -23,7 +23,7 @@ android {
         applicationId = "minmul.kwpass"
         minSdk = 30
         targetSdk = 36
-        versionCode = 2
+        versionCode = 20001
         versionName = "1.0"
 
     }
@@ -38,7 +38,7 @@ android {
                 "proguard-rules.pro"
             )
             ndk {
-                debugSymbolLevel = "SYMBOL_TABLE" // "FULL"?
+                debugSymbolLevel = "FULL" // "FULL"? "SYMBOL_TABLE"?
             }
         }
     }

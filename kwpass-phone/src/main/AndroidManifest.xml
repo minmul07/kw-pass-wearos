@@ -39,11 +39,11 @@
 
         <activity
             android:name=".ui.widget.QrOverlayActivity"
-            android:theme="@style/Theme.KWPass.Transparent"
-            android:exported="true"
             android:excludeFromRecents="true"
+            android:exported="true"
+            android:launchMode="singleTop"
             android:taskAffinity=""
-            android:launchMode="singleTop" />
+            android:theme="@style/Theme.KWPass.Transparent" />
 
         <activity
             android:name=".ui.main.MainActivity"
