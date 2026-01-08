@@ -89,7 +89,7 @@ fun HomeScreen(
                 isFetching = uiState.fetchingData,
                 qrBitmap = uiState.qrBitmap,
                 unavailable = uiState.failedToGetQr,
-                onClick = refreshQR
+                refresh = refreshQR
             )
             Spacer(modifier = Modifier.height(24.dp))
             Button(

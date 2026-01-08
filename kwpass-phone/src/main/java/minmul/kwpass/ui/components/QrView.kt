@@ -47,7 +47,7 @@ fun QrView(
     isFetching: Boolean,
     unavailable: Boolean,
     qrBitmap: Bitmap?,
-    onClick: () -> Unit
+    refresh: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -55,7 +55,7 @@ fun QrView(
         if (qrBitmap != null) {
             while (isActive) {
                 delay(50000L)
-                onClick()
+                refresh()
             }
         }
     }
@@ -83,7 +83,10 @@ fun QrView(
         modifier = Modifier
             .size(animatedQrSize)
             .clickable(
-                onClick = onClick, indication = null, interactionSource = interactionSource
+                onClick = refresh,
+                indication = null,
+                interactionSource = interactionSource,
+                enabled = !isFetching
             ), contentAlignment = Alignment.Center
     ) {
 
@@ -143,10 +146,12 @@ fun KeepScreenMaxBrightness() {
                     layoutParams.screenBrightness = 1f
                     window.attributes = layoutParams
                 }
+
                 Lifecycle.Event.ON_PAUSE -> {
                     layoutParams.screenBrightness = originalBrightness
                     window.attributes = layoutParams
                 }
+
                 else -> {}
             }
         }

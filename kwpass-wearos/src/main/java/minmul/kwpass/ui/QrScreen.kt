@@ -9,6 +9,8 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -39,7 +42,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
@@ -67,6 +69,7 @@ fun QrScreen(
             animation = tween(500, easing = LinearEasing)
         ), label = "spinAngle"
     )
+    val interactionSource = remember { MutableInteractionSource() }
 
     LaunchedEffect(uiState.savedQrBitmap) {
         while (isActive) {
@@ -125,7 +128,13 @@ fun QrScreen(
                         .fillMaxSize(0.65f)
                         .clip(RoundedCornerShape(4.dp))
                         .alpha(qrAlpha)
-                        .zIndex(1f),
+                        .zIndex(1f)
+                        .clickable(
+                            onClick = onRefresh,
+                            enabled = !uiState.isRefreshing,
+                            indication = null,
+                            interactionSource = interactionSource
+                        ),
                     filterQuality = FilterQuality.None
 
                 )
@@ -146,9 +155,8 @@ fun QrScreen(
                 ) {
                     IconButton(
                         modifier = Modifier,
-                        onClick = if (uiState.isRefreshing) {
-                            {}
-                        } else onRefresh
+                        onClick = onRefresh,
+                        enabled = !uiState.isRefreshing
                     ) {
                         Icon(
                             modifier = Modifier
