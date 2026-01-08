@@ -1,21 +1,27 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# 1. Shared 모듈 및 데이터 모델 보호 (필수)
+-keep class minmul.kwpass.shared.** { *; }
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+-keep class minmul.kwpass.main.** { *; }
+-keep class minmul.kwpass.service.** { *; }
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# 2. DataStore 및 Protobuf
+-keep class androidx.datastore.** { *; }
+-keep class androidx.datastore.preferences.** { *; }
+-keep class androidx.datastore.preferences.protobuf.** { *; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# 3. Kotlin Serialization
+-keepattributes *Annotation*, EnclosingMethod, Signature, InnerClasses
+-keepclassmembers class ** {
+    *** Companion;
+    *** $serializer;
+}
+-keep @kotlinx.serialization.Serializable class * { *; }
+
+# 4. Hilt / Dagger
+-keep class dagger.hilt.** { *; }
+-keep class javax.inject.** { *; }
+
+# 5. Tiles, Complications
+-keep class androidx.wear.tiles.** { *; }
+-keep public class * extends androidx.wear.watchface.complications.data.ComplicationData
+-keep public class * extends androidx.wear.watchface.complications.datasource.ComplicationDataSourceService

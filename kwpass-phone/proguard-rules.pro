@@ -1,21 +1,21 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# 1. DataStore 및 Protobuf
+-keep class androidx.datastore.** { *; }
+-keep class androidx.datastore.preferences.** { *; }
+-keep class androidx.datastore.preferences.protobuf.** { *; }
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# 2. Shared 모듈 및 데이터 모델 보호
+-keep class minmul.kwpass.shared.** { *; }
+-keep class minmul.kwpass.service.** { *; }
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# 3. Kotlin Serialization
+-keepattributes *Annotation*, EnclosingMethod, Signature, InnerClasses
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+-keepclassmembers class ** {
+    *** Companion;
+    *** $serializer;
+}
+-keep @kotlinx.serialization.Serializable class * { *; }
+
+# 4. Hilt
+-keep class dagger.hilt.** { *; }
+-keep class javax.inject.** { *; }
