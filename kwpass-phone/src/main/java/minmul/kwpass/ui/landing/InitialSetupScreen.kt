@@ -24,13 +24,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import minmul.kwpass.R
 import minmul.kwpass.ui.components.AccountInputFieldSet
-import minmul.kwpass.ui.main.MainUiState
+import minmul.kwpass.ui.main.InputFormState
+import minmul.kwpass.ui.main.ProcessState
 import minmul.kwpass.ui.theme.KWPassTheme
 
 @Composable
 fun InitialSetupScreen(
     onNextClicked: () -> Unit,
-    uiState: MainUiState,
+    processState: ProcessState,
+    inputFormState: InputFormState,
     onRidChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onPasswordVisibilityChange: () -> Unit,
@@ -77,13 +79,14 @@ fun InitialSetupScreen(
                 shape = RoundedCornerShape(24.dp)
             ) {
                 AccountInputFieldSet(
-                    uiState = uiState,
+                    processState = processState,
+                    inputFormState = inputFormState,
                     onRidChange = onRidChange,
                     onPasswordChange = onPasswordChange,
                     onPasswordVisibilityChange = onPasswordVisibilityChange,
                     onTelChange = onTelChange,
-                    onButtonClicked = { if (!uiState.succeededForAccountVerification) onSave() else onNextClicked() },
-                    buttonLabel = if (!uiState.succeededForAccountVerification) stringResource(R.string.login)
+                    onButtonClicked = { if (!processState.fetchSucceeded) onSave() else onNextClicked() },
+                    buttonLabel = if (!processState.fetchSucceeded) stringResource(R.string.login)
                     else stringResource(R.string.start),
                     buttonOnWork = stringResource(R.string.checking),
                     isInitialSetup = true, colors = TextFieldDefaults.colors(
@@ -100,30 +103,33 @@ fun InitialSetupScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun InitialSetupScreenPreview() {
     KWPassTheme {
+        // 프리뷰를 위한 가상 데이터 생성
+        val mockInputForm = InputFormState(
+            ridInput = "2023203000",
+            passwordInput = "abcdef12345678",
+            telInput = "01012345678",
+            isRidValid = true,
+            isPasswordValid = true,
+            isTelValid = true,
+            passwordVisible = false,
+            fieldErrorStatus = false
+        )
+
+        val mockProcess = ProcessState(
+            isFetching = false,
+            fetchFailed = false,
+            fetchSucceeded = false,
+            initialStatus = false
+        )
+
         InitialSetupScreen(
             onNextClicked = { },
-            uiState = MainUiState(
-                savedRid = "2023203000",
-                savedPassword = "abcdef12345678",
-                savedTel = "01012345678",
-                savedQR = "asdasdasd",
-                ridInput = "2023203000",
-                passwordInput = "abcdef12345678",
-                telInput = "01012345678",
-                isRidValid = true,
-                isPasswordValid = true,
-                isTelValid = true,
-                passwordVisible = false,
-                fetchingData = false,
-                fieldErrorStatus = false,
-                initialStatus = false,
-                failedForAccountVerification = false,
-                succeededForAccountVerification = false,
-            ),
+            processState = mockProcess,
+            inputFormState = mockInputForm,
             onRidChange = { },
             onPasswordChange = { },
             onPasswordVisibilityChange = { },
@@ -133,30 +139,32 @@ fun InitialSetupScreenPreview() {
     }
 }
 
-@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun DarkInitialSetupScreenPreview() {
     KWPassTheme {
+        val mockInputForm = InputFormState(
+            ridInput = "2023203000",
+            passwordInput = "abcdef12345678",
+            telInput = "01012345678",
+            isRidValid = true,
+            isPasswordValid = true,
+            isTelValid = true,
+            passwordVisible = false,
+            fieldErrorStatus = false
+        )
+
+        val mockProcess = ProcessState(
+            isFetching = false,
+            fetchFailed = false,
+            fetchSucceeded = false,
+            initialStatus = false
+        )
+
         InitialSetupScreen(
             onNextClicked = { },
-            uiState = MainUiState(
-                savedRid = "2023203000",
-                savedPassword = "abcdef12345678",
-                savedTel = "01012345678",
-                savedQR = "asdasdasd",
-                ridInput = "2023203000",
-                passwordInput = "abcdef12345678",
-                telInput = "01012345678",
-                isRidValid = true,
-                isPasswordValid = true,
-                isTelValid = true,
-                passwordVisible = false,
-                fetchingData = false,
-                fieldErrorStatus = false,
-                initialStatus = false,
-                failedForAccountVerification = false,
-                succeededForAccountVerification = false,
-            ),
+            processState = mockProcess,
+            inputFormState = mockInputForm,
             onRidChange = { },
             onPasswordChange = { },
             onPasswordVisibilityChange = { },

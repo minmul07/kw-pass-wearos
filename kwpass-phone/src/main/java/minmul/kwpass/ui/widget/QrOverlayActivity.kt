@@ -63,14 +63,14 @@ class QrOverlayActivity : ComponentActivity() {
         setContent {
             KWPassTheme {
                 val interactionSource = remember { MutableInteractionSource() }
-                val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+                val uiState by viewModel.mainUiState.collectAsStateWithLifecycle()
 
                 val lifecycleOwner = LocalLifecycleOwner.current
 
                 DisposableEffect(lifecycleOwner) {
                     val observer = LifecycleEventObserver { _, event ->
                         if (event == Event.ON_RESUME) {
-                            if (uiState.isAllValidInput) {
+                            if (uiState.accountInfo.hasValidInfo) {
                                 viewModel.refreshQR(scaled = true)
                             }
                         }
@@ -82,8 +82,8 @@ class QrOverlayActivity : ComponentActivity() {
                     }
                 }
 
-                LaunchedEffect(uiState.qrBitmap) {
-                    if (uiState.qrBitmap != null) {
+                LaunchedEffect(uiState.process.qrBitmap) {
+                    if (uiState.process.qrBitmap != null) {
                         while (isActive) {
                             delay(50000L)
                             viewModel.refreshQR(scaled = true)
@@ -91,8 +91,8 @@ class QrOverlayActivity : ComponentActivity() {
                     }
                 }
 
-                LaunchedEffect(uiState.isAllValidInput) {
-                    if (uiState.isAllValidInput) {
+                LaunchedEffect(uiState.accountInfo.hasValidInfo) {
+                    if (uiState.accountInfo.hasValidInfo) {
                         viewModel.refreshQR(scaled = true)
                     }
                 }
@@ -110,19 +110,19 @@ class QrOverlayActivity : ComponentActivity() {
                             }, indication = null, interactionSource = interactionSource
                         ), contentAlignment = Alignment.Center
                 ) {
-                    if (uiState.fetchingData) {
+                    if (uiState.process.isFetching) {
                         CircularProgressIndicator(color = Color.White)
-                    } else if (uiState.qrBitmap != null) {
+                    } else if (uiState.process.qrBitmap != null) {
                         KeepScreenMaxBrightness()
                         Image(
-                            bitmap = uiState.qrBitmap!!.asImageBitmap(),
+                            bitmap = uiState.process.qrBitmap!!.asImageBitmap(),
                             contentDescription = "QR Code",
                             modifier = Modifier
                                 .size(250.dp)
                                 .clip(RoundedCornerShape(16.dp))
 
                         )
-                    } else if (uiState.failedToGetQr) {
+                    } else if (uiState.process.fetchFailed) {
                         Text(
                             text = "ERROR"
                         )

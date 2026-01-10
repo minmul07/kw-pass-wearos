@@ -79,7 +79,7 @@ fun SettingScreenAppBar(
 @Composable
 fun SettingMainScreen(
     modifier: Modifier = Modifier,
-    uiState: MainUiState,
+    mainUiState: MainUiState,
     onRidChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onPasswordVisibilityChange: () -> Unit,
@@ -126,7 +126,8 @@ fun SettingMainScreen(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     AccountInputFieldSet(
-                        uiState = uiState,
+                        processState = mainUiState.process,
+                        inputFormState = mainUiState.inputForm,
                         onRidChange = onRidChange,
                         onPasswordChange = onPasswordChange,
                         onPasswordVisibilityChange = onPasswordVisibilityChange,
@@ -196,7 +197,7 @@ fun SettingMainScreen(
 fun SettingMainScreenPreview() {
     KWPassTheme {
         SettingMainScreen(
-            uiState = MainUiState(),
+            mainUiState = MainUiState(),
             onRidChange = { },
             onPasswordChange = { },
             onPasswordVisibilityChange = { },
@@ -214,7 +215,7 @@ fun SettingMainScreenPreview() {
 fun DarkSettingMainScreenPreview() {
     KWPassTheme {
         SettingMainScreen(
-            uiState = MainUiState(),
+            mainUiState = MainUiState(),
             onRidChange = { },
             onPasswordChange = { },
             onPasswordVisibilityChange = { },

@@ -42,7 +42,7 @@ fun MainScreen(
     val focusManager = LocalFocusManager.current
 
     val context = LocalContext.current
-    val uiState by mainViewModel.uiState.collectAsStateWithLifecycle()
+    val mainUiState by mainViewModel.mainUiState.collectAsStateWithLifecycle()
 
     val animSpec = tween<IntOffset>(durationMillis = 400)
 
@@ -96,7 +96,7 @@ fun MainScreen(
             }
         ) {
             HomeScreen(
-                uiState = uiState,
+                processState = mainUiState.process,
                 refreshQR = { mainViewModel.refreshQR() },
                 navController = navController,
                 snackbarEvent = mainViewModel.snackbarEvent
@@ -120,7 +120,7 @@ fun MainScreen(
             }
         ) {
             SettingMainScreen(
-                uiState = uiState,
+                mainUiState = mainUiState,
                 navController = navController,
                 focusManager = focusManager,
                 onRidChange = { mainViewModel.updateRidInput(it) },

@@ -31,13 +31,15 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import minmul.kwpass.R
-import minmul.kwpass.ui.main.MainUiState
+import minmul.kwpass.ui.main.InputFormState
+import minmul.kwpass.ui.main.ProcessState
 import minmul.kwpass.ui.theme.KWPassTheme
 
 @Composable
 fun AccountInputFieldSet(
     modifier: Modifier = Modifier,
-    uiState: MainUiState,
+    processState: ProcessState,
+    inputFormState: InputFormState,
     onRidChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onPasswordVisibilityChange: () -> Unit,
@@ -46,7 +48,7 @@ fun AccountInputFieldSet(
     buttonLabel: String,
     buttonOnWork: String,
     isInitialSetup: Boolean = false,
-    colors : TextFieldColors = TextFieldDefaults.colors(
+    colors: TextFieldColors = TextFieldDefaults.colors(
         focusedContainerColor = colorScheme.inverseOnSurface,
         unfocusedContainerColor = colorScheme.inverseOnSurface,
         disabledContainerColor = colorScheme.inverseOnSurface,
@@ -56,21 +58,21 @@ fun AccountInputFieldSet(
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
-        val fieldEnabled = !uiState.fetchingData && if (isInitialSetup) {
-            !uiState.succeededForAccountVerification
+        val fieldEnabled = !processState.isFetching && if (isInitialSetup) {
+            !processState.fetchSucceeded
         } else {
             true
         }
 
         // 학번
         AccountInputField(
-            value = uiState.ridInput,
+            value = inputFormState.ridInput,
             onValueChange = onRidChange,
             label = stringResource(R.string.rid),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number).copy(
                 imeAction = ImeAction.Done
             ),
-            isError = uiState.fieldErrorStatus,
+            isError = inputFormState.fieldErrorStatus,
             enabled = fieldEnabled,
             colors = colors
         )
@@ -79,28 +81,29 @@ fun AccountInputFieldSet(
 
         // 비밀번호
         AccountInputField(
-            value = uiState.passwordInput,
+            value = inputFormState.passwordInput,
             onValueChange = onPasswordChange,
             label = stringResource(R.string.password),
-            visualTransformationStatus = if (uiState.passwordVisible) VisualTransformation.None
+            visualTransformationStatus = if (inputFormState.passwordVisible) VisualTransformation.None
             else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password).copy(
                 imeAction = ImeAction.Next
             ),
             trailingIcon = {
-                val passwordVisibilityIcon = if (uiState.passwordVisible) Icons.Default.Visibility
-                else Icons.Default.VisibilityOff
+                val passwordVisibilityIcon =
+                    if (inputFormState.passwordVisible) Icons.Default.Visibility
+                    else Icons.Default.VisibilityOff
 
-                val description = if (uiState.passwordVisible) "비밀번호 보기"
+                val description = if (inputFormState.passwordVisible) "비밀번호 보기"
                 else "비밀번호 숨기기"
 
                 IconButton(
-                    onClick = onPasswordVisibilityChange, enabled = !uiState.fetchingData
+                    onClick = onPasswordVisibilityChange, enabled = !processState.isFetching
                 ) {
                     Icon(imageVector = passwordVisibilityIcon, description)
                 }
             },
-            isError = uiState.fieldErrorStatus,
+            isError = inputFormState.fieldErrorStatus,
             enabled = fieldEnabled,
             colors = colors
         )
@@ -109,13 +112,13 @@ fun AccountInputFieldSet(
 
         // 전화번호
         AccountInputField(
-            value = uiState.telInput,
+            value = inputFormState.telInput,
             onValueChange = onTelChange,
             label = stringResource(R.string.tel),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number).copy(
                 imeAction = ImeAction.Done
             ),
-            isError = uiState.fieldErrorStatus,
+            isError = inputFormState.fieldErrorStatus,
             enabled = fieldEnabled,
             colors = colors
         )
@@ -127,11 +130,11 @@ fun AccountInputFieldSet(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val message: String = if (uiState.initialStatus) " "
-            else if (uiState.fetchingData) stringResource(R.string.verifying_account)
-            else if (uiState.failedForAccountVerification) stringResource(R.string.error_verifying_account)
-            else if (uiState.succeededForAccountVerification) stringResource(R.string.login_success)
-            else if (!uiState.isAllValidInput) stringResource(R.string.field_not_satisfied) // TODO() not working
+            val message: String = if (processState.initialStatus) " "
+            else if (processState.isFetching) stringResource(R.string.verifying_account)
+            else if (processState.fetchFailed) stringResource(R.string.error_verifying_account)
+            else if (processState.fetchSucceeded) stringResource(R.string.login_success)
+//            else if (!processState.isAllValidInput) stringResource(R.string.field_not_satisfied) // TODO() not working
             else " "
 
             Text(
@@ -143,10 +146,10 @@ fun AccountInputFieldSet(
             )
             Button(
                 onClick = onButtonClicked,
-                enabled = uiState.isAllValidInput && !uiState.fetchingData,
+                enabled = inputFormState.isAllValidInput && !processState.isFetching,
                 modifier = Modifier.padding(horizontal = 4.dp)
             ) {
-                if (!uiState.fetchingData) {
+                if (!processState.isFetching) {
                     Text(text = buttonLabel)
                 } else {
                     Text(text = buttonOnWork)
@@ -169,7 +172,7 @@ fun AccountInputField(
     trailingIcon: @Composable (() -> Unit)? = null,
     isError: Boolean,
     enabled: Boolean,
-    colors : TextFieldColors
+    colors: TextFieldColors
 ) {
     OutlinedTextField(
         value = value,
@@ -190,25 +193,28 @@ fun AccountInputField(
 @Composable
 fun AccountInputFieldSetPreview() {
     KWPassTheme {
+        // 프리뷰를 위한 가상 데이터 생성
+        val mockInputForm = InputFormState(
+            ridInput = "2023203000",
+            passwordInput = "abcdef12345678",
+            telInput = "01012345678",
+            isRidValid = true,
+            isPasswordValid = true,
+            isTelValid = true,
+            passwordVisible = false,
+            fieldErrorStatus = false
+        )
+
+        val mockProcess = ProcessState(
+            isFetching = false,
+            fetchFailed = false,
+            fetchSucceeded = false,
+            initialStatus = false
+        )
+
         AccountInputFieldSet(
-            uiState = MainUiState(
-                savedRid = "2023203000",
-                savedPassword = "abcdef12345678",
-                savedTel = "01012345678",
-                savedQR = "asdasdasd",
-                ridInput = "2023203000",
-                passwordInput = "abcdef12345678",
-                telInput = "01012345678",
-                isRidValid = true,
-                isPasswordValid = true,
-                isTelValid = true,
-                passwordVisible = false,
-                fetchingData = false,
-                fieldErrorStatus = false,
-                initialStatus = false,
-                failedForAccountVerification = false,
-                succeededForAccountVerification = false,
-            ),
+            processState = mockProcess,
+            inputFormState = mockInputForm,
             onRidChange = {},
             onPasswordChange = {},
             onPasswordVisibilityChange = {},
@@ -216,6 +222,7 @@ fun AccountInputFieldSetPreview() {
             onButtonClicked = {},
             buttonLabel = stringResource(R.string.login),
             buttonOnWork = stringResource(R.string.checking),
+            isInitialSetup = true
         )
     }
 }

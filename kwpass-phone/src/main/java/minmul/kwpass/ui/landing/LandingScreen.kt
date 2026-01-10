@@ -26,11 +26,11 @@ fun LandingScreen(
 ) {
     val activity = LocalActivity.current as ComponentActivity
     val mainViewModel: MainViewModel = hiltViewModel(activity)
-    val uiState by mainViewModel.uiState.collectAsStateWithLifecycle()
+    val mainUiState by mainViewModel.mainUiState.collectAsStateWithLifecycle()
 
     LandingContent(
         onFinished = onFinished,
-        uiState = uiState,
+        mainUiState = mainUiState,
         onRidChange = mainViewModel::updateRidInput,
         onPasswordChange = mainViewModel::updatePasswordInput,
         onPasswordVisibilityChange = mainViewModel::updatePasswordVisibility,
@@ -43,7 +43,7 @@ fun LandingScreen(
 @Composable
 fun LandingContent(
     onFinished: () -> Unit,
-    uiState: MainUiState,
+    mainUiState: MainUiState,
     onRidChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onPasswordVisibilityChange: () -> Unit,
@@ -80,7 +80,8 @@ fun LandingContent(
 
                 2 -> InitialSetupScreen(
                     onNextClicked = onFinished,
-                    uiState = uiState,
+                    processState = mainUiState.process,
+                    inputFormState = mainUiState.inputForm,
                     onRidChange = onRidChange,
                     onPasswordChange = onPasswordChange,
                     onPasswordVisibilityChange = onPasswordVisibilityChange,

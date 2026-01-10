@@ -39,7 +39,7 @@ import minmul.kwpass.R
 import minmul.kwpass.ui.ScreenDestination
 import minmul.kwpass.ui.UiText
 import minmul.kwpass.ui.components.QrView
-import minmul.kwpass.ui.main.MainUiState
+import minmul.kwpass.ui.main.ProcessState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,7 +70,7 @@ fun HomeScreenAppBar(
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    uiState: MainUiState,
+    processState: ProcessState,
     refreshQR: () -> Unit,
     navController: NavController,
     snackbarEvent: Flow<UiText>
@@ -105,18 +105,18 @@ fun HomeScreen(
             verticalArrangement = Arrangement.Center
         ) {
             QrView(
-                isFetching = uiState.fetchingData,
-                qrBitmap = uiState.qrBitmap,
-                unavailable = uiState.failedToGetQr,
+                isFetching = processState.isFetching,
+                qrBitmap = processState.qrBitmap,
+                unavailable = processState.fetchFailed,
                 refresh = refreshQR
             )
             Spacer(modifier = Modifier.height(24.dp))
             Button(
                 onClick = refreshQR,
-                enabled = uiState.isAllValidInput && !uiState.fetchingData,
+                enabled = !processState.isFetching,
             ) {
                 AnimatedContent(
-                    targetState = uiState.fetchingData,
+                    targetState = processState.isFetching,
                     transitionSpec = {
                         fadeIn(animationSpec = tween(durationMillis = 300)) togetherWith
                                 fadeOut(animationSpec = tween(durationMillis = 300))
