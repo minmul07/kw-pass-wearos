@@ -1,4 +1,4 @@
-package minmul.kwpass.theme
+package minmul.kwpass.ui.theme
 
 import androidx.compose.runtime.Composable
 import androidx.wear.compose.material.MaterialTheme

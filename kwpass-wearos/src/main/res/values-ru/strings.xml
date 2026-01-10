@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">KW Pass</string>
-    <string name="loading_qr">Генерация QR-кода…</string>
     <string name="fetching_qr">Получение QR-кода…</string>
     <string name="loading_account">Синхронизация аккаунта…</string>
     <string name="no_connected_phone">Нет связи с телефоном.</string>

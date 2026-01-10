@@ -1,6 +1,5 @@
-package minmul.kwpass.main
+package minmul.kwpass.ui.main
 
-import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.common.api.ApiException
@@ -11,7 +10,6 @@ import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.NodeClient
 import com.google.android.gms.wearable.WearableStatusCodes
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.awaitClose
@@ -23,11 +21,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
-import minmul.kwpass.shared.KwuRepository
 import minmul.kwpass.shared.QrGenerator
 import minmul.kwpass.shared.UserData
-import minmul.kwpass.shared.analystics.KwPassLogger
+import minmul.kwpass.shared.domain.GetQrCodeUseCase
 import minmul.kwpass.ui.ScreenStatus
 import timber.log.Timber
 import javax.inject.Inject
@@ -38,10 +34,10 @@ class MainViewModel @Inject constructor(
     private val messageClient: MessageClient,
     private val dataClient: DataClient,
     private val nodeClient: NodeClient,
-    private val kwuRepository: KwuRepository,
-    private val kwPassLogger: KwPassLogger
+    private val getQrCodeUseCase: GetQrCodeUseCase,
 ) : ViewModel() {
-    // UISTATE
+    private val source: String = "watch"
+
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
@@ -139,30 +135,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun generateQrBitmap(content: String) {
-        if (content.isEmpty()) {
-            return
-        }
-
-        kwPassLogger.logQrGenerated("wear")
-        viewModelScope.launch {
-            val bitmap: Bitmap? = withContext(Dispatchers.Default) {
-                QrGenerator.generateQrBitmapInternal(content)
-            }
-
-            if (bitmap != null) {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        savedQrBitmap = bitmap,
-                        status = ScreenStatus.QR_READY,
-                        isRefreshing = false
-                    )
-                }
-            }
-        }
-    }
-
-
     fun requestForcedAccountDataSync(silent: Boolean) {
         viewModelScope.launch {
             try {
@@ -208,12 +180,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private suspend fun fetchQR(rid: String, password: String, tel: String): String {
-        Timber.tag("fetchQR").i("INFO rid: $rid, password: ${password.length}자리, tel: $tel")
-        val realRid = "0$rid"
-        return kwuRepository.startProcess(rid = realRid, password = password, tel = tel)
-    }
-
     fun refreshQR() {
         if (!uiState.value.accountDataLoaded) {
             _uiState.update { currentState ->
@@ -229,40 +195,30 @@ class MainViewModel @Inject constructor(
             return
         }
 
-        if (refreshJob?.isActive == true) {
-            Timber.i("이전 작업 취소")
-            refreshJob?.cancel()
-        }
-
+        refreshJob?.cancel()
         refreshJob = viewModelScope.launch {
-            var result: String
             _uiState.update { currentState ->
                 currentState.copy(
                     isRefreshing = true,
                     status = ScreenStatus.FETCHING_QR
                 )
             }
-            try {
-                result = fetchQR(
-                    uiState.value.savedRid,
-                    uiState.value.savedPassword,
-                    uiState.value.savedTel
-                )
-                if (result == "") {
-                    throw Exception("Void QR Response. ")
+
+            val rid = uiState.value.savedRid
+            val password = uiState.value.savedPassword
+            val tel = uiState.value.savedTel
+
+            getQrCodeUseCase(rid, password, tel, source)
+                .onSuccess { bitmap ->
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            savedQrBitmap = bitmap,
+                            status = ScreenStatus.QR_READY,
+                            isRefreshing = false
+                        )
+                    }
                 }
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        savedQR = result,
-                        status = ScreenStatus.GENERATING_QR
-                    )
-                }
-                generateQrBitmap(result)
-            } catch (e: Exception) {
-                if (e is CancellationException) {
-                    Timber.i("작업이 취소되었습니다.")
-                    throw e
-                } else {
+                .onFailure {
                     playErrorVibration()
                     _uiState.update { currentState ->
                         currentState.copy(
@@ -271,7 +227,6 @@ class MainViewModel @Inject constructor(
                         )
                     }
                 }
-            }
         }
     }
 }

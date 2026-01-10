@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">KW Pass</string>
-    <string name="loading_qr">QRコードを生成中…</string>
     <string name="fetching_qr">QRコードを取得中…</string>
     <string name="loading_account">アカウントを連携中…</string>
     <string name="no_connected_phone">スマホと接続できません。</string>

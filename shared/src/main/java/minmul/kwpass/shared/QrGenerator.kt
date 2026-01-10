@@ -11,7 +11,7 @@ import com.google.zxing.common.BitMatrix
 object QrGenerator {
     private val qrWriter = MultiFormatWriter()
 
-    fun generateQrBitmapInternal(content: String, margin: Int = 1, size: Int = 1): Bitmap? {
+    fun generateQrBitmapInternal(content: String, margin: Int = 1): Bitmap? {
         return try {
             val hint = mapOf(
                 EncodeHintType.MARGIN to margin
@@ -19,7 +19,7 @@ object QrGenerator {
             val bitMatrix: BitMatrix = qrWriter.encode(
                 content,
                 BarcodeFormat.QR_CODE,
-                size, size,
+                1, 1,
                 hint
             )
             val width = bitMatrix.width

@@ -1,4 +1,4 @@
-package minmul.kwpass.main
+package minmul.kwpass.ui.main
 
 import android.R
 import android.os.Bundle

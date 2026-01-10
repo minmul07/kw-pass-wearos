@@ -1,4 +1,4 @@
-package minmul.kwpass.main
+package minmul.kwpass.ui.main
 
 import android.graphics.Bitmap
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -9,7 +9,6 @@ data class MainUiState(
     val savedRid: String = "",
     val savedPassword: String = "",
     val savedTel: String = "",
-    val savedQR: String = "",
     val savedQrBitmap: Bitmap? = null,
     val savedQrTime: Long = 0L,
     val status: ScreenStatus = ScreenStatus.START,

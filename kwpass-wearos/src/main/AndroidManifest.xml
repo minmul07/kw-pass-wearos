@@ -31,7 +31,7 @@
             android:value="SHORT_TEXT,SMALL_IMAGE,MONOCHROMATIC_IMAGE" />
 
         <activity
-            android:name=".main.MainActivity"
+            android:name=".ui.main.MainActivity"
             android:exported="true"
             android:taskAffinity=""
             android:launchMode="singleTask"

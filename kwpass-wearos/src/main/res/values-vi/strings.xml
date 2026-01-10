@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">KW Pass</string>
-    <string name="loading_qr">Đang tạo mã QR…</string>
     <string name="fetching_qr">Đang tải mã QR…</string>
     <string name="loading_account">Đang đồng bộ tài khoản…</string>
     <string name="no_connected_phone">Không thể kết nối với điện thoại.</string>

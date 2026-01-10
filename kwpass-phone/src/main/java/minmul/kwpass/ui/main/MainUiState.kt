@@ -27,7 +27,6 @@ data class InputFormState(
 
 data class ProcessState(
     val qrBitmap: Bitmap? = null,
-    val qrString: String = "",
     val isFetching: Boolean = false,
     val fetchFailed: Boolean = false, // failedToGetQr, failedForAccountVerification 통합 고려
     val fetchSucceeded: Boolean = false,

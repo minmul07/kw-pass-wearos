@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -50,7 +51,7 @@ class QrOverlayActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
         super.onNewIntent(intent, caller)
 
-        viewModel.refreshQR(scaled = true)
+        viewModel.refreshQR()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,7 +72,7 @@ class QrOverlayActivity : ComponentActivity() {
                     val observer = LifecycleEventObserver { _, event ->
                         if (event == Event.ON_RESUME) {
                             if (uiState.accountInfo.hasValidInfo) {
-                                viewModel.refreshQR(scaled = true)
+                                viewModel.refreshQR()
                             }
                         }
                     }
@@ -86,14 +87,14 @@ class QrOverlayActivity : ComponentActivity() {
                     if (uiState.process.qrBitmap != null) {
                         while (isActive) {
                             delay(50000L)
-                            viewModel.refreshQR(scaled = true)
+                            viewModel.refreshQR()
                         }
                     }
                 }
 
                 LaunchedEffect(uiState.accountInfo.hasValidInfo) {
                     if (uiState.accountInfo.hasValidInfo) {
-                        viewModel.refreshQR(scaled = true)
+                        viewModel.refreshQR()
                     }
                 }
 
@@ -119,7 +120,8 @@ class QrOverlayActivity : ComponentActivity() {
                             contentDescription = "QR Code",
                             modifier = Modifier
                                 .size(250.dp)
-                                .clip(RoundedCornerShape(16.dp))
+                                .clip(RoundedCornerShape(16.dp)),
+                            filterQuality = FilterQuality.None
 
                         )
                     } else if (uiState.process.fetchFailed) {

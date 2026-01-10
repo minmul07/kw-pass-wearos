@@ -49,8 +49,8 @@ import androidx.wear.tooling.preview.devices.WearDevices
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import minmul.kwpass.R
-import minmul.kwpass.main.MainUiState
-import minmul.kwpass.main.MainUiStateProvider
+import minmul.kwpass.ui.main.MainUiState
+import minmul.kwpass.ui.main.MainUiStateProvider
 
 @Composable
 fun QrScreen(
@@ -101,7 +101,6 @@ fun QrScreen(
                             ScreenStatus.START -> stringResource(R.string.welcome)
                             ScreenStatus.NOT_CONNECTED_TO_PHONE -> stringResource(R.string.no_connected_phone)
                             ScreenStatus.FAILED_TO_GET_QR -> stringResource(R.string.failed_to_get_qr)
-                            ScreenStatus.GENERATING_QR -> stringResource(R.string.loading_qr)
                             ScreenStatus.FETCHING_QR -> stringResource(R.string.fetching_qr)
                             ScreenStatus.SYNCING_ACCOUNT_DATA -> stringResource(R.string.loading_account)
                             ScreenStatus.FAILED_TO_GET_ACCOUNT_DATA_FROM_PHONE -> stringResource(

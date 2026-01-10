@@ -1,34 +1,26 @@
 package minmul.kwpass.ui.main
 
-import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.wearable.DataClient
-import com.google.android.gms.wearable.MessageClient
-import com.google.android.gms.wearable.PutDataMapRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import minmul.kwpass.R
+import minmul.kwpass.domain.usecase.SyncWatchUseCase
+import minmul.kwpass.domain.usecase.ValidateAccountUseCase
 import minmul.kwpass.shared.KwPassException
-import minmul.kwpass.shared.KwuRepository
-import minmul.kwpass.shared.QrGenerator
 import minmul.kwpass.shared.UserData
 import minmul.kwpass.shared.analystics.KwPassLogger
+import minmul.kwpass.shared.domain.GetQrCodeUseCase
 import minmul.kwpass.ui.UiText
 import timber.log.Timber
 import javax.inject.Inject
@@ -36,11 +28,12 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val userData: UserData,
-    private val kwuRepository: KwuRepository,
-    private val dataClient: DataClient,
-    private val messageClient: MessageClient,
+    private val getQrCodeUseCase: GetQrCodeUseCase,
+    private val syncWatchUseCase: SyncWatchUseCase,
+    private val validateAccountUseCase: ValidateAccountUseCase,
     private val kwPassLogger: KwPassLogger
 ) : ViewModel() {
+    private val source: String = "phone"
 
     private val _mainUiState = MutableStateFlow(MainUiState())
     val mainUiState: StateFlow<MainUiState> = _mainUiState.asStateFlow()
@@ -77,7 +70,7 @@ class MainViewModel @Inject constructor(
                 Timber.tag("DEBUG_USER").d("로드된 정보: 학번=$rid, 비번= ${password.length}자리, 전화=$tel")
                 setDataOnUiState(rid, password, tel)
 
-                if (isAppReadyToRefresh && !firstRun && isValidRid(rid)) {
+                if (isAppReadyToRefresh && !firstRun && validateAccountUseCase.isValidRid(rid)) {
                     isAppReadyToRefresh = false
                     refreshQR()
                 }
@@ -95,58 +88,18 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun sendAccountDataToWatch(rid: String, password: String, tel: String) {
-        viewModelScope.launch {
-            try {
-                val request = PutDataMapRequest.create("/account").apply {
-                    dataMap.putString("rid", rid)
-                    dataMap.putString("password", password)
-                    dataMap.putString("tel", tel)
-                    dataMap.putLong("timestamp", System.currentTimeMillis())
-                }.asPutDataRequest().setUrgent()
-
-                dataClient.putDataItem(request).await()
-
-                Timber.d("계정 정보 전송 성공. rid=$rid")
-            } catch (e: Exception) {
-                Timber.tag("계정 정보 전송 실패").e(e)
-            }
-        }
-    }
-
 
     fun startListeningForForcedAccountSync() {
         viewModelScope.launch {
-            callbackFlow {
-                val listener = MessageClient.OnMessageReceivedListener { messageEvent ->
-                    if (messageEvent.path == "/refresh") {
-                        trySend(Unit)
-                    }
+            syncWatchUseCase.setSyncListener()
+                .collect {
+                    val account = mainUiState.value.accountInfo
+                    syncWatchUseCase.sendAccountData(
+                        rid = account.rid,
+                        password = account.password,
+                        tel = account.tel
+                    )
                 }
-                messageClient.addListener(listener)
-                awaitClose { messageClient.removeListener(listener) }
-            }.collect {
-                sendAccountDataToWatch(
-                    mainUiState.value.accountInfo.rid,
-                    mainUiState.value.accountInfo.password,
-                    mainUiState.value.accountInfo.tel
-                )
-            }
-        }
-    }
-
-    private suspend fun generateQrBitmap(content: String, scaled: Boolean): Bitmap? {
-        if (content.isEmpty()) {
-            return null
-        }
-
-        kwPassLogger.logQrGenerated("phone")
-        return withContext(Dispatchers.Default) {
-            QrGenerator.generateQrBitmapInternal(
-                content = content,
-                margin = 2,
-                size = if (scaled) 400 else 1
-            )
         }
     }
 
@@ -163,7 +116,6 @@ class MainViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            var result: String
             _mainUiState.update { currentState ->
                 currentState.copy(
                     process = currentState.process.copy(
@@ -182,65 +134,49 @@ class MainViewModel @Inject constructor(
             val newPassword = mainUiState.value.inputForm.passwordInput
             val newTel = mainUiState.value.inputForm.telInput
 
-            try {
-                result = fetchQR(newRid, newPassword, newTel)
-                if (result.isEmpty()) {
-                    Timber.tag("fetchQR").d("result = $result")
-                    throw Exception("Void QR Response. ")
-                }
-
-                // 성공!
-                saveDataOnLocal(newRid, newPassword, newTel)
-                sendAccountDataToWatch(newRid, newPassword, newTel)
-                _mainUiState.update { currentState ->
-                    currentState.copy(
-                        process = currentState.process.copy(
-                            isFetching = false,
-                            fetchFailed = false,
-                            fetchSucceeded = true
-                        ),
-                        accountInfo = currentState.accountInfo.copy(
-                            rid = newRid,
-                            password = newPassword,
-                            tel = newTel
+            getQrCodeUseCase(newRid, newPassword, newTel, source)
+                .onSuccess {
+                    saveDataOnLocal(newRid, newPassword, newTel)
+                    syncWatchUseCase.sendAccountData(newRid, newPassword, newTel)
+                    _mainUiState.update { currentState ->
+                        currentState.copy(
+                            process = currentState.process.copy(
+                                isFetching = false,
+                                fetchFailed = false,
+                                fetchSucceeded = true
+                            ),
+                            accountInfo = currentState.accountInfo.copy(
+                                rid = newRid,
+                                password = newPassword,
+                                tel = newTel
+                            )
                         )
-                    )
+                    }
                 }
-            } catch (e: KwPassException) {
-                val uiText = getErrorUiText(e)
-                _toastEvent.send(uiText)
-
-                _mainUiState.update { currentState ->
-                    currentState.copy(
-                        process = currentState.process.copy(
-                            isFetching = false,
-                            fetchFailed = true,
-                            fetchSucceeded = false
-                        ),
-                        inputForm = currentState.inputForm.copy(
-                            fieldErrorStatus = true
+                .onFailure { e ->
+                    if (e is KwPassException) {
+                        val uiText = getErrorUiText(e)
+                        _toastEvent.send(uiText)
+                    } else {
+                        _toastEvent.send(UiText.DynamicString(e.message ?: "Unknown Error"))
+                    }
+                    _mainUiState.update { currentState ->
+                        currentState.copy(
+                            process = currentState.process.copy(
+                                isFetching = false,
+                                fetchFailed = true,
+                                fetchSucceeded = false
+                            ),
+                            inputForm = currentState.inputForm.copy(
+                                fieldErrorStatus = true
+                            )
                         )
-                    )
+                    }
                 }
-            } catch (e: Exception) {
-                _snackbarEvent.send(UiText.DynamicString(e.message ?: "Unknown Error"))
-                _mainUiState.update { currentState ->
-                    currentState.copy(
-                        process = currentState.process.copy(
-                            isFetching = false,
-                            fetchFailed = true,
-                            fetchSucceeded = false
-                        ),
-                        inputForm = currentState.inputForm.copy(
-                            fieldErrorStatus = true
-                        )
-                    )
-                }
-            }
         }
     }
 
-    fun refreshQR(scaled: Boolean = false) {
+    fun refreshQR() {
         if (!mainUiState.value.inputForm.isAllValidInput) {
             return
         }
@@ -249,65 +185,49 @@ class MainViewModel @Inject constructor(
         val password = mainUiState.value.accountInfo.password
         val tel = mainUiState.value.accountInfo.tel
 
-
         refreshJob?.cancel()
-
         refreshJob = viewModelScope.launch {
-            var result: String
             _mainUiState.update { currentState ->
                 currentState.copy(
                     process = currentState.process.copy(
-                        isFetching = true
+                        isFetching = true,
+                        fetchFailed = false
                     )
                 )
             }
-            try {
-                result = fetchQR(rid, password, tel)
-                if (result == "") {
-                    throw Exception("Void QR Response. ")
-                }
 
-                val qrBitmap = generateQrBitmap(content = result, scaled = scaled)
+            getQrCodeUseCase(rid, password, tel, source)
+                .onSuccess { bitmap ->
+                    _mainUiState.update { currentState ->
+                        currentState.copy(
+                            process = currentState.process.copy(
+                                fetchFailed = false,
+                                fetchSucceeded = true,
+                                isFetching = false,
+                                qrBitmap = bitmap
+                            )
+                        )
+                    }
+                }
+                .onFailure { e ->
+                    _mainUiState.update { currentState ->
+                        currentState.copy(
+                            process = currentState.process.copy(
+                                fetchFailed = true,
+                                fetchSucceeded = false,
+                                isFetching = false
+                            )
+                        )
+                    }
 
-                _mainUiState.update { currentState ->
-                    currentState.copy(
-                        process = currentState.process.copy(
-                            fetchFailed = false,
-                            qrBitmap = qrBitmap,
-                            qrString = result
-                        )
-                    )
+                    if (e is KwPassException) {
+                        val uiText = getErrorUiText(e)
+                        _snackbarEvent.send(uiText)
+                    } else {
+                        _snackbarEvent.send(UiText.DynamicString(e.message ?: "Unknown Error"))
+                    }
                 }
-            } catch (e: KwPassException) {
-                val uiText = getErrorUiText(e)
-                _snackbarEvent.send(uiText)
-
-                _mainUiState.update { currentState ->
-                    currentState.copy(
-                        process = currentState.process.copy(
-                            isFetching = true
-                        )
-                    )
-                }
-            } catch (e: Exception) {
-                _snackbarEvent.send(UiText.DynamicString(e.message ?: "Unknown Error"))
-            } finally {
-                _mainUiState.update { currentState ->
-                    currentState.copy(
-                        process = currentState.process.copy(
-                            isFetching = false
-                        )
-                    )
-                }
-            }
         }
-    }
-
-    // qr 코드 반환
-    private suspend fun fetchQR(rid: String, password: String, tel: String): String {
-        Timber.tag("fetchQR").i("INFO rid: $rid, password: ${password.length}자리, tel: $tel")
-        val realRid = "0$rid"
-        return kwuRepository.startProcess(rid = realRid, password = password, tel = tel)
     }
 
     fun saveDataOnLocal(rid: String, password: String, tel: String) {
@@ -339,7 +259,7 @@ class MainViewModel @Inject constructor(
                 currentState.copy(
                     inputForm = currentState.inputForm.copy(
                         ridInput = input,
-                        isRidValid = isValidRid(input),
+                        isRidValid = validateAccountUseCase.isValidRid(input),
                         fieldErrorStatus = false
                     )
                 )
@@ -348,13 +268,13 @@ class MainViewModel @Inject constructor(
     }
 
     fun updatePasswordInput(input: String) {
-        Timber.tag("isPasswordValid").i(isValidPassword(input).toString())
+        Timber.tag("isPasswordValid").i(validateAccountUseCase.isValidPassword(input).toString())
         _mainUiState.update { currentState ->
 
             currentState.copy(
                 inputForm = currentState.inputForm.copy(
                     passwordInput = input,
-                    isPasswordValid = isValidPassword(input),
+                    isPasswordValid = validateAccountUseCase.isValidPassword(input),
                     fieldErrorStatus = false
                 )
             )
@@ -367,7 +287,7 @@ class MainViewModel @Inject constructor(
                 currentState.copy(
                     inputForm = currentState.inputForm.copy(
                         telInput = input,
-                        isTelValid = isValidTel(input),
+                        isTelValid = validateAccountUseCase.isValidTel(input),
                         fieldErrorStatus = false
                     )
                 )
@@ -387,42 +307,15 @@ class MainViewModel @Inject constructor(
                     ridInput = newRid,
                     passwordInput = "",
                     telInput = newTel,
-                    isRidValid = isValidRid(newRid), // true 보장됨
-                    isPasswordValid = isValidPassword(newPassword), // true 보장됨
-                    isTelValid = isValidTel(newTel),  // true 보장됨
+                    isRidValid = validateAccountUseCase.isValidRid(newRid), // true 보장됨
+                    isPasswordValid = validateAccountUseCase.isValidPassword(newPassword), // true 보장됨
+                    isTelValid = validateAccountUseCase.isValidTel(newTel),  // true 보장됨
                 ),
                 process = currentState.process.copy(
                     isFetching = false
                 )
             )
         }
-    }
-
-    private fun isValidPassword(ps: String): Boolean {
-        //첫문자를 영문자로 입력하세요.
-        //영대문자(A~Z), 영소문자(a~z), 숫자(0~9) 및 특수문자(32개)
-        //중 3종류 이상으로 입력하세요. 8자리 이상
-        if (ps.length < 8) {
-            return false
-        }
-
-        if (!ps[0].isLetter()) {
-            return false
-        }
-
-        val specialChars = "!\"#\$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
-
-        return ps.all { char ->
-            char.isLetterOrDigit() || specialChars.contains(char)
-        }
-    }
-
-    private fun isValidRid(input: String): Boolean {
-        return input.length == 10 && input.all { it.isDigit() }
-    }
-
-    private fun isValidTel(input: String): Boolean {
-        return input.length == 11 && input.all { it.isDigit() }
     }
 
     fun backAction(): Boolean {

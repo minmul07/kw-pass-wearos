@@ -17,4 +17,6 @@ class KwPassLogger @Inject constructor(
         analytics.logEvent("qr_generated", params)
         Timber.d("logged: qr_generated - $source")
     }
+
+    // TODO: fun accountLoginAttempted
 }

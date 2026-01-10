@@ -16,7 +16,7 @@ import androidx.wear.watchface.complications.data.SmallImageType
 import androidx.wear.watchface.complications.datasource.ComplicationRequest
 import androidx.wear.watchface.complications.datasource.SuspendingComplicationDataSourceService
 import minmul.kwpass.R
-import minmul.kwpass.main.MainActivity
+import minmul.kwpass.ui.main.MainActivity
 import timber.log.Timber
 
 open class TextComplicationService : SuspendingComplicationDataSourceService() {

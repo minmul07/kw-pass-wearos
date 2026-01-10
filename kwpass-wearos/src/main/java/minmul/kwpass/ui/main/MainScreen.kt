@@ -1,4 +1,4 @@
-package minmul.kwpass.main
+package minmul.kwpass.ui.main
 
 import android.content.Context
 import android.os.Build
