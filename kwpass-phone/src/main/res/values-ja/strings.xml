@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">KW Pass</string>
     <string name="setting">設定</string>
 
     <string name="rid">学籍番号</string>
@@ -17,8 +16,12 @@
     <string name="field_not_satisfied">入力を確認してください。</string>
     <string name="login_success">ログイン成功！ :D</string>
 
+    <string name="error_network">インターネット接続を確認してください。</string>
+    <string name="error_server">サーバーエラーが発生しました。しばらくしてからもう一度お試しください。</string>
+    <string name="error_account">アカウント認証に失敗しました。アカウント情報を再確認してください。</string>
+    <string name="error_unknown">不明なエラーが発生しました。</string>
+
     <string name="goBack">戻る</string>
-    <string name="error_getSecret">シークレットキーの取得中に問題が発生しました。</string>
     <string name="checking">確認中</string>
     <string name="fetching">QRコード読込中</string>
     <string name="fetch">QRコードを取得</string>
@@ -35,11 +38,12 @@
     <string name="introduce_watch_app">ポケットからスマホを出さずに、手元でQRコードを確認できます。</string>
     <string name="introduce_watch_complication">ウォッチフェイスにQRショートカットを追加できます。</string>
 
-    <string name="widget_title">KW Pass</string>
+    <string name="shortcut_short_label">QRを開く</string>
+    <string name="shortcut_long_label">QRコード를すぐ開く</string>
+    <string name="shortcut_disabled_message">ショートカットを利用できません。</string>
 
     <string name="account_info">アカウント情報</string>
     <string name="language">言語</string>
     <string name="app_version">アプリバージョン</string>
-    <string name="github" translatable="false">KW Pass for WearOS GitHub</string>
     <string name="opensource_licence">オープンソースライセンス</string>
 </resources>

@@ -17,8 +17,12 @@
     <string name="field_not_satisfied">입력을 확인해주세요.</string>
     <string name="login_success">로그인 성공! :D</string>
 
+    <string name="error_network">인터넷 연결을 확인해 주세요.</string>
+    <string name="error_server">서버 문제가 발생했습니다. 나중에 다시 시도해 주세요.</string>
+    <string name="error_account">계정 인증에 실패했습니다. 계정 정보를 다시 확인해주세요.</string>
+    <string name="error_unknown">알 수 없는 문제가 발생했습니다.</string>
+
     <string name="goBack">뒤로 가기</string>
-    <string name="error_getSecret">시크릿 키를 불러오던 중 문제가 발생했습니다.</string>
     <string name="checking">확인 중</string>
     <string name="fetching">QR코드 불러오는 중</string>
     <string name="fetch">QR코드 요청</string>
@@ -39,7 +43,7 @@
 
     <string name="shortcut_short_label">QR 열기</string>
     <string name="shortcut_long_label">QR 코드 바로 열기</string>
-    <string name="shortcut_disabled_message">바로가기를 사용할 수 없어요,</string>
+    <string name="shortcut_disabled_message">바로가기를 사용할 수 없어요.</string>
 
     <string name="account_info">계정 정보</string>
     <string name="language">언어</string>

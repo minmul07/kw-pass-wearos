@@ -19,18 +19,25 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import kotlinx.coroutines.flow.Flow
 import minmul.kwpass.BuildConfig
 import minmul.kwpass.R
 import minmul.kwpass.ui.ScreenDestination
+import minmul.kwpass.ui.UiText
 import minmul.kwpass.ui.components.QrView
 import minmul.kwpass.ui.main.MainUiState
 
@@ -65,8 +72,19 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     uiState: MainUiState,
     refreshQR: () -> Unit,
-    navController: NavController
+    navController: NavController,
+    snackbarEvent: Flow<UiText>
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+
+    LaunchedEffect(snackbarEvent) {
+        snackbarEvent.collect { uiText ->
+            val message = uiText.asString(context)
+            snackbarHostState.showSnackbar(message)
+        }
+    }
+
     Scaffold(
         topBar = {
             HomeScreenAppBar(
@@ -75,7 +93,8 @@ fun HomeScreen(
                 },
                 modifier = Modifier
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
 
     ) { paddingValues ->
         Column(

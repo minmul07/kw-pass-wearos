@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">KW Pass</string>
     <string name="setting">Settings</string>
 
     <string name="rid">Student ID</string>
@@ -17,8 +16,12 @@
     <string name="field_not_satisfied">Please check your input.</string>
     <string name="login_success">Login successful! :D</string>
 
+    <string name="error_network">Please check your internet connection.</string>
+    <string name="error_server">A server error occurred. Please try again later.</string>
+    <string name="error_account">Account authentication failed. Please check your account information.</string>
+    <string name="error_unknown">An unknown error occurred.</string>
+
     <string name="goBack">Back</string>
-    <string name="error_getSecret">There was a problem retrieving the secret key.</string>
     <string name="checking">Checking…</string>
     <string name="fetching">Loading QR Code…</string>
     <string name="fetch">Request QR Code</string>
@@ -35,11 +38,12 @@
     <string name="introduce_watch_app">Check your QR code right from your wrist without taking out your phone.</string>
     <string name="introduce_watch_complication">You can add a QR shortcut directly to your watch face.</string>
 
-    <string name="widget_title">KW Pass</string>
+    <string name="shortcut_short_label">Open QR</string>
+    <string name="shortcut_long_label">Open QR code directly</string>
+    <string name="shortcut_disabled_message">Shortcut is unavailable.</string>
 
     <string name="account_info">Account Info</string>
     <string name="language">Language</string>
     <string name="app_version">App Version</string>
-    <string name="github" translatable="false">KW Pass for WearOS GitHub</string>
     <string name="opensource_licence">Open Source Licenses</string>
 </resources>

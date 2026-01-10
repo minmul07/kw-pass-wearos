@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">KW Pass</string>
     <string name="setting">Cài đặt</string>
 
     <string name="rid">Mã số sinh viên</string>
@@ -17,8 +16,12 @@
     <string name="field_not_satisfied">Vui lòng kiểm tra dữ liệu nhập.</string>
     <string name="login_success">Đăng nhập thành công! :D</string>
 
+    <string name="error_network">Vui lòng kiểm tra kết nối internet.</string>
+    <string name="error_server">Đã xảy ra lỗi máy chủ. Vui lòng thử lại sau.</string>
+    <string name="error_account">Xác thực tài khoản thất bại. Vui lòng kiểm tra lại thông tin tài khoản.</string>
+    <string name="error_unknown">Đã xảy ra lỗi không xác định.</string>
+
     <string name="goBack">Quay lại</string>
-    <string name="error_getSecret">Đã xảy ra lỗi khi lấy Secret Key.</string>
     <string name="checking">Đang kiểm tra</string>
     <string name="fetching">Đang tải mã QR</string>
     <string name="fetch">Yêu cầu mã QR</string>
@@ -35,11 +38,12 @@
     <string name="introduce_watch_app">Xem mã QR ngay trên cổ tay mà không cần lấy điện thoại ra khỏi túi.</string>
     <string name="introduce_watch_complication">Bạn có thể thêm phím tắt QR vào mặt đồng hồ của mình.</string>
 
-    <string name="widget_title">KW Pass</string>
+    <string name="shortcut_short_label">Mở QR</string>
+    <string name="shortcut_long_label">Mở mã QR trực tiếp</string>
+    <string name="shortcut_disabled_message">Phím tắt không khả dụng.</string>
 
     <string name="account_info">Thông tin tài khoản</string>
     <string name="language">Ngôn ngữ</string>
     <string name="app_version">Phiên bản ứng dụng</string>
-    <string name="github" translatable="false">KW Pass for WearOS GitHub</string>
     <string name="opensource_licence">Giấy phép mã nguồn mở</string>
 </resources>

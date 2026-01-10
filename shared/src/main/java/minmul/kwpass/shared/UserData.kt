@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 val Context.dataStore by preferencesDataStore(name = "userInfo")
 
-class UserData @Inject constructor(@ApplicationContext private val context: Context) {
+class UserData @Inject constructor(@param:ApplicationContext private val context: Context) {
     companion object {
         val KEY_RID = stringPreferencesKey("rid") // 학번
         val KEY_PASSWORD = stringPreferencesKey("password") // 비밀번호

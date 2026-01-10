@@ -47,7 +47,8 @@ fun MainScreen(
     val animSpec = tween<IntOffset>(durationMillis = 400)
 
     LaunchedEffect(key1 = true) {
-        mainViewModel.toastEvent.collect { message ->
+        mainViewModel.toastEvent.collect { uiText ->
+            val message = uiText.asString(context)
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
     }
@@ -97,7 +98,8 @@ fun MainScreen(
             HomeScreen(
                 uiState = uiState,
                 refreshQR = { mainViewModel.refreshQR() },
-                navController = navController
+                navController = navController,
+                snackbarEvent = mainViewModel.snackbarEvent
             )
         }
 

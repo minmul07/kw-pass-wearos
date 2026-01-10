@@ -7,7 +7,6 @@ import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.PutDataMapRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -24,10 +23,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import minmul.kwpass.R
+import minmul.kwpass.shared.KwPassException
 import minmul.kwpass.shared.KwuRepository
 import minmul.kwpass.shared.QrGenerator
 import minmul.kwpass.shared.UserData
 import minmul.kwpass.shared.analystics.KwPassLogger
+import minmul.kwpass.ui.UiText
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -44,8 +46,11 @@ class MainViewModel @Inject constructor(
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
 
-    private val _toastEvent = Channel<String>()
+    private val _toastEvent = Channel<UiText>(Channel.BUFFERED)
     val toastEvent = _toastEvent.receiveAsFlow()
+
+    private val _snackbarEvent = Channel<UiText>(Channel.BUFFERED)
+    val snackbarEvent = _snackbarEvent.receiveAsFlow()
 
     val isFirstRun: StateFlow<Boolean?> = userData.isFirstRun
         .stateIn(
@@ -78,6 +83,15 @@ class MainViewModel @Inject constructor(
                 }
             }
 
+        }
+    }
+
+    private fun getErrorUiText(e: KwPassException): UiText {
+        return when (e) {
+            is KwPassException.NetworkError -> UiText.StringResource(R.string.error_network)
+            is KwPassException.ServerError -> UiText.StringResource(R.string.error_server)
+            is KwPassException.AccountError -> UiText.StringResource(R.string.error_account)
+            is KwPassException.UnknownError -> UiText.StringResource(R.string.error_unknown)
         }
     }
 
@@ -190,8 +204,20 @@ class MainViewModel @Inject constructor(
                         succeededForAccountVerification = true
                     )
                 }
+            } catch (e: KwPassException) {
+                val uiText = getErrorUiText(e)
+                _toastEvent.send(uiText)
+
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        fetchingData = false,
+                        failedForAccountVerification = true,
+                        succeededForAccountVerification = false,
+                        fieldErrorStatus = true,
+                    )
+                }
             } catch (e: Exception) {
-                _toastEvent.send("정보 확인 필요: ${e.message}")
+                _snackbarEvent.send(UiText.DynamicString(e.message ?: "Unknown Error"))
                 _uiState.update { currentState ->
                     currentState.copy(
                         fetchingData = false,
@@ -237,17 +263,17 @@ class MainViewModel @Inject constructor(
                         failedToGetQr = false
                     )
                 }
-            } catch (e: Exception) {
-                if (e is CancellationException) {
-                    Timber.tag("refreshQR").d("Job Canceled")
-                    throw e
-                }
-                _toastEvent.send(e.message ?: "알 수 없는 오류가 발생했습니다.")
+            } catch (e: KwPassException) {
+                val uiText = getErrorUiText(e)
+                _snackbarEvent.send(uiText)
+
                 _uiState.update { currentState ->
                     currentState.copy(
                         failedToGetQr = true
                     )
                 }
+            } catch (e: Exception) {
+                _snackbarEvent.send(UiText.DynamicString(e.message ?: "Unknown Error"))
             } finally {
                 _uiState.update { currentState ->
                     currentState.copy(

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">KW Pass</string>
     <string name="setting">設定</string>
 
     <string name="rid">學號</string>
@@ -17,8 +16,12 @@
     <string name="field_not_satisfied">請檢查輸入內容。</string>
     <string name="login_success">登入成功！:D</string>
 
+    <string name="error_network">請檢查網路連線。</string>
+    <string name="error_server">伺服器發生錯誤實。請稍後再試。</string>
+    <string name="error_account">帳號驗證失敗。請重新檢查帳號資訊。</string>
+    <string name="error_unknown">發生了未知錯誤。</string>
+
     <string name="goBack">返回</string>
-    <string name="error_getSecret">讀取金鑰時發生問題。</string>
     <string name="checking">確認中</string>
     <string name="fetching">正在載入 QR Code</string>
     <string name="fetch">請求 QR Code</string>
@@ -35,11 +38,12 @@
     <string name="introduce_watch_app">無需從口袋拿出手機，在手腕上即可查看 QR Code。</string>
     <string name="introduce_watch_complication">可以在錶面上新增 QR 捷徑。</string>
 
-    <string name="widget_title">KW Pass</string>
+    <string name="shortcut_short_label">打開QR碼</string>
+    <string name="shortcut_long_label">直接打開二維碼</string>
+    <string name="shortcut_disabled_message">快捷方式無法使用。</string>
 
     <string name="account_info">帳戶資訊</string>
     <string name="language">語言</string>
     <string name="app_version">應用程式版本</string>
-    <string name="github" translatable="false">KW Pass for WearOS GitHub</string>
     <string name="opensource_licence">開放原始碼授權</string>
 </resources>
