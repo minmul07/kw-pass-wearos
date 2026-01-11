@@ -103,7 +103,7 @@ fun SettingMainScreen(
     ) { paddingValues ->
         Column(
             modifier = modifier
-                .padding(paddingValues)
+                .padding(top = paddingValues.calculateTopPadding())
                 .verticalScroll(rememberScrollState())
         ) {
 
