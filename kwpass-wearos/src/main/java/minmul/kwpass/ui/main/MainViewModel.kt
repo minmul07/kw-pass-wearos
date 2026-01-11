@@ -13,11 +13,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -62,24 +64,26 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             combine(userData.userFlow, userData.isFirstRun) { user, firstRun ->
                 Pair(user, firstRun)
-            }.collect { (user, firstRun) ->
-                val (rid, password, tel) = user
-
-                Timber.d("로드된 정보: 학번=$rid, 비번= ${password.length}자리, 전화=$tel")
-
-                if (rid.isNotEmpty() && password.isNotEmpty() && tel.isNotEmpty()) { // 데이터 로드 성공
-                    setUserDataOnUiState(rid, password, tel)
-                    refreshQR()
-                } else { // 최초 실행, 휴대폰에 계정 설정 완료되지 않음
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            status = ScreenStatus.START
-                        )
-                    }
-                    requestForcedAccountDataSync(silent = true)
-                    Timber.d("최초 실행")
-                }
             }
+                .distinctUntilChanged()
+                .collect { (user, firstRun) ->
+                    val (rid, password, tel) = user
+
+                    Timber.d("로드된 정보: 학번=$rid, 비번= ${password.length}자리, 전화=$tel")
+
+                    if (rid.isNotEmpty() && password.isNotEmpty() && tel.isNotEmpty()) { // 데이터 로드 성공
+                        setUserDataOnUiState(rid, password, tel)
+                        refreshQR()
+                    } else { // 최초 실행, 휴대폰에 계정 설정 완료되지 않음
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                status = ScreenStatus.START
+                            )
+                        }
+                        requestForcedAccountDataSync(silent = true)
+                        Timber.d("최초 실행")
+                    }
+                }
         }
     }
 
@@ -144,6 +148,7 @@ class MainViewModel @Inject constructor(
                 if (phoneNode != null) {
                     messageClient.sendMessage(phoneNode.id, "/refresh", null).await()
                     Timber.tag("requestRefresh").d("새로고침 요청 전송 완료")
+                    delay(1000L)
                 } else if (!silent) {
                     playErrorVibration()
                     _uiState.update { currentState ->
