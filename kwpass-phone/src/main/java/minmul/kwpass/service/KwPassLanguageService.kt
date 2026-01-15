@@ -65,7 +65,7 @@ object KwPassLanguageService {
         val currentLocale: Locale = getCurrentLocale()
         val languageCode = currentLocale.language
         val countryCode = currentLocale.country
-        return if (languageCode == "zh") {
+        return if (languageCode == "zh" && countryCode.isNotEmpty()) {
             "$languageCode-$countryCode"
         } else {
             languageCode

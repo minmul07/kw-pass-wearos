@@ -64,7 +64,9 @@ fun SingleMenu(
                 .height(72.dp)
                 .conditional(onclick != null) {
                     clickable { onclick?.invoke() }
-                }, verticalAlignment = Alignment.CenterVertically
+                }
+                .padding(end = 18.dp),
+            verticalAlignment = Alignment.CenterVertically
 
         ) {
             val iconPainter = imageVector?.let { rememberVectorPainter(it) } ?: painter
@@ -97,7 +99,6 @@ fun SingleMenu(
                     imageVector = trailingIcon,
                     contentDescription = null,
                     modifier = Modifier
-                        .padding(18.dp)
                         .size(18.dp)
                 )
             }
