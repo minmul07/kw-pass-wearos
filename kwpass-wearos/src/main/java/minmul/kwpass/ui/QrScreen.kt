@@ -9,6 +9,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -120,23 +121,30 @@ fun QrScreen(
                 if (!uiState.isRefreshing) {
                     KeepScreenMaxBrightness()
                 }
-                Image(
-                    bitmap = uiState.savedQrBitmap.asImageBitmap(),
-                    contentDescription = null,
+                Box(
                     modifier = Modifier
-                        .fillMaxSize(0.65f)
                         .clip(RoundedCornerShape(4.dp))
+                        .fillMaxSize(0.707f)
                         .alpha(qrAlpha)
+                        .background(Color.White)
                         .zIndex(1f)
                         .clickable(
                             onClick = onRefresh,
                             enabled = !uiState.isRefreshing,
                             indication = null,
                             interactionSource = interactionSource
-                        ),
-                    filterQuality = FilterQuality.None
+                        )
+                ) {
+                    Image(
+                        bitmap = uiState.savedQrBitmap.asImageBitmap(),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(4.dp),
+                        filterQuality = FilterQuality.None
 
-                )
+                    )
+                }
             }
 
 
@@ -159,7 +167,7 @@ fun QrScreen(
                     ) {
                         Icon(
                             modifier = Modifier
-                                .size(24.dp)
+                                .size(16.dp)
                                 .rotate(if (uiState.isRefreshing) angle else 0f),
                             imageVector = Icons.Default.Refresh,
                             contentDescription = null,

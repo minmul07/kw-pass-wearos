@@ -27,7 +27,9 @@ class GetQrCodeUseCase @Inject constructor(
 
             kwPassLogger.logQrGenerated(source)
             // 비트맵 생성 로직
-            QrGenerator.generateQrBitmapInternal(qrString, margin = 2)
+
+            val margin = if (source == "watch") 0 else 2
+            QrGenerator.generateQrBitmapInternal(qrString, margin = margin)
                 ?: throw KwPassException.UnknownError()
         }
 }
