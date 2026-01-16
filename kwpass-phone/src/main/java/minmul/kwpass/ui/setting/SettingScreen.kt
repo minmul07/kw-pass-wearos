@@ -152,7 +152,7 @@ fun SettingMainScreen(
             SingleMenu(
                 imageVector = Icons.Default.Android,
                 title = stringResource(R.string.app_version),
-                subTitle = "v1.0",
+                subTitle = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
                 bottom = false
             )
             SingleMenu(
