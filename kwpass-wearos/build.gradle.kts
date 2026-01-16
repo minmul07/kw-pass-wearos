@@ -54,6 +54,11 @@ android {
         buildConfig = true
         compose = true
     }
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
 }
 
 dependencies {

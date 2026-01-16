@@ -37,6 +37,7 @@ android {
         release {
             signingConfig = signingConfigs.getByName("debug") // release 시 삭제
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
