@@ -35,7 +35,9 @@ fun MainScreen(
             } else {
                 mainViewModel.requestForcedAccountDataSync(silent = false)
             }
-        }
+        },
+        stopTimer = { mainViewModel.stopRefreshTimer() },
+        resumeTimer = { mainViewModel.resumeRefreshTimer() }
     )
 }
 

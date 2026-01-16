@@ -26,6 +26,7 @@ class GetQrCodeUseCase @Inject constructor(
             if (qrString.isBlank()) throw KwPassException.ServerError()
 
             kwPassLogger.logQrGenerated(source)
+            Timber.i("qr created on ${System.currentTimeMillis()}")
             // 비트맵 생성 로직
 
             val margin = if (source == "watch") 0 else 2

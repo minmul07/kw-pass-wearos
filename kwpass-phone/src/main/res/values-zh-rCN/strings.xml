@@ -25,6 +25,7 @@
     <string name="checking">确认中</string>
     <string name="fetching">正在加载二维码</string>
     <string name="fetch">请求二维码</string>
+    <string name="qr_seconds">%d秒</string>
 
     <string name="welcome">欢迎！</string>
     <string name="start">开始使用</string>

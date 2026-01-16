@@ -25,6 +25,7 @@
     <string name="checking">Đang kiểm tra</string>
     <string name="fetching">Đang tải mã QR</string>
     <string name="fetch">Yêu cầu mã QR</string>
+    <string name="qr_seconds">%dgiây</string>
 
     <string name="welcome">Chào mừng!</string>
     <string name="start">Bắt đầu</string>

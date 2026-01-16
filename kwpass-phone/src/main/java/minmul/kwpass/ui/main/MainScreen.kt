@@ -99,7 +99,9 @@ fun MainScreen(
                 processState = mainUiState.process,
                 refreshQR = { mainViewModel.refreshQR() },
                 navController = navController,
-                snackbarEvent = mainViewModel.snackbarEvent
+                snackbarEvent = mainViewModel.snackbarEvent,
+                stopTimer = { mainViewModel.stopRefreshTimer() },
+                resumeTimer = { mainViewModel.resumeRefreshTimer() }
             )
         }
 

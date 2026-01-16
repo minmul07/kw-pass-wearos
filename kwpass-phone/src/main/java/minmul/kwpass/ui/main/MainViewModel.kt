@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import minmul.kwpass.R
 import minmul.kwpass.domain.usecase.SyncWatchUseCase
@@ -33,6 +35,12 @@ class MainViewModel @Inject constructor(
     private val validateAccountUseCase: ValidateAccountUseCase,
     private val kwPassLogger: KwPassLogger
 ) : ViewModel() {
+
+    companion object {
+        const val QR_VALID_TIME_SEC = 50
+        const val QR_VALID_TIME_MS = QR_VALID_TIME_SEC * 1000L
+    }
+
     private val source: String = "phone"
 
     private val _mainUiState = MutableStateFlow(MainUiState())
@@ -56,6 +64,8 @@ class MainViewModel @Inject constructor(
     private var backActionCount = 0
 
     private var refreshJob: Job? = null
+
+    private var timerJob: Job? = null
 
 
     init {
@@ -185,6 +195,7 @@ class MainViewModel @Inject constructor(
         val password = mainUiState.value.accountInfo.password
         val tel = mainUiState.value.accountInfo.tel
 
+        timerJob?.cancel()
         refreshJob?.cancel()
         refreshJob = viewModelScope.launch {
             _mainUiState.update { currentState ->
@@ -204,10 +215,13 @@ class MainViewModel @Inject constructor(
                                 fetchFailed = false,
                                 fetchSucceeded = true,
                                 isFetching = false,
-                                qrBitmap = bitmap
+                                qrBitmap = bitmap,
+                                refreshTimeLeft = QR_VALID_TIME_SEC,
+                                qrCreationTime = System.currentTimeMillis()
                             )
                         )
                     }
+                    startRefreshTimer(time = QR_VALID_TIME_SEC)
                 }
                 .onFailure { e ->
                     _mainUiState.update { currentState ->
@@ -226,8 +240,72 @@ class MainViewModel @Inject constructor(
                     } else {
                         _snackbarEvent.send(UiText.DynamicString(e.message ?: "Unknown Error"))
                     }
+                    stopRefreshTimer()
                 }
         }
+    }
+
+    private fun startRefreshTimer(time: Int) {
+        timerJob?.cancel()
+
+        _mainUiState.update { currentState ->
+            currentState.copy(
+                process = currentState.process.copy(
+                    refreshTimeLeft = time
+                )
+            )
+        }
+
+        timerJob = viewModelScope.launch {
+            while (isActive && mainUiState.value.process.refreshTimeLeft > 0) {
+                delay(1000L)
+                _mainUiState.update { currentState ->
+                    currentState.copy(
+                        process = currentState.process.copy(
+                            refreshTimeLeft = currentState.process.refreshTimeLeft - 1
+                        )
+                    )
+
+                }
+
+                if (mainUiState.value.process.refreshTimeLeft == 0) {
+                    refreshQR()
+                }
+            }
+        }
+    }
+
+    fun resumeRefreshTimer() {
+        val qrCreationTime = mainUiState.value.process.qrCreationTime
+        if (qrCreationTime == 0L) return
+
+        val qrLifeElapsed = (System.currentTimeMillis() - qrCreationTime)
+        Timber.tag("qrLifeElapsed").i("$qrLifeElapsed")
+
+        // 유효기간 지났나?
+        if (qrLifeElapsed >= QR_VALID_TIME_MS) {
+            refreshQR()
+        } else {
+            val calculatedCurrentQrTimeLeft = QR_VALID_TIME_SEC - (qrLifeElapsed / 1000).toInt()
+            Timber.tag("calculatedCurrentQrTimeLeft").i("$calculatedCurrentQrTimeLeft")
+            _mainUiState.update { currentState ->
+                currentState.copy(
+                    process = currentState.process.copy(
+                        refreshTimeLeft = calculatedCurrentQrTimeLeft
+                    )
+                )
+            }
+            startRefreshTimer(calculatedCurrentQrTimeLeft)
+        }
+    }
+
+    fun stopRefreshTimer() {
+        timerJob?.cancel()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        stopRefreshTimer()
     }
 
     fun saveDataOnLocal(rid: String, password: String, tel: String) {

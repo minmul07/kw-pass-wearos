@@ -51,14 +51,6 @@ fun QrView(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
-    LaunchedEffect(qrBitmap) {
-        if (qrBitmap != null) {
-            while (isActive) {
-                delay(50000L)
-                refresh()
-            }
-        }
-    }
     val animatedQrBlur: Dp by animateDpAsState(
         if (isFetching || unavailable) 4.dp else 0.dp,
         animationSpec = tween(durationMillis = 200)

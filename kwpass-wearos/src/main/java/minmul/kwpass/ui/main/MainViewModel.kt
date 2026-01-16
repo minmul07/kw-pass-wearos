@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import minmul.kwpass.shared.QrGenerator
@@ -38,6 +39,12 @@ class MainViewModel @Inject constructor(
     private val nodeClient: NodeClient,
     private val getQrCodeUseCase: GetQrCodeUseCase,
 ) : ViewModel() {
+
+    companion object {
+        const val QR_VALID_TIME_SEC = 50
+        const val QR_VALID_TIME_MS = QR_VALID_TIME_SEC * 1000L
+    }
+
     private val source: String = "watch"
 
     private val _uiState = MutableStateFlow(MainUiState())
@@ -49,6 +56,8 @@ class MainViewModel @Inject constructor(
 
     // QR
     private var refreshJob: Job? = null
+
+    private var timerJob: Job? = null
 
     init {
         startListeningForAccountSync()
@@ -200,6 +209,7 @@ class MainViewModel @Inject constructor(
             return
         }
 
+        timerJob?.cancel()
         refreshJob?.cancel()
         refreshJob = viewModelScope.launch {
             _uiState.update { currentState ->
@@ -219,9 +229,12 @@ class MainViewModel @Inject constructor(
                         currentState.copy(
                             savedQrBitmap = bitmap,
                             status = ScreenStatus.QR_READY,
-                            isRefreshing = false
+                            isRefreshing = false,
+                            refreshTimeLeft = QR_VALID_TIME_SEC,
+                            qrCreationTime = System.currentTimeMillis()
                         )
                     }
+                    startRefreshTimer(time = QR_VALID_TIME_SEC)
                 }
                 .onFailure {
                     playErrorVibration()
@@ -233,5 +246,62 @@ class MainViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    private fun startRefreshTimer(time: Int) {
+        timerJob?.cancel()
+
+        _uiState.update { currentState ->
+            currentState.copy(
+                refreshTimeLeft = time
+            )
+        }
+
+        timerJob = viewModelScope.launch {
+            while (isActive && uiState.value.refreshTimeLeft > 0) {
+                delay(1000L)
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        refreshTimeLeft = currentState.refreshTimeLeft - 1
+                    )
+
+                }
+
+                if (uiState.value.refreshTimeLeft == 0) {
+                    refreshQR()
+                }
+            }
+        }
+    }
+
+    fun resumeRefreshTimer() {
+        val qrCreationTime = uiState.value.qrCreationTime
+        if (qrCreationTime == 0L) return
+
+        val qrLifeElapsed = (System.currentTimeMillis() - qrCreationTime)
+        Timber.tag("qrLifeElapsed").i("$qrLifeElapsed")
+
+        // 유효기간 지났나?
+        if (qrLifeElapsed >= QR_VALID_TIME_MS) {
+            refreshQR()
+        } else {
+            val calculatedCurrentQrTimeLeft = QR_VALID_TIME_SEC - (qrLifeElapsed / 1000).toInt()
+            Timber.tag("calculatedCurrentQrTimeLeft").i("$calculatedCurrentQrTimeLeft")
+            _uiState.update { currentState ->
+                currentState.copy(
+                    refreshTimeLeft = calculatedCurrentQrTimeLeft
+                )
+            }
+            startRefreshTimer(calculatedCurrentQrTimeLeft)
+        }
+    }
+
+    fun stopRefreshTimer() {
+        timerJob?.cancel()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        stopRefreshTimer()
     }
 }

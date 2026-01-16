@@ -25,6 +25,7 @@
     <string name="checking">確認中</string>
     <string name="fetching">QRコード読込中</string>
     <string name="fetch">QRコードを取得</string>
+    <string name="qr_seconds">%d秒</string>
 
     <string name="welcome">ようこそ！</string>
     <string name="start">始める</string>

@@ -25,6 +25,7 @@
     <string name="checking">Проверка…</string>
     <string name="fetching">Загрузка QR-кода…</string>
     <string name="fetch">Запросить QR-код</string>
+    <string name="qr_seconds">%dсек</string>
 
     <string name="welcome">Добро пожаловать!</string>
     <string name="start">Начать</string>

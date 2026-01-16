@@ -31,6 +31,8 @@ data class ProcessState(
     val fetchFailed: Boolean = false, // failedToGetQr, failedForAccountVerification 통합 고려
     val fetchSucceeded: Boolean = false,
     val initialStatus: Boolean = true,
+    val refreshTimeLeft: Int = 0,
+    val qrCreationTime: Long = 0L
 )
 
 data class MainUiState(

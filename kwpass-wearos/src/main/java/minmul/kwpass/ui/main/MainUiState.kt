@@ -10,7 +10,8 @@ data class MainUiState(
     val savedPassword: String = "",
     val savedTel: String = "",
     val savedQrBitmap: Bitmap? = null,
-    val savedQrTime: Long = 0L,
+    val qrCreationTime: Long = 0L,
+    val refreshTimeLeft: Int = 0,
     val status: ScreenStatus = ScreenStatus.START,
 
     val accountDataLoaded: Boolean = false,

@@ -7,4 +7,5 @@
     <string name="failed_to_get_account_from_phone">帳戶同步失敗。</string>
     <string name="failed_to_get_qr">無法取得 QR Code。</string>
     <string name="welcome">歡迎！\n請在手機的 KW Pass 應用程式中註冊帳戶。</string>
+    <string name="qr_seconds">%d秒</string>
 </resources>

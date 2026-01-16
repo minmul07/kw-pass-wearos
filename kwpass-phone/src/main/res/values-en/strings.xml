@@ -25,6 +25,7 @@
     <string name="checking">Checking…</string>
     <string name="fetching">Loading QR Code…</string>
     <string name="fetch">Request QR Code</string>
+    <string name="qr_seconds">%ds</string>
 
     <string name="welcome">Welcome!</string>
     <string name="start">Get Started</string>

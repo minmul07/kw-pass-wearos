@@ -1,17 +1,25 @@
 package minmul.kwpass.ui.home
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,13 +33,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import kotlinx.coroutines.flow.Flow
 import minmul.kwpass.BuildConfig
@@ -73,15 +87,42 @@ fun HomeScreen(
     processState: ProcessState,
     refreshQR: () -> Unit,
     navController: NavController,
-    snackbarEvent: Flow<UiText>
+    snackbarEvent: Flow<UiText>,
+    stopTimer: () -> Unit,
+    resumeTimer: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val infiniteTransition = rememberInfiniteTransition(label = "spin")
+    val angle by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(500, easing = LinearEasing)
+        ), label = "spinAngle"
+    )
 
     LaunchedEffect(snackbarEvent) {
         snackbarEvent.collect { uiText ->
             val message = uiText.asString(context)
             snackbarHostState.showSnackbar(message)
+        }
+    }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_PAUSE -> stopTimer()
+                Lifecycle.Event.ON_RESUME -> resumeTimer()
+                else -> {}
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 
@@ -122,10 +163,27 @@ fun HomeScreen(
                                 fadeOut(animationSpec = tween(durationMillis = 300))
                     }
                 ) { isFetching ->
-                    if (!isFetching) {
-                        Text(text = stringResource(R.string.fetch))
-                    } else {
-                        Text(text = stringResource(R.string.fetching))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .size(16.dp)
+                                .rotate(if (isFetching) angle else 0f),
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = null
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        if (!isFetching) {
+                            Text(
+                                text = stringResource(
+                                    R.string.qr_seconds,
+                                    processState.refreshTimeLeft
+                                )
+                            )
+                        } else {
+                            Text(text = stringResource(R.string.fetching))
+                        }
                     }
                 }
             }

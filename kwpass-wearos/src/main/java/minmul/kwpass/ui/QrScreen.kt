@@ -24,7 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -43,12 +42,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import minmul.kwpass.R
 import minmul.kwpass.ui.main.MainUiState
 import minmul.kwpass.ui.main.MainUiStateProvider
@@ -57,7 +57,10 @@ import minmul.kwpass.ui.main.MainUiStateProvider
 fun QrScreen(
     uiState: MainUiState,
     onRefresh: () -> Unit,
+    stopTimer: () -> Unit,
+    resumeTimer: () -> Unit
 ) {
+
     val qrAlpha by animateFloatAsState(
         targetValue = if (uiState.isRefreshing) 0.1f else 1.0f,
         animationSpec = tween(durationMillis = 300)
@@ -72,10 +75,20 @@ fun QrScreen(
     )
     val interactionSource = remember { MutableInteractionSource() }
 
-    LaunchedEffect(uiState.savedQrBitmap) {
-        while (isActive) {
-            delay(50000L)
-            onRefresh()
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_PAUSE -> stopTimer()
+                Lifecycle.Event.ON_RESUME -> resumeTimer()
+                else -> {}
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 
@@ -148,22 +161,24 @@ fun QrScreen(
             }
 
 
-            if (uiState.isRefreshing || uiState.status in listOf<ScreenStatus>(
-                    ScreenStatus.QR_READY,
-                    ScreenStatus.NOT_CONNECTED_TO_PHONE,
-                    ScreenStatus.FAILED_TO_GET_QR,
-                    ScreenStatus.FETCHING_QR,
-                    ScreenStatus.GENERATING_QR
-                )
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
+                if (uiState.isRefreshing || uiState.status in listOf<ScreenStatus>(
+                        ScreenStatus.QR_READY,
+                        ScreenStatus.NOT_CONNECTED_TO_PHONE,
+                        ScreenStatus.FAILED_TO_GET_QR,
+                        ScreenStatus.FETCHING_QR,
+                        ScreenStatus.GENERATING_QR
+                    )
                 ) {
                     IconButton(
                         modifier = Modifier,
                         onClick = onRefresh,
-                        enabled = !uiState.isRefreshing
+                        enabled = !uiState.isRefreshing,
+                        interactionSource = interactionSource
                     ) {
                         Icon(
                             modifier = Modifier
@@ -174,8 +189,15 @@ fun QrScreen(
                             tint = if (uiState.isRefreshing) Color.LightGray else Color.White
                         )
                     }
+
+                }
+                if (uiState.status == ScreenStatus.QR_READY) {
+                    Text(
+                        text = stringResource(R.string.qr_seconds, uiState.refreshTimeLeft)
+                    )
                 }
             }
+
         }
     }
 }
@@ -196,7 +218,9 @@ fun QrScreenPreview(
 ) {
     QrScreen(
         uiState = uiState,
-        onRefresh = {})
+        onRefresh = {},
+        resumeTimer = {},
+        stopTimer = {})
 }
 
 @Composable

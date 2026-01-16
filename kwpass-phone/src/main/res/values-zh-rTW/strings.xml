@@ -25,6 +25,7 @@
     <string name="checking">確認中</string>
     <string name="fetching">正在載入 QR Code</string>
     <string name="fetch">請求 QR Code</string>
+    <string name="qr_seconds">%d秒</string>
 
     <string name="welcome">歡迎！</string>
     <string name="start">開始使用</string>
