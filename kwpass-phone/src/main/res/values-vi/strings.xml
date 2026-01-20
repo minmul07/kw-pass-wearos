@@ -20,6 +20,8 @@
     <string name="error_server">Đã xảy ra lỗi máy chủ. Vui lòng thử lại sau.</string>
     <string name="error_account">Xác thực tài khoản thất bại. Vui lòng kiểm tra lại thông tin tài khoản.</string>
     <string name="error_unknown">Đã xảy ra lỗi không xác định.</string>
+    <string name="error_common">Không thể lấy được mã QR.</string>
+    <string name="how_to_exit">Nhấn lần nữa hoặc vuốt để thoát.</string>
 
     <string name="goBack">Quay lại</string>
     <string name="checking">Đang kiểm tra</string>

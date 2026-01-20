@@ -12,7 +12,6 @@ import androidx.glance.appwidget.updateAll
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import minmul.kwpass.BuildConfig
 import minmul.kwpass.ui.ScreenDestination
 import minmul.kwpass.ui.theme.KWPassTheme
 import minmul.kwpass.ui.widget.KwPassWidget
@@ -26,10 +25,6 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
-        if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
-        }
 
         lifecycleScope.launch {
             KwPassWidget().updateAll(applicationContext)

@@ -20,6 +20,8 @@
     <string name="error_server">サーバーエラーが発生しました。しばらくしてからもう一度お試しください。</string>
     <string name="error_account">アカウント認証に失敗しました。アカウント情報を再確認してください。</string>
     <string name="error_unknown">不明なエラーが発生しました。</string>
+    <string name="error_common">QRコードを取得できませんでした。</string>
+    <string name="how_to_exit">もう一度押すか、スワイプして終了できます。</string>
 
     <string name="goBack">戻る</string>
     <string name="checking">確認中</string>

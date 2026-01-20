@@ -20,6 +20,8 @@
     <string name="error_server">伺服器發生錯誤實。請稍後再試。</string>
     <string name="error_account">帳號驗證失敗。請重新檢查帳號資訊。</string>
     <string name="error_unknown">發生了未知錯誤。</string>
+    <string name="error_common">無法獲取 QR Code。</string>
+    <string name="how_to_exit">再次點擊或滑動即可退出。</string>
 
     <string name="goBack">返回</string>
     <string name="checking">確認中</string>

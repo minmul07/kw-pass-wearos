@@ -20,6 +20,8 @@
     <string name="error_server">Произошла ошибка сервера. Пожалуйста, попробуйте позже.</string>
     <string name="error_account">Ошибка проверки подлинности аккаунта. Пожалуйста, проверьте данные аккаунта еще раз.</string>
     <string name="error_unknown">Произошла неизвестная ошибка.</string>
+    <string name="error_common">Не удалось получить QR-код.</string>
+    <string name="how_to_exit">Нажмите еще раз или смахните, чтобы выйти.</string>
 
     <string name="goBack">Назад</string>
     <string name="checking">Проверка…</string>

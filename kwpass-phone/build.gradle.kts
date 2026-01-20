@@ -80,6 +80,7 @@ dependencies {
     implementation(libs.play.services.oss.licenses)
     implementation(libs.androidx.appcompat)
     implementation(libs.firebase.crashlytics)
+    implementation(libs.androidx.foundation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -186,7 +186,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun refreshQR() {
+    fun refreshQR(onWidget: Boolean = false) {
         if (!mainUiState.value.inputForm.isAllValidInput) {
             return
         }
@@ -236,9 +236,18 @@ class MainViewModel @Inject constructor(
 
                     if (e is KwPassException) {
                         val uiText = getErrorUiText(e)
-                        _snackbarEvent.send(uiText)
+                        if (!onWidget) {
+                            _snackbarEvent.send(uiText)
+                        } else {
+                            _toastEvent.send(uiText)
+                        }
                     } else {
-                        _snackbarEvent.send(UiText.DynamicString(e.message ?: "Unknown Error"))
+                        val message = UiText.DynamicString(e.message ?: "Unknown Error")
+                        if (!onWidget) {
+                            _snackbarEvent.send(message)
+                        } else {
+                            _toastEvent.send(message)
+                        }
                     }
                     stopRefreshTimer()
                 }
@@ -400,6 +409,9 @@ class MainViewModel @Inject constructor(
         if (backActionCount == 1) {
             return true
         } else {
+            viewModelScope.launch {
+                _toastEvent.send(UiText.StringResource(R.string.how_to_exit))
+            }
             backActionCount++
             return false
         }

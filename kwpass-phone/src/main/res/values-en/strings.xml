@@ -20,6 +20,8 @@
     <string name="error_server">A server error occurred. Please try again later.</string>
     <string name="error_account">Account authentication failed. Please check your account information.</string>
     <string name="error_unknown">An unknown error occurred.</string>
+    <string name="error_common">Failed to get QR code.</string>
+    <string name="how_to_exit">Press again or swipe to exit.</string>
 
     <string name="goBack">Back</string>
     <string name="checking">Checking…</string>

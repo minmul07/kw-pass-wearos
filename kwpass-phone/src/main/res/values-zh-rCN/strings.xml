@@ -20,6 +20,8 @@
     <string name="error_server">服务器发生错误。请稍后再试。</string>
     <string name="error_account">账号验证失败。请重新检查账号信息。</string>
     <string name="error_unknown">发生了未知错误。</string>
+    <string name="error_common">无法获取二维码。</string>
+    <string name="how_to_exit">再次点击或轻扫即可退出。</string>
 
     <string name="goBack">返回</string>
     <string name="checking">确认中</string>
