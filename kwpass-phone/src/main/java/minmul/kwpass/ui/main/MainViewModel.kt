@@ -20,7 +20,7 @@ import minmul.kwpass.R
 import minmul.kwpass.domain.usecase.SyncWatchUseCase
 import minmul.kwpass.domain.usecase.ValidateAccountUseCase
 import minmul.kwpass.shared.KwPassException
-import minmul.kwpass.shared.UserData
+import minmul.kwpass.shared.LocalDisk
 import minmul.kwpass.shared.analystics.KwPassLogger
 import minmul.kwpass.shared.domain.GetQrCodeUseCase
 import minmul.kwpass.ui.UiText
@@ -29,7 +29,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val userData: UserData,
+    private val localDisk: LocalDisk,
     private val getQrCodeUseCase: GetQrCodeUseCase,
     private val syncWatchUseCase: SyncWatchUseCase,
     private val validateAccountUseCase: ValidateAccountUseCase,
@@ -53,7 +53,7 @@ class MainViewModel @Inject constructor(
     private val _snackbarEvent = Channel<UiText>(Channel.BUFFERED)
     val snackbarEvent = _snackbarEvent.receiveAsFlow()
 
-    val isFirstRun: StateFlow<Boolean?> = userData.isFirstRun
+    val isFirstRun: StateFlow<Boolean?> = localDisk.isFirstRun
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
@@ -72,7 +72,7 @@ class MainViewModel @Inject constructor(
         startListeningForForcedAccountSync()
 
         viewModelScope.launch {
-            combine(userData.userFlow, userData.isFirstRun) { user, firstRun ->
+            combine(localDisk.userFlow, localDisk.isFirstRun) { user, firstRun ->
                 Pair(user, firstRun)
             }.collect { (user, firstRun) ->
                 val (rid, password, tel) = user
@@ -319,7 +319,7 @@ class MainViewModel @Inject constructor(
 
     fun saveDataOnLocal(rid: String, password: String, tel: String) {
         viewModelScope.launch {
-            userData.saveUserCredentials(rid, password, tel)
+            localDisk.saveUserCredentials(rid, password, tel)
         }
     }
 
@@ -335,7 +335,7 @@ class MainViewModel @Inject constructor(
 
     fun completeInitialSetup() {
         viewModelScope.launch {
-            userData.finishedInitialSetupProcessedStatus()
+            localDisk.finishedInitialSetupProcessedStatus()
         }
     }
 
@@ -379,6 +379,14 @@ class MainViewModel @Inject constructor(
                     )
                 )
             }
+        }
+    }
+
+    fun removeAuthKeyOnDisk() {
+        viewModelScope.launch {
+            localDisk.deleteSavedAuthKey()
+            _toastEvent.send(UiText.DynamicString("auth 키 제거됨"))
+            Timber.i("DEBUG: auth 키 제거됨")
         }
     }
 

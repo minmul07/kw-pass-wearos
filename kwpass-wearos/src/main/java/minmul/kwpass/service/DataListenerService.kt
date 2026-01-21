@@ -9,13 +9,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import minmul.kwpass.shared.UserData
+import minmul.kwpass.shared.LocalDisk
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class DataListenerService : WearableListenerService() {
     @Inject
-    lateinit var userData: UserData
+    lateinit var localDisk: LocalDisk
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onDataChanged(dataEvents: DataEventBuffer) {
@@ -31,7 +31,7 @@ class DataListenerService : WearableListenerService() {
                     val tel = dataMap.getString("tel") ?: ""
 
                     scope.launch {
-                        userData.saveUserCredentials(rid, password, tel)
+                        localDisk.saveUserCredentials(rid, password, tel)
                     }
                 }
             }

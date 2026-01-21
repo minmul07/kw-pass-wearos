@@ -49,59 +49,20 @@ interface KwuApiService {
 }
 
 class KwuRepository @Inject constructor(
-    private val api: KwuApiService
+    private val kwuApiService: KwuApiService
 ) {
-    var secretKey: String = ""
-    var authKey: String = ""
-    var qrData: String = ""
-
-    suspend fun startProcess(
-        rid: String, password: String, tel: String
-    ): String {
-        try {
-            val secret = getSecretKey(rid)
-            if (secret.isNullOrBlank()) {
-                Timber.e("No Secret Key")
-                throw KwPassException.ServerError()
-            }
-
-            val auth = getAuthKey(rid, password, tel)
-            if (auth.isNullOrBlank()) {
-                Timber.e("No Auth Key")
-                throw KwPassException.AccountError()
-            }
-
-
-            val qr = getQR(rid)
-            if (qr.isNullOrBlank()) {
-                Timber.e("No QR")
-                throw KwPassException.ServerError()
-            }
-            return qrData
-
-        } catch (e: KwPassException) {
-            throw e
-        } catch (e: IOException) {
-            Timber.e(e)
-            throw KwPassException.NetworkError()
-        } catch (e: Exception) {
-            Timber.e(e, "알 수 없는 오류 발생")
-            throw KwPassException.UnknownError()
-        }
-    }
-
-
     suspend fun getSecretKey(
         rid: String,
     ): String? {
         return try {
             Timber.tag("getSecretKey").i("1. 시크릿 키 요청 중...")
-            val keyResponse = api.getSecretKey(
+            val secretKeyResponse = kwuApiService.getSecretKey(
                 userId = with(Encryption) {
                     rid.encode()
                 })
-            Timber.tag("getSecretKey").i("   >> Secret Key: $secretKey (${secretKey.length})")
-            secretKey = keyResponse.item.secret ?: return null
+            val secretKey = secretKeyResponse.item.secret
+            Timber.tag("getSecretKey")
+                .i("   >> Secret Key: $secretKey (${secretKey?.length ?: "NULL"})")
             secretKey
         } catch (e: Exception) {
             if (e is IOException) throw e
@@ -114,18 +75,21 @@ class KwuRepository @Inject constructor(
         rid: String,
         password: String,
         tel: String,
+        secretKey: String
     ): String? {
         return try {
             Timber.tag("getAuthKey").i("2. 로그인 요청 중...")
-            val loginResponse = api.getAuthKey(realId = with(Encryption) {
+            val authKeyResponse = kwuApiService.getAuthKey(realId = with(Encryption) {
                 rid.encode()
             }, rid = with(Encryption) {
                 rid.encode()
             }, deviceGb = "A", telNo = tel, passWd = with(Encryption) {
                 password.encrypt(secretKey)
             })
-            Timber.tag("getAuthKey").i("   >> Auth Key: $authKey (${authKey.length})")
-            authKey = loginResponse.item.authKey ?: return null
+
+            val authKey = authKeyResponse.item.authKey
+            Timber.tag("getAuthKey")
+                .i("   >> Auth Key: $authKey (${authKey?.length ?: "NULL"})")
             authKey
         } catch (e: Exception) {
             if (e is IOException) throw e
@@ -134,24 +98,27 @@ class KwuRepository @Inject constructor(
         }
     }
 
-    suspend fun getQR(
-        rid: String
+    suspend fun getQrString(
+        rid: String,
+        authKey: String
     ): String? {
         val encryption = Encryption
         return try {
             Timber.tag("getQR").i("3. QR코드 데이터 요청 중...")
-            val qrResponse = api.getQrCode(
+            val qrResponse = kwuApiService.getQrCode(
                 realId = with(encryption) {
                     rid.encode()
                 }, authKey = authKey, newCheck = "Y"
             )
+
+            val qrString = qrResponse.item.qrCode
             Timber.tag("getQR").i("===============================")
-            Timber.tag("getQR").i("QR Code Data: $qrData (${qrData.length})")
+            Timber.tag("getQR")
+                .i("QR Code Data: $qrString (${qrString?.length ?: "NULL"})")
             Timber.tag("getQR").i("===============================")
-            qrData = qrResponse.item.qrCode ?: return null
-            qrData
+            qrString
         } catch (e: Exception) {
-            if (e is IOException) throw  e
+            if (e is IOException) throw e
             Timber.e(e)
             null
         }

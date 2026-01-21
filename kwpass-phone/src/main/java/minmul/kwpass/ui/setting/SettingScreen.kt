@@ -87,7 +87,8 @@ fun SettingMainScreen(
     onSave: () -> Unit,
     navController: NavController,
     focusManager: FocusManager,
-    context: Context
+    context: Context,
+    debugAuthKey: () -> Unit
 ) {
 
     Scaffold(
@@ -184,6 +185,14 @@ fun SettingMainScreen(
                 ) {
                     Text("Crashlytics 테스트")
                 }
+
+                Button(
+                    onClick = {
+                        debugAuthKey()
+                    }
+                ) {
+                    Text("저장된 AuthKey 초기화")
+                }
             }
             Spacer(
                 modifier = Modifier.height(120.dp)
@@ -205,7 +214,8 @@ fun SettingMainScreenPreview() {
             onSave = {},
             navController = rememberNavController(),
             focusManager = LocalFocusManager.current,
-            context = LocalContext.current
+            context = LocalContext.current,
+            debugAuthKey = {}
         )
     }
 }
@@ -223,7 +233,8 @@ fun DarkSettingMainScreenPreview() {
             onSave = {},
             navController = rememberNavController(),
             focusManager = LocalFocusManager.current,
-            context = LocalContext.current
+            context = LocalContext.current,
+            debugAuthKey = {}
         )
     }
 }

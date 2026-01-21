@@ -130,7 +130,8 @@ fun MainScreen(
                 onPasswordVisibilityChange = { mainViewModel.updatePasswordVisibility() },
                 onTelChange = { mainViewModel.updateTelInput(it) },
                 onSave = { mainViewModel.setAccountData() },
-                context = context
+                context = context,
+                debugAuthKey = {mainViewModel.removeAuthKeyOnDisk()}
             )
         }
 

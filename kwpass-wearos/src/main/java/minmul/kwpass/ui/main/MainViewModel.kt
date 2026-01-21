@@ -25,7 +25,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import minmul.kwpass.shared.QrGenerator
-import minmul.kwpass.shared.UserData
+import minmul.kwpass.shared.LocalDisk
 import minmul.kwpass.shared.domain.GetQrCodeUseCase
 import minmul.kwpass.ui.ScreenStatus
 import timber.log.Timber
@@ -33,7 +33,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val userData: UserData,
+    private val localDisk: LocalDisk,
     private val messageClient: MessageClient,
     private val dataClient: DataClient,
     private val nodeClient: NodeClient,
@@ -71,7 +71,7 @@ class MainViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            combine(userData.userFlow, userData.isFirstRun) { user, firstRun ->
+            combine(localDisk.userFlow, localDisk.isFirstRun) { user, firstRun ->
                 Pair(user, firstRun)
             }
                 .distinctUntilChanged()
@@ -106,7 +106,7 @@ class MainViewModel @Inject constructor(
 
     fun saveDataOnLocal(rid: String, password: String, tel: String) {
         viewModelScope.launch {
-            userData.saveUserCredentials(rid, password, tel)
+            localDisk.saveUserCredentials(rid, password, tel)
             setUserDataOnUiState(rid, password, tel)
         }
     }

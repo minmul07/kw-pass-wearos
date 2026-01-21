@@ -12,14 +12,14 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import minmul.kwpass.shared.UserData
+import minmul.kwpass.shared.LocalDisk
 import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class DataListenerService : WearableListenerService() {
     @Inject
-    lateinit var userData: UserData
+    lateinit var localDisk: LocalDisk
 
     @Inject
     lateinit var dataClient: DataClient
@@ -31,7 +31,7 @@ class DataListenerService : WearableListenerService() {
 
         if (messageEvent.path == "/refresh") {
             scope.launch {
-                val (rid, password, tel) = userData.userFlow.first()
+                val (rid, password, tel) = localDisk.userFlow.first()
 
                 if (rid.isNotEmpty()) {
                     // 2. 워치로 데이터 전송

@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,11 +50,6 @@ import minmul.kwpass.R
 import minmul.kwpass.ui.main.MainViewModel
 import minmul.kwpass.ui.theme.KWPassTheme
 import kotlin.math.hypot
-
-enum class SwipeState {
-    Idle,
-    Exit
-}
 
 @AndroidEntryPoint
 class QrOverlayActivity : ComponentActivity() {
@@ -216,5 +212,3 @@ fun KeepScreenMaxBrightness() {
         }
     }
 }
-
-enum class DragValue { Start, End }
