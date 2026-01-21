@@ -13,10 +13,6 @@ plugins {
     alias(libs.plugins.google.firebase.crashlytics)
 }
 
-buildscript {
-
-}
-
 android {
     namespace = "minmul.kwpass"
     compileSdk {
@@ -27,8 +23,8 @@ android {
         applicationId = "minmul.kwpass"
         minSdk = 29
         targetSdk = 36
-        versionCode = 10004
-        versionName = "phone_1.0.3"
+        versionCode = 10005
+        versionName = "phone_1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
