@@ -90,6 +90,9 @@ fun SettingMainScreen(
     context: Context,
     debugAuthKey: () -> Unit
 ) {
+    val isFormValidForUpdate = mainUiState.inputForm.run {
+        isRidValid && isTelValid && (isPasswordValid || passwordInput.isBlank())
+    }
 
     Scaffold(
         topBar = {
@@ -134,9 +137,10 @@ fun SettingMainScreen(
                         onPasswordVisibilityChange = onPasswordVisibilityChange,
                         onTelChange = onTelChange,
                         onButtonClicked = onSave,
+                        buttonEnabled = isFormValidForUpdate && !mainUiState.process.isFetching,
                         buttonLabel = stringResource(R.string.login),
                         buttonOnWork = stringResource(R.string.checking),
-                        isInitialSetup = false
+                        isInitialSetup = false,
                     )
                 }
             }

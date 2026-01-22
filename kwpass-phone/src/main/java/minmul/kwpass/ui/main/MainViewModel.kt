@@ -141,7 +141,9 @@ class MainViewModel @Inject constructor(
             }
 
             val newRid = mainUiState.value.inputForm.ridInput
-            val newPassword = mainUiState.value.inputForm.passwordInput
+            val newPassword = mainUiState.value.inputForm.passwordInput.ifBlank {
+                mainUiState.value.accountInfo.password
+            }
             val newTel = mainUiState.value.inputForm.telInput
 
             getQrCodeUseCase(newRid, newPassword, newTel, source)
@@ -187,7 +189,8 @@ class MainViewModel @Inject constructor(
     }
 
     fun refreshQR(onWidget: Boolean = false) {
-        if (!mainUiState.value.inputForm.isAllValidInput) {
+        if (!mainUiState.value.accountInfo.hasValidInfo) {
+            Timber.e("isAllValidInput is false")
             return
         }
 
@@ -403,7 +406,7 @@ class MainViewModel @Inject constructor(
                     passwordInput = "",
                     telInput = newTel,
                     isRidValid = validateAccountUseCase.isValidRid(newRid), // true 보장됨
-                    isPasswordValid = validateAccountUseCase.isValidPassword(newPassword), // true 보장됨
+                    isPasswordValid = false,
                     isTelValid = validateAccountUseCase.isValidTel(newTel),  // true 보장됨
                 ),
                 process = currentState.process.copy(

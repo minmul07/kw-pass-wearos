@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -39,8 +38,6 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 
 @Composable
 fun QrView(
@@ -57,7 +54,7 @@ fun QrView(
     )
 
     val animatedQrSize by animateDpAsState(
-        targetValue = if (isFetching || unavailable) 234.dp else 256.dp,
+        targetValue = if (isFetching || unavailable) 240.dp else 256.dp,
         animationSpec = tween(durationMillis = 400)
     )
 

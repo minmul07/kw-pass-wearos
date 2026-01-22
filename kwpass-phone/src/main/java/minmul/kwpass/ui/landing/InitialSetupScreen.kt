@@ -95,10 +95,10 @@ fun InitialSetupScreen(
                         disabledContainerColor = colorScheme.inverseOnSurface,
                         errorContainerColor = colorScheme.inverseOnSurface
                     ),
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(16.dp),
+                    buttonEnabled = (processState.fetchSucceeded) || (inputFormState.isAllValidInput && !processState.isFetching)
                 )
             }
-
         }
     }
 }

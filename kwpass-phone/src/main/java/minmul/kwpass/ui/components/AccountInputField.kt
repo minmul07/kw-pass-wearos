@@ -47,6 +47,7 @@ fun AccountInputFieldSet(
     onButtonClicked: () -> Unit,
     buttonLabel: String,
     buttonOnWork: String,
+    buttonEnabled: Boolean,
     isInitialSetup: Boolean = false,
     colors: TextFieldColors = TextFieldDefaults.colors(
         focusedContainerColor = colorScheme.inverseOnSurface,
@@ -146,7 +147,7 @@ fun AccountInputFieldSet(
             )
             Button(
                 onClick = onButtonClicked,
-                enabled = inputFormState.isAllValidInput && !processState.isFetching,
+                enabled = buttonEnabled,
                 modifier = Modifier.padding(horizontal = 4.dp)
             ) {
                 if (!processState.isFetching) {
@@ -222,7 +223,8 @@ fun AccountInputFieldSetPreview() {
             onButtonClicked = {},
             buttonLabel = stringResource(R.string.login),
             buttonOnWork = stringResource(R.string.checking),
-            isInitialSetup = true
+            isInitialSetup = true,
+            buttonEnabled = true
         )
     }
 }
