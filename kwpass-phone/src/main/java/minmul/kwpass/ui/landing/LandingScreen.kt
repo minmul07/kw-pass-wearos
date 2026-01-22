@@ -92,21 +92,3 @@ fun LandingContent(
         }
     }
 }
-
-@Preview
-@Composable
-fun LandingScreenPreview() {
-    KWPassTheme {
-        LandingScreen(
-            onFinished = {})
-    }
-}
-
-@Preview(uiMode = UI_MODE_NIGHT_YES)
-@Composable
-fun DarkLandingScreenPreview() {
-    KWPassTheme {
-        LandingScreen(
-            onFinished = {})
-    }
-}

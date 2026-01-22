@@ -36,7 +36,7 @@
     <string name="introduce_title">使用指南</string>
 
     <string name="introduce_phone_widget">在主屏幕添加小部件，快速查看二维码。</string>
-    <string name="introduce_phone_lockscreen">可以在锁屏界面查看二维码。\n无需解锁，直接点击二维码图标。(开发中)</string>
+    <string name="introduce_phone_static_shortcuts">对于三星 Galaxy 设备，您可以在“模式和日常程序”应用中设置自动显示二维码。</string>
 
     <string name="introduce_watch_app">无需从口袋拿出手机，在手腕上即可查看二维码。</string>
     <string name="introduce_watch_complication">可以在表盘上添加二维码快捷方式。</string>

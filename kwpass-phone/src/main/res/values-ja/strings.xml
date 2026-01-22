@@ -36,7 +36,7 @@
     <string name="introduce_title">活用のヒント</string>
 
     <string name="introduce_phone_widget">ホーム画面にウィジェットを追加して、QRコードを素早く確認できます。</string>
-    <string name="introduce_phone_lockscreen">ロック画面でもQRコードを確認できます。\nロック解除なしでQRアイコンをタップしてください。(開発中)</string>
+    <string name="introduce_phone_static_shortcuts">Samsung Galaxyデバイスの場合、「モードとルーチン」アプリでQRコード表示の自動化を設定できます。</string>
 
     <string name="introduce_watch_app">ポケットからスマホを出さずに、手元でQRコードを確認できます。</string>
     <string name="introduce_watch_complication">ウォッチフェイスにQRショートカットを追加できます。</string>

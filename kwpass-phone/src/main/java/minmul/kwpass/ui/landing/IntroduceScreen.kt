@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoMode
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Watch
 import androidx.compose.material3.Button
@@ -70,8 +71,8 @@ fun IntroduceScreen(
                 GentleHorizontalDivider(thickness = 2)
 
                 IntroduceSection(
-                    text = stringResource(R.string.introduce_phone_lockscreen),
-                    icon = Icons.Default.PhoneAndroid
+                    text = stringResource(R.string.introduce_phone_static_shortcuts),
+                    icon = Icons.Default.AutoMode
                 )
 
                 GentleHorizontalDivider(thickness = 2)

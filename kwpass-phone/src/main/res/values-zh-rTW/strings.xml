@@ -36,7 +36,7 @@
     <string name="introduce_title">使用指南</string>
 
     <string name="introduce_phone_widget">在主畫面新增小工具，快速查看 QR Code。</string>
-    <string name="introduce_phone_lockscreen">可以在鎖定螢幕查看 QR Code。\n無需解鎖，直接點擊 QR 圖示。(開發中)</string>
+    <string name="introduce_phone_static_shortcuts">若是三星 Galaxy 裝置，您可以在「模式與日常行程」應用程式中設定自動顯示 QR Code。</string>
 
     <string name="introduce_watch_app">無需從口袋拿出手機，在手腕上即可查看 QR Code。</string>
     <string name="introduce_watch_complication">可以在錶面上新增 QR 捷徑。</string>

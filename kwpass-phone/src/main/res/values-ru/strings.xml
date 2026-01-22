@@ -36,7 +36,7 @@
     <string name="introduce_title">Как использовать</string>
 
     <string name="introduce_phone_widget">Добавьте виджет на главный экран для быстрого доступа к QR-коду.</string>
-    <string name="introduce_phone_lockscreen">Вы можете просмотреть QR-код с экрана блокировки.\nНажмите на иконку QR без разблокировки. (В разработке)</string>
+    <string name="introduce_phone_static_shortcuts">На устройствах Samsung Galaxy вы можете настроить автоматическое отображение QR-кода в приложении «Режимы и сценарии».</string>
 
     <string name="introduce_watch_app">Проверяйте QR-код прямо на запястье, не доставая телефон из кармана.</string>
     <string name="introduce_watch_complication">Вы можете добавить ярлык QR прямо на циферблат.</string>

@@ -36,7 +36,7 @@
     <string name="introduce_title">How to Use</string>
 
     <string name="introduce_phone_widget">Add the widget to your home screen for quick access to your QR code.</string>
-    <string name="introduce_phone_lockscreen">You can view the QR code from the lock screen.\nClick the QR icon without unlocking. (In development)</string>
+    <string name="introduce_phone_static_shortcuts">For Samsung Galaxy devices, you can set up QR code display automation in the "Modes and Routines" app.</string>
 
     <string name="introduce_watch_app">Check your QR code right from your wrist without taking out your phone.</string>
     <string name="introduce_watch_complication">You can add a QR shortcut directly to your watch face.</string>
