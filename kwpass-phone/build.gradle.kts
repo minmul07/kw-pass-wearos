@@ -23,8 +23,8 @@ android {
         applicationId = "minmul.kwpass"
         minSdk = 29
         targetSdk = 36
-        versionCode = 10005
-        versionName = "phone_1.1"
+        versionCode = 10006
+        versionName = "phone_1.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
