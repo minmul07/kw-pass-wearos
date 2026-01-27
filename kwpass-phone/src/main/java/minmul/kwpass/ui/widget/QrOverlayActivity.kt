@@ -90,7 +90,7 @@ class QrOverlayActivity : ComponentActivity() {
                 val offsetX = remember { Animatable(0f, Float.VectorConverter) }
                 val offsetY = remember { Animatable(0f, Float.VectorConverter) }
 
-                val exitDistanceThreshold = with(density) { 100.dp.toPx() }
+                val exitDistanceThreshold = with(density) { 80.dp.toPx() }
 
                 DisposableEffect(lifecycleOwner) {
                     val observer = LifecycleEventObserver { _, event ->
@@ -113,12 +113,6 @@ class QrOverlayActivity : ComponentActivity() {
                             delay(50000L)
                             viewModel.refreshQR()
                         }
-                    }
-                }
-
-                LaunchedEffect(uiState.accountInfo.hasValidInfo) {
-                    if (uiState.accountInfo.hasValidInfo) {
-                        viewModel.refreshQR()
                     }
                 }
 
@@ -178,10 +172,10 @@ class QrOverlayActivity : ComponentActivity() {
                             text = stringResource(R.string.error_common),
                             color = Color.White,
                         )
-                    } else {
+                    } else if (uiState.process.initialStatus) {
                         Text(
-                            text = stringResource(R.string.fetching),
-                            color = Color.White
+                            text = stringResource(R.string.initial_account_setup_desc),
+                            color = Color.White,
                         )
                     }
                 }

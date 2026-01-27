@@ -128,7 +128,7 @@ fun SettingMainScreen(
                         color = Color.Gray,
                         modifier = Modifier.padding(top = 4.dp)
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     AccountInputFieldSet(
                         processState = mainUiState.process,
                         inputFormState = mainUiState.inputForm,
