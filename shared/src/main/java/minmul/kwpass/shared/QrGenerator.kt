@@ -19,7 +19,7 @@ object QrGenerator {
             val bitMatrix: BitMatrix = qrWriter.encode(
                 content,
                 BarcodeFormat.QR_CODE,
-                1, 1,
+                1, 1, // 최소 이미지 비트맵 생성
                 hint
             )
             val width = bitMatrix.width

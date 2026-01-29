@@ -10,11 +10,14 @@ import retrofit2.http.POST
 import timber.log.Timber
 import javax.inject.Inject
 
+// xml 데이터의 구조를 명시적으로 표현, NetworkModule에서의 TikXmlConverterFactory이 받은 xml 응답을 코틀린 객체로 변환해줌
+// root 태그로 매핑
 @Xml(name = "root")
 data class KwResponse(
     @param:Element(name = "item") val item: KwItem
 )
 
+// root의 하위 객체인 item 내부의 속성들 매핑
 @Xml(name = "item")
 data class KwItem(
     @param:PropertyElement(name = "sec_key") val secret: String?,
@@ -26,7 +29,7 @@ interface KwuApiService {
     @FormUrlEncoded
     @POST("mobile/MA/xml_user_key.php")
     suspend fun getSecretKey(
-        @Field("user_id") userId: String
+        @Field("user_id") userId: String // key-value 쌍, FormUrlEncoded과 함께 사용됨
     ): KwResponse
 
     @FormUrlEncoded
@@ -49,7 +52,7 @@ interface KwuApiService {
 }
 
 class KwuRepository @Inject constructor(
-    private val kwuApiService: KwuApiService
+    private val kwuApiService: KwuApiService // Hilt가 Retrofit 구현체 주입해줌
 ) {
     suspend fun getSecretKey(
         rid: String,
