@@ -5,8 +5,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.glance.appwidget.updateAll
 import androidx.lifecycle.lifecycleScope
@@ -35,16 +39,21 @@ class MainActivity : AppCompatActivity() {
         }
         setContent {
             KWPassTheme {
-                val isFirstRun by mainViewModel.isFirstRun.collectAsState()
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    val isFirstRun by mainViewModel.isFirstRun.collectAsState()
 
-                if (isFirstRun != null) {
-                    Timber.tag("isFirstRun").d("$isFirstRun")
-                    val startDestination = if (isFirstRun == true) {
-                        ScreenDestination.Landing
-                    } else {
-                        ScreenDestination.Home
+                    if (isFirstRun != null) {
+                        Timber.tag("isFirstRun").d("$isFirstRun")
+                        val startDestination = if (isFirstRun == true) {
+                            ScreenDestination.Landing
+                        } else {
+                            ScreenDestination.Home
+                        }
+                        MainScreen(startDestination = startDestination)
                     }
-                    MainScreen(startDestination = startDestination)
                 }
             }
         }
