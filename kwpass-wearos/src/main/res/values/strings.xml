@@ -6,6 +6,6 @@
     <string name="no_connected_phone">휴대폰과 연결할 수 없습니다.</string>
     <string name="failed_to_get_account_from_phone">계정 연동에 실패했습니다.</string>
     <string name="failed_to_get_qr">QR코드 요청에 실패했습니다.</string>
-    <string name="welcome">환영합니다!\n휴대폰의 KW Pass 어플리케이션에서 계정 정보를 등륵해주세요.</string>
+    <string name="welcome">휴대폰의 KW Pass 어플리케이션에서 계정 정보를 등륵해주세요.</string>
     <string name="qr_seconds">%d초</string>
 </resources>

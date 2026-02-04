@@ -6,6 +6,6 @@
     <string name="no_connected_phone">无法连接到手机。</string>
     <string name="failed_to_get_account_from_phone">帐户同步失败。</string>
     <string name="failed_to_get_qr">获取二维码失败。</string>
-    <string name="welcome">欢迎！\n请在手机上的 KW Pass 应用中注册帐户。</string>
+    <string name="welcome">请在手机上的 KW Pass 应用中注册帐户。</string>
     <string name="qr_seconds">%d秒</string>
 </resources>

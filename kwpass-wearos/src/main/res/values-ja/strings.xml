@@ -6,6 +6,6 @@
     <string name="no_connected_phone">スマホと接続できません。</string>
     <string name="failed_to_get_account_from_phone">アカウントの連携に失敗しました。</string>
     <string name="failed_to_get_qr">QRコードの取得に失敗しました。</string>
-    <string name="welcome">ようこそ！\nスマホのKW Passアプリでアカウント情報を登録してください。</string>
+    <string name="welcome">スマホのKW Passアプリでアカウント情報を登録してください。</string>
     <string name="qr_seconds">%d秒</string>
 </resources>

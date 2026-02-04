@@ -6,6 +6,6 @@
     <string name="no_connected_phone">Cannot connect to phone.</string>
     <string name="failed_to_get_account_from_phone">Failed to sync account.</string>
     <string name="failed_to_get_qr">Failed to fetch QR code.</string>
-    <string name="welcome">Welcome!\nPlease register your account in the KW Pass app on your phone.</string>
+    <string name="welcome">Please register your account in the KW Pass app on your phone.</string>
     <string name="qr_seconds">%ds</string>
 </resources>
