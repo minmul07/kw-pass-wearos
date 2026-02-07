@@ -205,12 +205,12 @@ fun QrScreen(
 @Preview(
     device = WearDevices.SMALL_ROUND,
     showSystemUi = true,
-    name = "Large Round"
+    name = "Small Round"
 )
 @Preview(
     device = WearDevices.LARGE_ROUND,
     showSystemUi = true,
-    name = "Square"
+    name = "Large Round"
 )
 @Composable
 fun QrScreenPreview(

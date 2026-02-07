@@ -179,9 +179,9 @@ fun Modifier.conditional(condition: Boolean, modifier: Modifier.() -> Modifier):
     }
 }
 
-fun Context.goToGithub() {
+fun Context.openUri(uri: String) {
     val intent = Intent(Intent.ACTION_VIEW).apply {
-        data = "https://github.com/minmul07/kw-pass-wearos".toUri()
+        data = uri.toUri()
     }
     startActivity(intent)
 }

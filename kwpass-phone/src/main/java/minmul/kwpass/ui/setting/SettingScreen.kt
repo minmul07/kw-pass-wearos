@@ -44,11 +44,12 @@ import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import minmul.kwpass.BuildConfig
 import minmul.kwpass.R
 import minmul.kwpass.service.KwPassLanguageService
+import minmul.kwpass.service.KwPassUri
 import minmul.kwpass.ui.ScreenDestination
 import minmul.kwpass.ui.components.AccountInputFieldSet
 import minmul.kwpass.ui.components.SingleMenu
 import minmul.kwpass.ui.main.MainUiState
-import minmul.kwpass.ui.main.goToGithub
+import minmul.kwpass.ui.main.openUri
 import minmul.kwpass.ui.theme.KWPassTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -158,12 +159,14 @@ fun SettingMainScreen(
                 imageVector = Icons.Default.Android,
                 title = stringResource(R.string.app_version),
                 subTitle = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
-                bottom = false
+                bottom = false,
+                onclick = { context.openUri(KwPassUri.STORE_URI) },
+                trailingIcon = Icons.AutoMirrored.Filled.OpenInNew
             )
             SingleMenu(
                 painter = painterResource(R.drawable.github_mark),
                 title = stringResource(R.string.github),
-                onclick = { context.goToGithub() },
+                onclick = { context.openUri(KwPassUri.GITHUB_URI) },
                 bottom = false,
                 top = false,
                 trailingIcon = Icons.AutoMirrored.Filled.OpenInNew
