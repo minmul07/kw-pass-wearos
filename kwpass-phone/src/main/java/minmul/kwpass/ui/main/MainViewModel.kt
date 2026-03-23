@@ -22,6 +22,7 @@ import minmul.kwpass.domain.usecase.ValidateAccountUseCase
 import minmul.kwpass.service.KwPassConst
 import minmul.kwpass.shared.KwPassException
 import minmul.kwpass.shared.LocalDisk
+import minmul.kwpass.shared.NetworkProfilingListener
 import minmul.kwpass.shared.QrGenerator
 import minmul.kwpass.shared.analystics.KwPassLogger
 import minmul.kwpass.shared.domain.GetQrCodeUseCase
@@ -152,8 +153,18 @@ class MainViewModel @Inject constructor(
                 mainUiState.value.accountInfo.password
             }
             val newTel = mainUiState.value.inputForm.telInput
+            val profileSessionId = NetworkProfilingListener.startQrProfilingSession(
+                source = source,
+                trigger = "setAccountData",
+            )
 
-            getQrCodeUseCase(newRid, newPassword, newTel, source)
+            getQrCodeUseCase(
+                rid = newRid,
+                password = newPassword,
+                tel = newTel,
+                source = source,
+                profileSessionId = profileSessionId,
+            )
                 .onSuccess {
                     saveDataOnLocal(newRid, newPassword, newTel)
                     syncWatchUseCase.sendAccountData(newRid, newPassword, newTel)
@@ -217,7 +228,18 @@ class MainViewModel @Inject constructor(
                 )
             }
 
-            getQrCodeUseCase(rid, password, tel, source)
+            val profileSessionId = NetworkProfilingListener.startQrProfilingSession(
+                source = source,
+                trigger = if (onWidget) "refreshQR(widget)" else "refreshQR",
+            )
+
+            getQrCodeUseCase(
+                rid = rid,
+                password = password,
+                tel = tel,
+                source = source,
+                profileSessionId = profileSessionId,
+            )
                 .onSuccess { bitmap ->
                     _mainUiState.update { currentState ->
                         currentState.copy(
@@ -431,6 +453,14 @@ class MainViewModel @Inject constructor(
             localDisk.deleteSavedAuthKey()
             _toastEvent.send(UiText.DynamicString("auth 키 제거됨"))
             Timber.i("DEBUG: auth 키 제거됨")
+        }
+    }
+
+    fun setAuthKeyExpiredOnDisk() {
+        viewModelScope.launch {
+            localDisk.expireAuthKey()
+            _toastEvent.send(UiText.DynamicString("만료된 authKey로 교체됨"))
+            Timber.i("DEBUG: auth 키 만료됨")
         }
     }
 

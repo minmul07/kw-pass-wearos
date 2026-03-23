@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import minmul.kwpass.shared.QrGenerator
 import minmul.kwpass.shared.LocalDisk
+import minmul.kwpass.shared.NetworkProfilingListener
 import minmul.kwpass.shared.domain.GetQrCodeUseCase
 import minmul.kwpass.ui.ScreenStatus
 import timber.log.Timber
@@ -222,8 +223,18 @@ class MainViewModel @Inject constructor(
             val rid = uiState.value.savedRid
             val password = uiState.value.savedPassword
             val tel = uiState.value.savedTel
+            val profileSessionId = NetworkProfilingListener.startQrProfilingSession(
+                source = source,
+                trigger = "refreshQR",
+            )
 
-            getQrCodeUseCase(rid, password, tel, source)
+            getQrCodeUseCase(
+                rid = rid,
+                password = password,
+                tel = tel,
+                source = source,
+                profileSessionId = profileSessionId,
+            )
                 .onSuccess { bitmap ->
                     _uiState.update { currentState ->
                         currentState.copy(

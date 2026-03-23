@@ -147,7 +147,8 @@ fun MainScreen(
                     onSave = { mainViewModel.setAccountData() },
                     context = context,
                     debugAuthKey = { mainViewModel.removeAuthKeyOnDisk() },
-                    initSampleQr = { mainViewModel.readySampleQrBitmap() }
+                    initSampleQr = { mainViewModel.readySampleQrBitmap() },
+                    expireAuthKey = { mainViewModel.setAuthKeyExpiredOnDisk() }
                 )
             }
         }

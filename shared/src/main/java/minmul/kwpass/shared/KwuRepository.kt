@@ -6,68 +6,95 @@ import com.tickaroo.tikxml.annotation.Xml
 import okio.IOException
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
+import retrofit2.http.Header
 import retrofit2.http.POST
 import timber.log.Timber
 import javax.inject.Inject
 
-// xml 데이터의 구조를 명시적으로 표현, NetworkModule에서의 TikXmlConverterFactory이 받은 xml 응답을 코틀린 객체로 변환해줌
-// root 태그로 매핑
 @Xml(name = "root")
 data class KwResponse(
-    @param:Element(name = "item") val item: KwItem
+    @param:Element(name = "item") val item: KwItem,
 )
 
-// root의 하위 객체인 item 내부의 속성들 매핑
 @Xml(name = "item")
 data class KwItem(
     @param:PropertyElement(name = "sec_key") val secret: String?,
     @param:PropertyElement(name = "auth_key") val authKey: String?,
-    @param:PropertyElement(name = "qr_code") val qrCode: String?
+    @param:PropertyElement(name = "qr_code") val qrCode: String?,
 )
 
 interface KwuApiService {
     @FormUrlEncoded
     @POST("mobile/MA/xml_user_key.php")
     suspend fun getSecretKey(
-        @Field("user_id") userId: String // key-value 쌍, FormUrlEncoded과 함께 사용됨
+        @Header(NetworkProfilingListener.PROFILE_SESSION_HEADER) profileSessionId: String? = null,
+        @Field("user_id") userId: String,
     ): KwResponse
 
     @FormUrlEncoded
     @POST("mobile/MA/xml_login_and.php")
     suspend fun getAuthKey(
+        @Header(NetworkProfilingListener.PROFILE_SESSION_HEADER) profileSessionId: String? = null,
         @Field("real_id") realId: String,
         @Field("rid") rid: String,
         @Field("device_gb") deviceGb: String,
         @Field("tel_no") telNo: String,
-        @Field("pass_wd") passWd: String
+        @Field("pass_wd") passWd: String,
     ): KwResponse
 
     @FormUrlEncoded
     @POST("mobile/MA/xml_userInfo_auth.php")
     suspend fun getQrCode(
+        @Header(NetworkProfilingListener.PROFILE_SESSION_HEADER) profileSessionId: String? = null,
         @Field("real_id") realId: String,
         @Field("auth_key") authKey: String,
-        @Field("new_check") newCheck: String
+        @Field("new_check") newCheck: String,
     ): KwResponse
 }
 
 class KwuRepository @Inject constructor(
-    private val kwuApiService: KwuApiService // Hilt가 Retrofit 구현체 주입해줌
+    private val kwuApiService: KwuApiService,
 ) {
     suspend fun getSecretKey(
         rid: String,
+        profileSessionId: String? = null,
     ): String? {
         return try {
-            Timber.tag("getSecretKey").i("1. 시크릿 키 요청 중...")
+            if (BuildConfig.DEBUG) {
+                NetworkProfilingListener.logStage(
+                    profileSessionId,
+                    "repository.secretKey.requestStart",
+                    "ridLength=${rid.length}",
+                )
+            }
+            Timber.tag("getSecretKey").i("1. secret key request started")
+
             val secretKeyResponse = kwuApiService.getSecretKey(
+                profileSessionId = profileSessionId,
                 userId = with(Encryption) {
                     rid.encode()
-                })
+                },
+            )
+
             val secretKey = secretKeyResponse.item.secret
+            if (BuildConfig.DEBUG) {
+                NetworkProfilingListener.logStage(
+                    profileSessionId,
+                    "repository.secretKey.responseParsed",
+                    "secretLength=${secretKey?.length ?: 0}",
+                )
+            }
             Timber.tag("getSecretKey")
-                .i("   >> Secret Key: $secretKey (${secretKey?.length ?: "NULL"})")
+                .i("   >> Secret Key length: ${secretKey?.length ?: "NULL"}")
             secretKey
         } catch (e: Exception) {
+            if (BuildConfig.DEBUG) {
+                NetworkProfilingListener.logStage(
+                    profileSessionId,
+                    "repository.secretKey.failed",
+                    "error=${e.javaClass.simpleName}:${e.message}",
+                )
+            }
             if (e is IOException) throw e
             Timber.e(e)
             null
@@ -78,23 +105,53 @@ class KwuRepository @Inject constructor(
         rid: String,
         password: String,
         tel: String,
-        secretKey: String
+        secretKey: String,
+        profileSessionId: String? = null,
     ): String? {
         return try {
-            Timber.tag("getAuthKey").i("2. 로그인 요청 중...")
-            val authKeyResponse = kwuApiService.getAuthKey(realId = with(Encryption) {
-                rid.encode()
-            }, rid = with(Encryption) {
-                rid.encode()
-            }, deviceGb = "A", telNo = tel, passWd = with(Encryption) {
-                password.encrypt(secretKey)
-            })
+            if (BuildConfig.DEBUG) {
+                NetworkProfilingListener.logStage(
+                    profileSessionId,
+                    "repository.authKey.requestStart",
+                    "ridLength=${rid.length}, telLength=${tel.length}, secretLength=${secretKey.length}",
+                )
+            }
+            Timber.tag("getAuthKey").i("2. auth key request started")
+
+            val authKeyResponse = kwuApiService.getAuthKey(
+                profileSessionId = profileSessionId,
+                realId = with(Encryption) {
+                    rid.encode()
+                },
+                rid = with(Encryption) {
+                    rid.encode()
+                },
+                deviceGb = "A",
+                telNo = tel,
+                passWd = with(Encryption) {
+                    password.encrypt(secretKey)
+                },
+            )
 
             val authKey = authKeyResponse.item.authKey
+            if (BuildConfig.DEBUG) {
+                NetworkProfilingListener.logStage(
+                    profileSessionId,
+                    "repository.authKey.responseParsed",
+                    "authKeyLength=${authKey?.length ?: 0}",
+                )
+            }
             Timber.tag("getAuthKey")
-                .i("   >> Auth Key: $authKey (${authKey?.length ?: "NULL"})")
+                .i("   >> Auth Key length: ${authKey?.length ?: "NULL"}")
             authKey
         } catch (e: Exception) {
+            if (BuildConfig.DEBUG) {
+                NetworkProfilingListener.logStage(
+                    profileSessionId,
+                    "repository.authKey.failed",
+                    "error=${e.javaClass.simpleName}:${e.message}",
+                )
+            }
             if (e is IOException) throw e
             Timber.e(e)
             null
@@ -103,28 +160,50 @@ class KwuRepository @Inject constructor(
 
     suspend fun getQrString(
         rid: String,
-        authKey: String
+        authKey: String,
+        profileSessionId: String? = null,
     ): String? {
-        val encryption = Encryption
         return try {
-            Timber.tag("getQR").i("3. QR코드 데이터 요청 중...")
+            if (BuildConfig.DEBUG) {
+                NetworkProfilingListener.logStage(
+                    profileSessionId,
+                    "repository.qrCode.requestStart",
+                    "ridLength=${rid.length}, authKeyLength=${authKey.length}",
+                )
+            }
+            Timber.tag("getQR").i("3. qr code request started")
+
             val qrResponse = kwuApiService.getQrCode(
-                realId = with(encryption) {
+                profileSessionId = profileSessionId,
+                realId = with(Encryption) {
                     rid.encode()
-                }, authKey = authKey, newCheck = "Y"
+                },
+                authKey = authKey,
+                newCheck = "Y",
             )
 
             val qrString = qrResponse.item.qrCode
-            Timber.tag("getQR").i("===============================")
+            if (BuildConfig.DEBUG) {
+                NetworkProfilingListener.logStage(
+                    profileSessionId,
+                    "repository.qrCode.responseParsed",
+                    "qrLength=${qrString?.length ?: 0}",
+                )
+            }
             Timber.tag("getQR")
-                .i("QR Code Data: $qrString (${qrString?.length ?: "NULL"})")
-            Timber.tag("getQR").i("===============================")
+                .i("QR Code length: ${qrString?.length ?: "NULL"}")
             qrString
         } catch (e: Exception) {
+            if (BuildConfig.DEBUG) {
+                NetworkProfilingListener.logStage(
+                    profileSessionId,
+                    "repository.qrCode.failed",
+                    "error=${e.javaClass.simpleName}:${e.message}",
+                )
+            }
             if (e is IOException) throw e
             Timber.e(e)
             null
         }
     }
 }
-

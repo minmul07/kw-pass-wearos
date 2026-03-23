@@ -44,8 +44,8 @@ import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import minmul.kwpass.BuildConfig
 import minmul.kwpass.R
-import minmul.kwpass.service.KwPassLanguageService
 import minmul.kwpass.service.KwPassConst
+import minmul.kwpass.service.KwPassLanguageService
 import minmul.kwpass.ui.ScreenDestination
 import minmul.kwpass.ui.components.AccountInputFieldSet
 import minmul.kwpass.ui.components.SingleMenu
@@ -91,7 +91,8 @@ fun SettingMainScreen(
     navController: NavController,
     focusManager: FocusManager,
     context: Context,
-    debugAuthKey: () -> Unit
+    debugAuthKey: () -> Unit,
+    expireAuthKey: () -> Unit,
 ) {
     val isFormValidForUpdate = mainUiState.inputForm.run {
         isRidValid && isTelValid && (isPasswordValid || passwordInput.isBlank())
@@ -213,6 +214,14 @@ fun SettingMainScreen(
                 ) {
                     Text("저장된 AuthKey 초기화")
                 }
+
+                Button(
+                    onClick = {
+                        expireAuthKey()
+                    }
+                ) {
+                    Text("AuthKey 강제 만료")
+                }
             }
             Spacer(
                 modifier = Modifier.height(120.dp)
@@ -236,7 +245,8 @@ fun SettingMainScreenPreview() {
             focusManager = LocalFocusManager.current,
             context = LocalContext.current,
             debugAuthKey = {},
-            initSampleQr = {}
+            initSampleQr = {},
+            expireAuthKey = {}
         )
     }
 }
@@ -256,7 +266,8 @@ fun DarkSettingMainScreenPreview() {
             focusManager = LocalFocusManager.current,
             context = LocalContext.current,
             debugAuthKey = {},
-            initSampleQr = {}
+            initSampleQr = {},
+            expireAuthKey = {},
         )
     }
 }

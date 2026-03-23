@@ -16,5 +16,8 @@ local.properties
 
 /.idea/discord.xml
 /.idea/deploymentTargetSelector.xml
+/.idea/codeStyles/
 google-services.json
 *.aab
+/.gradle-user/
+/gradle/gradle-daemon-jvm.properties

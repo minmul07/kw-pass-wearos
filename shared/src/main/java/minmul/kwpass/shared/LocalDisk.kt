@@ -47,6 +47,14 @@ class LocalDisk @Inject constructor(
         }
     }
 
+    // DEBUG
+    suspend fun expireAuthKey() {
+        Timber.i("만료된 authKey 저장중..")
+        context.dataStore.edit { preferences ->
+            preferences[AUTH_KEY] = "DJ8225wceL14ITQur5INSnRR1pYZjfj5"
+        }
+    }
+
     suspend fun getSavedAuthKey(): String? {
         return context.dataStore.data.map { preferences ->
             preferences[AUTH_KEY]
