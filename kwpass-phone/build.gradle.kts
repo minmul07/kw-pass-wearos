@@ -1,23 +1,20 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.hilt.android)
 
-    id("com.google.android.gms.oss-licenses-plugin")
+    // id("com.google.android.gms.oss-licenses-plugin") // Incompatible with AGP 9
 
     kotlin("plugin.serialization") version "2.0.0"
 
-    kotlin("kapt")
+    alias(libs.plugins.hilt.android)
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.google.firebase.crashlytics)
+    alias(libs.plugins.google.devtools.ksp)
 }
 
 android {
     namespace = "minmul.kwpass"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "minmul.kwpass"
@@ -39,7 +36,7 @@ android {
                 "proguard-rules.pro"
             )
             ndk {
-                debugSymbolLevel = "FULL" // "FULL"? "SYMBOL_TABLE"?
+                debugSymbolLevel = "FULL" 
             }
         }
     }
@@ -47,9 +44,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+
     buildFeatures {
         compose = true
         buildConfig = true
@@ -98,7 +93,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.text.google.fonts)
 
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
     implementation(platform(libs.firebase.bom))
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.firebase.analytics)

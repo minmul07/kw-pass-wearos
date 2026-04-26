@@ -1,17 +1,13 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.google.devtools.ksp)
 
     kotlin("plugin.serialization") version "2.0.0"
-
-    kotlin("kapt")
 }
 
 android {
     namespace = "minmul.kwpass.shared"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
     defaultConfig {
 
         minSdk = 29
@@ -26,16 +22,13 @@ android {
                 "proguard-rules.pro"
             )
             ndk {
-                debugSymbolLevel = "SYMBOL_TABLE" // "FULL"?
+                debugSymbolLevel = "SYMBOL_TABLE"
             }
         }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
     }
     buildFeatures {
         buildConfig = true
@@ -52,7 +45,7 @@ dependencies {
     implementation(libs.core)
     api(libs.annotation)
     implementation(libs.play.services.measurement.api)
-    kapt(libs.processor)
+    ksp(libs.processor)
 
     api(libs.kotlinx.serialization.json)
 
@@ -60,7 +53,7 @@ dependencies {
     implementation(libs.zxing.core)
 
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 
     implementation(libs.timber)
 

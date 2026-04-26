@@ -1,36 +1,36 @@
 [versions]
-agp = "8.13.2"
-composeMaterial3 = "1.5.6"
+agp = "9.1.1"
+composeMaterial3 = "1.6.1"
 coreVersion = "3.5.4"
-datastorePreferences = "1.2.0"
-firebaseBom = "34.10.0"
+datastorePreferences = "1.2.1"
+firebaseBom = "34.12.0"
 glanceAppwidget = "1.1.1"
-kotlin = "2.3.10"
-coreKtx = "1.17.0"
+kotlin = "2.3.21"
+coreKtx = "1.18.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
 kotlinxCoroutinesCore = "1.10.2"
 kotlinxCoroutinesPlayServices = "1.10.2"
-kotlinxSerializationJson = "1.10.0"
+kotlinxSerializationJson = "1.11.0"
 lifecycleRuntimeKtx = "2.10.0"
-activityCompose = "1.12.4"
-composeBom = "2026.02.01"
+activityCompose = "1.13.0"
+composeBom = "2026.04.01"
 material = "1.13.0"
 materialIconsExtended = "1.7.8"
-playServicesOssLicenses = "17.4.0"
+playServicesOssLicenses = "17.5.1"
 playServicesWearable = "19.0.0"
-composeMaterial = "1.5.6"
-composeFoundation = "1.5.6"
+composeMaterial = "1.6.1"
+composeFoundation = "1.6.1"
 retrofit = "3.0.0"
-tiles = "1.5.0"
+tiles = "1.6.0"
 timber = "5.0.1"
-uiTextGoogleFonts = "1.10.4"
+uiTextGoogleFonts = "1.11.0"
 wearToolingPreview = "1.0.0"
 coreSplashscreen = "1.2.0"
-navigationRuntimeKtx = "2.9.7"
-navigationCompose = "2.9.7"
-hilt = "2.58"
+navigationRuntimeKtx = "2.9.8"
+navigationCompose = "2.9.8"
+hilt = "2.59.2"
 hiltNavigationCompose = "1.3.0"
 watchfaceComplicationsDataSourceKtx = "1.3.0"
 watchfaceComplicationsData = "1.3.0"
@@ -44,13 +44,14 @@ retrofitConverter = "0.8.13" # 0.8.13
 #noinspection NewerVersionAvailable
 processor = "0.8.13"
 material3 = "1.4.0"
-animationGraphics = "1.10.4"
+animationGraphics = "1.11.0"
 appcompat = "1.7.1"
-firebaseCrashlytics = "20.0.4"
+firebaseCrashlytics = "20.0.5"
 googleGmsGoogleServices = "4.4.4"
-googleFirebaseCrashlytics = "3.0.6"
-playServicesMeasurementApi = "23.0.0"
-foundation = "1.10.4"
+googleFirebaseCrashlytics = "3.0.7"
+googleDevtoolsKsp = "2.3.4"
+playServicesMeasurementApi = "23.2.0"
+foundation = "1.11.0"
 
 [libraries]
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
@@ -113,9 +114,9 @@ androidx-foundation = { group = "androidx.compose.foundation", name = "foundatio
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
 google-firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "googleFirebaseCrashlytics" }
+google-devtools-ksp = {id = "com.google.devtools.ksp", version.ref = "googleDevtoolsKsp"}
