@@ -3,8 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt.android)
 
-    // id("com.google.android.gms.oss-licenses-plugin") // Incompatible with AGP 9
-
     kotlin("plugin.serialization") version "2.0.0"
 
     alias(libs.plugins.google.gms.google.services)

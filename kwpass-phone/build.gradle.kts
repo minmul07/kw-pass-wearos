@@ -2,12 +2,11 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
 
-    // id("com.google.android.gms.oss-licenses-plugin") // Incompatible with AGP 9
-
     kotlin("plugin.serialization") version "2.0.0"
 
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.google.gms.oss.licenses)
     alias(libs.plugins.google.firebase.crashlytics)
     alias(libs.plugins.google.devtools.ksp)
 }
@@ -86,6 +85,7 @@ dependencies {
     implementation(libs.play.services.wearable)
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.androidx.glance.material3)
     implementation(libs.material)

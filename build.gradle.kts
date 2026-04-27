@@ -4,9 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.hilt.android) apply false
     alias(libs.plugins.android.library) apply false
-
-    id("com.google.android.gms.oss-licenses-plugin") version "0.10.6" apply false
     alias(libs.plugins.google.gms.google.services) apply false
+    alias(libs.plugins.google.gms.oss.licenses) apply false
     alias(libs.plugins.google.firebase.crashlytics) apply false
     alias(libs.plugins.google.devtools.ksp) apply false
 }
