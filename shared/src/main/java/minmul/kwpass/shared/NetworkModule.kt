@@ -1,7 +1,5 @@
 package minmul.kwpass.shared
 
-import com.tickaroo.tikxml.TikXml
-import com.tickaroo.tikxml.retrofit.TikXmlConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,9 +31,6 @@ class MemoryCookieJar : CookieJar {
 object NetworkModule {
     private const val BASE_URL = "https://mobileid.kw.ac.kr/" // 끝에 / 필수
 
-    // TikXml 설정 (데이터클래스에 선언되지 않은 태그들 무시를 위해 exceptionOnUnreadXml false 설정)
-    private val tikXml = TikXml.Builder().exceptionOnUnreadXml(false).build()
-
     // 1단계: OkHttpClient 생성 및 쿠키 저장소 연결
     @Provides
     @Singleton
@@ -43,13 +38,11 @@ object NetworkModule {
         return OkHttpClient.Builder().cookieJar(MemoryCookieJar()).build()
     }
 
-    // 2단계: Retrofit 생성 - OkHttpClient에 baseUrl 연결하고 xml 변환기 연결
+    // 2단계: Retrofit 생성 - XML 응답은 Repository에서 XmlPullParser로 직접 읽음
     @Provides
     @Singleton
     fun provideRetrofit(client: OkHttpClient): Retrofit { // Hilt가 OkHttpClient를 알아서 넣어준대요 신기방기
-        return Retrofit.Builder().baseUrl(BASE_URL).client(client).addConverterFactory(
-            TikXmlConverterFactory.create(tikXml)
-        ).build()
+        return Retrofit.Builder().baseUrl(BASE_URL).client(client).build()
     }
 
     // 3단계: 최종 ApiService 생성, Retrofit이 KwuApiService의 구현체를 만들어줌

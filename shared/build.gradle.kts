@@ -40,12 +40,8 @@ dependencies {
     api(libs.kotlinx.coroutines.core)
 
     api(libs.retrofit)
-    api(libs.retrofit.converter)
 
-    implementation(libs.core)
-    api(libs.annotation)
     implementation(libs.play.services.measurement.api)
-    ksp(libs.processor)
 
     api(libs.kotlinx.serialization.json)
 
