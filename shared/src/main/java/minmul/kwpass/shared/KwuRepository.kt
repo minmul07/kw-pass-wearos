@@ -9,6 +9,7 @@ import retrofit2.http.POST
 import timber.log.Timber
 import javax.inject.Inject
 import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserException
 
 data class KwResponse(
     val item: KwItem
@@ -63,6 +64,7 @@ class KwuRepository @Inject constructor(
                 .i("   >> Secret Key: $secretKey (${secretKey?.length ?: "NULL"})")
             secretKey
         } catch (e: Exception) {
+            if (e is KwPassException) throw e
             if (e is IOException) throw e
             Timber.e(e)
             null
@@ -90,6 +92,7 @@ class KwuRepository @Inject constructor(
                 .i("   >> Auth Key: $authKey (${authKey?.length ?: "NULL"})")
             authKey
         } catch (e: Exception) {
+            if (e is KwPassException) throw e
             if (e is IOException) throw e
             Timber.e(e)
             null
@@ -116,6 +119,7 @@ class KwuRepository @Inject constructor(
             Timber.tag("getQR").i("===============================")
             qrString
         } catch (e: Exception) {
+            if (e is KwPassException) throw e
             if (e is IOException) throw e
             Timber.e(e)
             null
@@ -124,33 +128,43 @@ class KwuRepository @Inject constructor(
 }
 
 private fun ResponseBody.toKwResponse(): KwResponse {
-    use { body ->
-        val parser = Xml.newPullParser()
-        parser.setInput(body.charStream())
+    try {
+        use { body ->
+            val parser = Xml.newPullParser()
+            parser.setInput(body.charStream())
 
-        var secret: String? = null
-        var authKey: String? = null
-        var qrCode: String? = null
-        var eventType = parser.eventType
+            var secret: String? = null
+            var authKey: String? = null
+            var qrCode: String? = null
+            var eventType = parser.eventType
 
-        while (eventType != XmlPullParser.END_DOCUMENT) {
-            if (eventType == XmlPullParser.START_TAG) {
-                when (parser.name) {
-                    "sec_key" -> secret = parser.nextText()
-                    "auth_key" -> authKey = parser.nextText()
-                    "qr_code" -> qrCode = parser.nextText()
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_TAG) {
+                    when (parser.name) {
+                        "sec_key" -> secret = parser.nextText()
+                        "auth_key" -> authKey = parser.nextText()
+                        "qr_code" -> qrCode = parser.nextText()
+                    }
                 }
+                eventType = parser.next()
             }
-            eventType = parser.next()
-        }
 
-        return KwResponse(
-            item = KwItem(
-                secret = secret,
-                authKey = authKey,
-                qrCode = qrCode
+            return KwResponse(
+                item = KwItem(
+                    secret = secret,
+                    authKey = authKey,
+                    qrCode = qrCode
+                )
             )
-        )
+        }
+    } catch (e: IOException) {
+        throw e
+    } catch (e: XmlPullParserException) {
+        Timber.e(e, "Failed to parse KWU XML response")
+        throw KwPassException.UnknownError()
+    } catch (e: Exception) {
+        Timber.e(e, "Unexpected error while parsing KWU XML response")
+        throw KwPassException.UnknownError()
     }
 }
 
