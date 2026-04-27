@@ -1,6 +1,7 @@
 package minmul.kwpass.shared
 
 import android.util.Xml
+import kotlinx.coroutines.CancellationException
 import okhttp3.ResponseBody
 import okio.IOException
 import retrofit2.http.Field
@@ -58,12 +59,16 @@ class KwuRepository @Inject constructor(
             val secretKeyResponse = kwuApiService.getSecretKey(
                 userId = with(Encryption) {
                     rid.encode()
-                }).toKwResponse()
+                }).toKwResponse(
+                    requiredTag = "sec_key",
+                    missingRequiredError = KwPassException.ServerError()
+                )
             val secretKey = secretKeyResponse.item.secret
             Timber.tag("getSecretKey")
                 .i("   >> Secret Key: $secretKey (${secretKey?.length ?: "NULL"})")
             secretKey
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
             if (e is KwPassException) throw e
             if (e is IOException) throw e
             Timber.e(e)
@@ -85,13 +90,17 @@ class KwuRepository @Inject constructor(
                 rid.encode()
             }, deviceGb = "A", telNo = tel, passWd = with(Encryption) {
                 password.encrypt(secretKey)
-            }).toKwResponse()
+            }).toKwResponse(
+                requiredTag = "auth_key",
+                missingRequiredError = KwPassException.AccountError()
+            )
 
             val authKey = authKeyResponse.item.authKey
             Timber.tag("getAuthKey")
                 .i("   >> Auth Key: $authKey (${authKey?.length ?: "NULL"})")
             authKey
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
             if (e is KwPassException) throw e
             if (e is IOException) throw e
             Timber.e(e)
@@ -110,7 +119,10 @@ class KwuRepository @Inject constructor(
                 realId = with(encryption) {
                     rid.encode()
                 }, authKey = authKey, newCheck = "Y"
-            ).toKwResponse()
+            ).toKwResponse(
+                requiredTag = "qr_code",
+                missingRequiredError = KwPassException.ServerError()
+            )
 
             val qrString = qrResponse.item.qrCode
             Timber.tag("getQR").i("===============================")
@@ -119,6 +131,7 @@ class KwuRepository @Inject constructor(
             Timber.tag("getQR").i("===============================")
             qrString
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
             if (e is KwPassException) throw e
             if (e is IOException) throw e
             Timber.e(e)
@@ -127,7 +140,10 @@ class KwuRepository @Inject constructor(
     }
 }
 
-private fun ResponseBody.toKwResponse(): KwResponse {
+private fun ResponseBody.toKwResponse(
+    requiredTag: String,
+    missingRequiredError: KwPassException
+): KwResponse {
     try {
         use { body ->
             val parser = Xml.newPullParser()
@@ -136,17 +152,40 @@ private fun ResponseBody.toKwResponse(): KwResponse {
             var secret: String? = null
             var authKey: String? = null
             var qrCode: String? = null
+            var hasRoot = false
+            var hasItem = false
             var eventType = parser.eventType
 
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 if (eventType == XmlPullParser.START_TAG) {
                     when (parser.name) {
+                        "root" -> hasRoot = true
+                        "item" -> hasItem = true
                         "sec_key" -> secret = parser.nextText()
                         "auth_key" -> authKey = parser.nextText()
                         "qr_code" -> qrCode = parser.nextText()
                     }
                 }
                 eventType = parser.next()
+            }
+
+            val requiredValue = when (requiredTag) {
+                "sec_key" -> secret
+                "auth_key" -> authKey
+                "qr_code" -> qrCode
+                else -> null
+            }
+
+            if (!hasRoot || !hasItem) {
+                Timber.e(
+                    "Invalid KWU XML response structure. hasRoot=$hasRoot, hasItem=$hasItem"
+                )
+                throw KwPassException.UnknownError()
+            }
+
+            if (requiredValue.isNullOrBlank()) {
+                Timber.e("Missing required KWU XML tag: $requiredTag")
+                throw missingRequiredError
             }
 
             return KwResponse(
@@ -158,6 +197,10 @@ private fun ResponseBody.toKwResponse(): KwResponse {
             )
         }
     } catch (e: IOException) {
+        throw e
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: KwPassException) {
         throw e
     } catch (e: XmlPullParserException) {
         Timber.e(e, "Failed to parse KWU XML response")
