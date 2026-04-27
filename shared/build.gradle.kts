@@ -1,17 +1,12 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
-
-    kotlin("plugin.serialization") version "2.0.0"
-
-    kotlin("kapt")
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.google.devtools.ksp)
 }
 
 android {
     namespace = "minmul.kwpass.shared"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
     defaultConfig {
 
         minSdk = 29
@@ -26,16 +21,13 @@ android {
                 "proguard-rules.pro"
             )
             ndk {
-                debugSymbolLevel = "SYMBOL_TABLE" // "FULL"?
+                debugSymbolLevel = "SYMBOL_TABLE"
             }
         }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
     }
     buildFeatures {
         buildConfig = true
@@ -44,25 +36,16 @@ android {
 }
 
 dependencies {
-    api(libs.kotlinx.coroutines.core)
-
-    api(libs.retrofit)
-    api(libs.retrofit.converter)
-
-    implementation(libs.core)
-    api(libs.annotation)
-    implementation(libs.play.services.measurement.api)
-    kapt(libs.processor)
-
-    api(libs.kotlinx.serialization.json)
-
+    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.zxing.core)
+    implementation(libs.timber)
+
+    api(libs.kotlinx.coroutines.core)
+    api(libs.retrofit)
 
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
-
-    implementation(libs.timber)
+    ksp(libs.hilt.compiler)
 
     implementation(platform(libs.firebase.bom))
     api(libs.firebase.analytics)

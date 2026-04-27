@@ -2,6 +2,8 @@ package minmul.kwpass.ui.main
 
 import android.graphics.Bitmap
 
+// TODO: uiState 더 세분화, 초기 설정과 이후의 계정 설정 state를 별개로 가져가고, qr 크기 state도 별개로 분리한다.
+
 data class AccountInfoState(
     val rid: String = "",
     val password: String = "",

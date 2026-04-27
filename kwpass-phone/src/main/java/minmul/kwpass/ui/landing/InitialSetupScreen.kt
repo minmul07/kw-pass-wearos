@@ -28,6 +28,8 @@ import minmul.kwpass.ui.main.InputFormState
 import minmul.kwpass.ui.main.ProcessState
 import minmul.kwpass.ui.theme.KWPassTheme
 
+// TODO: 비밀번호 오류 발생 시, 도서관 초기 비밀번호일 수 있음. 앱 사용을 위해 사용자에게 변경 권장
+
 @Composable
 fun InitialSetupScreen(
     onNextClicked: () -> Unit,

@@ -29,6 +29,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
@@ -41,12 +43,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import com.google.android.gms.oss.licenses.v2.OssLicensesMenuActivity
 import minmul.kwpass.BuildConfig
 import minmul.kwpass.R
 import minmul.kwpass.service.KwPassLanguageService
 import minmul.kwpass.service.KwPassConst
 import minmul.kwpass.ui.ScreenDestination
+import minmul.kwpass.ui.UiText
 import minmul.kwpass.ui.components.AccountInputFieldSet
 import minmul.kwpass.ui.components.SingleMenu
 import minmul.kwpass.ui.main.MainUiState
@@ -78,6 +81,8 @@ fun SettingScreenAppBar(
     )
 }
 
+// TODO: QR 페이지로 이동 시 계정 입력 상태 유지되도록 입력 필드와 QR크기의 UiState 조정
+
 @Composable
 fun SettingMainScreen(
     modifier: Modifier = Modifier,
@@ -96,6 +101,7 @@ fun SettingMainScreen(
     val isFormValidForUpdate = mainUiState.inputForm.run {
         isRidValid && isTelValid && (isPasswordValid || passwordInput.isBlank())
     }
+    val licenseTypography = MaterialTheme.typography
 
     Scaffold(
         topBar = {
@@ -189,10 +195,14 @@ fun SettingMainScreen(
                 title = stringResource(R.string.opensource_licence),
                 top = false,
                 onclick = {
-                    val intent = Intent(context, OssLicensesMenuActivity::class.java)
-                    // 앱의 타이틀을 변경하고 싶다면 추가
-                    intent.putExtra("title", "오픈소스 라이선스")
-                    context.startActivity(intent)
+                    val title = UiText.StringResource(R.string.opensource_licence).asString(context)
+                    OssLicensesMenuActivity.setActivityTitle(title)
+                    OssLicensesMenuActivity.setTheme(
+                        lightColorScheme(),
+                        darkColorScheme(),
+                        licenseTypography
+                    )
+                    context.startActivity(Intent(context, OssLicensesMenuActivity::class.java))
                 },
                 trailingIcon = Icons.AutoMirrored.Filled.ArrowForwardIos
             )

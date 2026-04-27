@@ -40,6 +40,7 @@ class LocalDisk @Inject constructor(
         }
     }
 
+    // TODO: AuthKey 암호화하여 저장
     suspend fun saveAuthKey(authKey: String) {
         Timber.i("disk에 auth key 저장중...")
         context.dataStore.edit { preferences ->
