@@ -12,7 +12,7 @@ data class MainUiState(
     val savedQrBitmap: Bitmap? = null,
     val qrCreationTime: Long = 0L,
     val refreshTimeLeft: Int = 0,
-    val status: ScreenStatus = ScreenStatus.START,
+    val status: ScreenStatus = ScreenStatus.SYNCING_ACCOUNT_DATA,
 
     val accountDataLoaded: Boolean = false,
     val isRefreshing: Boolean = false

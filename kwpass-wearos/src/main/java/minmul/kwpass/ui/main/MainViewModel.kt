@@ -86,7 +86,15 @@ class MainViewModel @Inject constructor(
                     } else { // 최초 실행, 휴대폰에 계정 설정 완료되지 않음
                         _uiState.update { currentState ->
                             currentState.copy(
-                                status = ScreenStatus.START
+                                savedRid = "",
+                                savedPassword = "",
+                                savedTel = "",
+                                savedQrBitmap = null,
+                                qrCreationTime = 0L,
+                                refreshTimeLeft = 0,
+                                accountDataLoaded = false,
+                                isRefreshing = false,
+                                status = ScreenStatus.SYNCING_ACCOUNT_DATA
                             )
                         }
                         requestForcedAccountDataSync(silent = true)
@@ -107,7 +115,6 @@ class MainViewModel @Inject constructor(
     fun saveDataOnLocal(rid: String, password: String, tel: String) {
         viewModelScope.launch {
             localDisk.saveUserCredentials(rid, password, tel)
-            setUserDataOnUiState(rid, password, tel)
         }
     }
 
@@ -117,7 +124,9 @@ class MainViewModel @Inject constructor(
                 savedRid = rid,
                 savedPassword = password,
                 savedTel = tel,
-                accountDataLoaded = true
+                accountDataLoaded = true,
+                isRefreshing = true,
+                status = ScreenStatus.FETCHING_QR
             )
         }
     }
@@ -150,6 +159,13 @@ class MainViewModel @Inject constructor(
 
     fun requestForcedAccountDataSync(silent: Boolean) {
         viewModelScope.launch {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    status = ScreenStatus.SYNCING_ACCOUNT_DATA,
+                    isRefreshing = false
+                )
+            }
+
             try {
                 val nodes = nodeClient.connectedNodes.await()
                 val phoneNode = nodes.firstOrNull()
@@ -195,20 +211,18 @@ class MainViewModel @Inject constructor(
     }
 
     fun refreshQR() {
-        if (!uiState.value.accountDataLoaded) {
+        if (!uiState.value.allDataReady) {
             _uiState.update { currentState ->
                 currentState.copy(
-                    status = ScreenStatus.START
+                    status = ScreenStatus.SYNCING_ACCOUNT_DATA,
+                    isRefreshing = false
                 )
             }
-        }
-
-        Timber.i("refreshQR()")
-        if (!uiState.value.accountDataLoaded) {
             Timber.w("데이터 로드 안됨")
             return
         }
 
+        Timber.i("refreshQR()")
         timerJob?.cancel()
         refreshJob?.cancel()
         refreshJob = viewModelScope.launch {
@@ -240,8 +254,11 @@ class MainViewModel @Inject constructor(
                     playErrorVibration()
                     _uiState.update { currentState ->
                         currentState.copy(
+                            savedQrBitmap = null,
                             status = ScreenStatus.FAILED_TO_GET_QR,
-                            isRefreshing = false
+                            isRefreshing = false,
+                            refreshTimeLeft = 0,
+                            qrCreationTime = 0L
                         )
                     }
                 }

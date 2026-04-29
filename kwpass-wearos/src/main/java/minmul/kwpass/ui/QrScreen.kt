@@ -102,7 +102,9 @@ fun QrScreen(
         ) {
             if (uiState.status !in listOf<ScreenStatus>(
                     ScreenStatus.START,
-                    ScreenStatus.NOT_CONNECTED_TO_PHONE
+                    ScreenStatus.NOT_CONNECTED_TO_PHONE,
+                    ScreenStatus.SYNCING_ACCOUNT_DATA,
+                    ScreenStatus.FAILED_TO_GET_ACCOUNT_DATA_FROM_PHONE
                 )
             ) {
                 KeepScreenOn()
@@ -168,8 +170,11 @@ fun QrScreen(
             ) {
                 if (uiState.isRefreshing || uiState.status in listOf<ScreenStatus>(
                         ScreenStatus.QR_READY,
+                        ScreenStatus.START,
                         ScreenStatus.NOT_CONNECTED_TO_PHONE,
                         ScreenStatus.FAILED_TO_GET_QR,
+                        ScreenStatus.SYNCING_ACCOUNT_DATA,
+                        ScreenStatus.FAILED_TO_GET_ACCOUNT_DATA_FROM_PHONE,
                         ScreenStatus.FETCHING_QR,
                         ScreenStatus.GENERATING_QR
                     )
