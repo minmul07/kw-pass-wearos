@@ -122,11 +122,17 @@ fun SettingMainScreen(
             modifier = modifier,
             contentPadding = PaddingValues(
                 start = 0.dp,
-                top = paddingValues.calculateTopPadding() + 16.dp,
+                top = paddingValues.calculateTopPadding(),
                 end = 0.dp,
                 bottom = paddingValues.calculateBottomPadding() + 120.dp,
             )
         ) {
+            item {
+                SettingSectionTitle(
+                    title = stringResource(R.string.account_info),
+                )
+            }
+
             item {
                 AccountSettingsCard(
                     mainUiState = mainUiState,
@@ -136,6 +142,12 @@ fun SettingMainScreen(
                     onPasswordVisibilityChange = onPasswordVisibilityChange,
                     onTelChange = onTelChange,
                     onSave = onSave,
+                )
+            }
+
+            item {
+                SettingSectionTitle(
+                    title = stringResource(R.string.setting_options),
                 )
             }
 
@@ -160,6 +172,12 @@ fun SettingMainScreen(
                         navController.navigate(ScreenDestination.Language)
                     },
                     top = false
+                )
+            }
+
+            item {
+                SettingSectionTitle(
+                    title = stringResource(R.string.setting_info),
                 )
             }
 
@@ -218,6 +236,21 @@ fun SettingMainScreen(
 }
 
 @Composable
+private fun SettingSectionTitle(
+    title: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(start = 32.dp, top = 16.dp, end = 32.dp, bottom = 6.dp)
+    )
+}
+
+@Composable
 private fun AccountSettingsCard(
     mainUiState: MainUiState,
     isFormValidForUpdate: Boolean,
@@ -240,13 +273,6 @@ private fun AccountSettingsCard(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(
-                text = stringResource(R.string.account_info),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 4.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
             AccountInputFieldSet(
                 accountSubmitState = mainUiState.accountSubmit,
                 inputFormState = mainUiState.inputForm,

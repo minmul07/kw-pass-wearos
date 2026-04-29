@@ -46,6 +46,8 @@
     <string name="shortcut_disabled_message">快捷方式不可用。</string>
 
     <string name="account_info">账户信息</string>
+    <string name="setting_options">选项</string>
+    <string name="setting_info">信息</string>
     <string name="language">语言</string>
     <string name="app_version">应用版本</string>
     <string name="opensource_licence">开源许可</string>

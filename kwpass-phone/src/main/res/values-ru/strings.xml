@@ -46,6 +46,8 @@
     <string name="shortcut_disabled_message">Ярлык недоступен.</string>
 
     <string name="account_info">Информация об аккаунте</string>
+    <string name="setting_options">Параметры</string>
+    <string name="setting_info">Информация</string>
     <string name="language">Язык</string>
     <string name="app_version">Версия приложения</string>
     <string name="opensource_licence">Лицензии открытого ПО</string>

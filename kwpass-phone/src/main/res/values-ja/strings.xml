@@ -46,6 +46,8 @@
     <string name="shortcut_disabled_message">ショートカットを利用できません。</string>
 
     <string name="account_info">アカウント情報</string>
+    <string name="setting_options">オプション</string>
+    <string name="setting_info">情報</string>
     <string name="language">言語</string>
     <string name="app_version">アプリバージョン</string>
     <string name="opensource_licence">オープンソースライセンス</string>

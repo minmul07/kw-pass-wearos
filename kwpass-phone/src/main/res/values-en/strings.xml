@@ -46,6 +46,8 @@
     <string name="shortcut_disabled_message">Shortcut is unavailable.</string>
 
     <string name="account_info">Account Info</string>
+    <string name="setting_options">Options</string>
+    <string name="setting_info">Information</string>
     <string name="language">Language</string>
     <string name="app_version">App Version</string>
     <string name="opensource_licence">Open Source Licenses</string>

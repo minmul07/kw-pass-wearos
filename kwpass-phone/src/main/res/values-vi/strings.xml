@@ -46,6 +46,8 @@
     <string name="shortcut_disabled_message">Phím tắt không khả dụng.</string>
 
     <string name="account_info">Thông tin tài khoản</string>
+    <string name="setting_options">Tùy chọn</string>
+    <string name="setting_info">Thông tin</string>
     <string name="language">Ngôn ngữ</string>
     <string name="app_version">Phiên bản ứng dụng</string>
     <string name="opensource_licence">Giấy phép mã nguồn mở</string>

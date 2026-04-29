@@ -49,6 +49,8 @@
     <string name="shortcut_disabled_message">바로가기를 사용할 수 없어요.</string>
 
     <string name="account_info">계정 정보</string>
+    <string name="setting_options">옵션</string>
+    <string name="setting_info">정보</string>
     <string name="language">언어</string>
     <string name="app_version">앱 버전</string>
     <string name="github" translatable="false">KW Pass for WearOS GitHub</string>
