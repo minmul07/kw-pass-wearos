@@ -1,34 +1,23 @@
 package minmul.kwpass.ui.setting
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.stringResource
@@ -39,31 +28,25 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import minmul.kwpass.R
+import minmul.kwpass.ui.components.KwPassTopAppBar
 import minmul.kwpass.ui.components.TipBox
 import minmul.kwpass.ui.main.MainUiState
 import minmul.kwpass.ui.theme.KWPassTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
+private const val MinQrSize = 140f
+private const val MaxQrSize = 320f
+private val QrSizeSliderGap = 40.dp
+private val SliderTouchTargetHeight = 48.dp
+
 @Composable
 fun QrSizeScreenTopBar(
     navigateUp: () -> Unit, modifier: Modifier = Modifier
 ) {
-    TopAppBar(
-        title = { Text(text = stringResource(R.string.qrcode_size)) },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
+    KwPassTopAppBar(
+        title = stringResource(R.string.qrcode_size),
         modifier = modifier,
-        navigationIcon = {
-            IconButton(onClick = navigateUp) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(
-                        (R.string.goBack)
-                    )
-                )
-            }
-        })
+        navigateUp = navigateUp,
+    )
 }
 
 @Composable
@@ -88,55 +71,54 @@ fun QrSizeScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            contentAlignment = Alignment.Center
+                .padding(paddingValues)
         ) {
             TipBox(
                 title = stringResource(R.string.about_size),
                 icon = Icons.Default.Info,
                 text = stringResource(R.string.about_size_description),
                 modifier = Modifier
-                    .padding(start = 8.dp, end = 8.dp, top = 16.dp)
                     .align(Alignment.TopCenter)
-
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
             )
-            Column(
-                modifier = Modifier,
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                if (mainUiState.process.sampleQrBitmap != null) {
-                    Text(
-                        text = stringResource(R.string.not_working_qr),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = Color.Gray,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
 
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Image(
-                        bitmap = mainUiState.process.sampleQrBitmap.asImageBitmap(),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(mainUiState.process.qrSize.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .zIndex(1f),
-                        filterQuality = FilterQuality.None
-                    )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
+            if (mainUiState.process.sampleQrBitmap != null) {
+                Text(
+                    text = stringResource(R.string.not_working_qr),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .offset(y = (-(mainUiState.process.qrSize / 2)).dp - 28.dp)
+                )
+
+                Image(
+                    bitmap = mainUiState.process.sampleQrBitmap.asImageBitmap(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .size(mainUiState.process.qrSize.dp)
+                        .clip(MaterialTheme.shapes.large)
+                        .zIndex(1f),
+                    filterQuality = FilterQuality.None
+                )
             }
+
             Slider(
                 value = mainUiState.process.qrSize.toFloat(),
                 onValueChange = { onQrSizeModified(it) },
-                valueRange = 140f..320f,
+                valueRange = MinQrSize..MaxQrSize,
                 steps = 29,
                 modifier = Modifier
-                    .fillMaxWidth()
                     .align(Alignment.Center)
-                    .padding(start = 32.dp, end = 32.dp, top = 400.dp)
-
+                    .offset(
+                        y = (MaxQrSize / 2).dp + QrSizeSliderGap + (SliderTouchTargetHeight / 2)
+                    )
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp)
             )
         }
     }

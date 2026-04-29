@@ -14,10 +14,10 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -45,39 +46,44 @@ fun QrView(
     unavailable: Boolean,
     qrBitmap: Bitmap?,
     refresh: () -> Unit,
-    qrSize: Int
+    qrSize: Int,
+    modifier: Modifier = Modifier,
+    contentDescription: String = "QR코드"
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+    val isQrDimmed = isFetching || unavailable
 
     val animatedQrBlur: Dp by animateDpAsState(
-        if (isFetching || unavailable) 4.dp else 0.dp,
+        if (isQrDimmed) 4.dp else 0.dp,
         animationSpec = tween(durationMillis = 200)
     )
 
 
     val shrunkQrSize: Int = (qrSize * 0.9375).toInt()
     val animatedQrSize by animateDpAsState(
-        targetValue = if (isFetching || unavailable) shrunkQrSize.dp else qrSize.dp,
+        targetValue = if (isQrDimmed) shrunkQrSize.dp else qrSize.dp,
         animationSpec = tween(durationMillis = 400)
     )
 
     val qrAlpha by animateFloatAsState(
-        targetValue = if (isFetching || unavailable) 0.5f else 1.0f,
+        targetValue = if (isQrDimmed) 0.5f else 1.0f,
         animationSpec = tween(durationMillis = 200)
     )
 
     val errorIconAlpha by animateFloatAsState(
-        targetValue = if (unavailable) 0f else 1f, animationSpec = tween(durationMillis = 200)
+        targetValue = if (unavailable) 1f else 0f,
+        animationSpec = tween(durationMillis = 200)
     )
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(animatedQrSize)
             .clickable(
                 onClick = refresh,
                 indication = null,
                 interactionSource = interactionSource,
-                enabled = !isFetching
+                enabled = !isFetching,
+                role = Role.Button
             ), contentAlignment = Alignment.Center
     ) {
 
@@ -85,22 +91,26 @@ fun QrView(
             Icon(
                 imageVector = Icons.Default.ErrorOutline,
                 contentDescription = null,
+                tint = MaterialTheme.colorScheme.error,
                 modifier = Modifier
                     .size(48.dp)
                     .alpha(errorIconAlpha)
+                    .zIndex(2f)
             )
         }
 
 
         AnimatedVisibility(qrBitmap != null, enter = fadeIn(), exit = fadeOut()) {
-            if (qrBitmap != null) {
+            val visibleQrBitmap = qrBitmap
+
+            if (visibleQrBitmap != null) {
                 Image(
-                    bitmap = qrBitmap.asImageBitmap(),
-                    contentDescription = null,
+                    bitmap = visibleQrBitmap.asImageBitmap(),
+                    contentDescription = contentDescription,
                     modifier = Modifier
                         .fillMaxSize()
                         .alpha(qrAlpha)
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(MaterialTheme.shapes.large)
                         .blur(
                             radius = animatedQrBlur, edgeTreatment = BlurredEdgeTreatment.Unbounded
                         )

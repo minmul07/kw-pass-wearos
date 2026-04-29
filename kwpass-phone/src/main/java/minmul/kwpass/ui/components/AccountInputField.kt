@@ -1,12 +1,13 @@
 package minmul.kwpass.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -28,6 +29,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import minmul.kwpass.R
@@ -50,22 +52,34 @@ fun AccountInputFieldSet(
     buttonEnabled: Boolean,
     isInitialSetup: Boolean = false,
     colors: TextFieldColors = TextFieldDefaults.colors(
-        focusedContainerColor = colorScheme.inverseOnSurface,
-        unfocusedContainerColor = colorScheme.inverseOnSurface,
-        disabledContainerColor = colorScheme.inverseOnSurface,
-        errorContainerColor = colorScheme.inverseOnSurface
+        focusedContainerColor = colorScheme.surfaceContainer,
+        unfocusedContainerColor = colorScheme.surfaceContainer,
+        disabledContainerColor = colorScheme.surfaceContainer,
+        errorContainerColor = colorScheme.surfaceContainer
     )
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth()
-    ) {
-        val fieldEnabled = !processState.isFetching && if (isInitialSetup) {
-            !processState.fetchSucceeded
-        } else {
-            true
-        }
+    val fieldEnabled = !processState.isFetching && if (isInitialSetup) {
+        !processState.fetchSucceeded
+    } else {
+        true
+    }
 
-        // 학번
+    val statusMessage: String = if (processState.initialStatus) ""
+    else if (processState.isFetching) stringResource(R.string.verifying_account)
+    else if (processState.fetchFailed) stringResource(R.string.error_verifying_account)
+    else if (processState.fetchSucceeded) stringResource(R.string.login_success)
+    else ""
+
+    val statusColor = when {
+        processState.fetchFailed -> MaterialTheme.colorScheme.error
+        processState.fetchSucceeded -> MaterialTheme.colorScheme.primary
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
         AccountInputField(
             value = inputFormState.ridInput,
             onValueChange = onRidChange,
@@ -78,9 +92,6 @@ fun AccountInputFieldSet(
             colors = colors
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // 비밀번호
         AccountInputField(
             value = inputFormState.passwordInput,
             onValueChange = onPasswordChange,
@@ -95,8 +106,8 @@ fun AccountInputFieldSet(
                     if (inputFormState.passwordVisible) Icons.Default.Visibility
                     else Icons.Default.VisibilityOff
 
-                val description = if (inputFormState.passwordVisible) "비밀번호 보기"
-                else "비밀번호 숨기기"
+                val description = if (inputFormState.passwordVisible) "비밀번호 숨기기"
+                else "비밀번호 보기"
 
                 IconButton(
                     onClick = onPasswordVisibilityChange, enabled = !processState.isFetching
@@ -109,9 +120,6 @@ fun AccountInputFieldSet(
             colors = colors
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // 전화번호
         AccountInputField(
             value = inputFormState.telInput,
             onValueChange = onTelChange,
@@ -124,31 +132,34 @@ fun AccountInputFieldSet(
             colors = colors
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
-
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 2.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val message: String = if (processState.initialStatus) " "
-            else if (processState.isFetching) stringResource(R.string.verifying_account)
-            else if (processState.fetchFailed) stringResource(R.string.error_verifying_account)
-            else if (processState.fetchSucceeded) stringResource(R.string.login_success)
-//            else if (!processState.isAllValidInput) stringResource(R.string.field_not_satisfied) // TODO() not working
-            else " "
-
-            Text(
-                text = message,
-                style = MaterialTheme.typography.labelSmall,
+            Box(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 8.dp)
-            )
+                    .heightIn(min = 48.dp)
+                    .padding(start = 4.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Text(
+                    text = statusMessage,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = statusColor,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
             Button(
                 onClick = onButtonClicked,
                 enabled = buttonEnabled,
-                modifier = Modifier.padding(horizontal = 4.dp)
+                modifier = Modifier
+                    .heightIn(min = 48.dp)
+                    .widthIn(min = 96.dp)
             ) {
                 if (!processState.isFetching) {
                     Text(text = buttonLabel)
@@ -186,6 +197,7 @@ fun AccountInputField(
         trailingIcon = trailingIcon,
         isError = isError,
         enabled = enabled,
+        shape = MaterialTheme.shapes.medium,
         modifier = modifier.fillMaxWidth()
     )
 }

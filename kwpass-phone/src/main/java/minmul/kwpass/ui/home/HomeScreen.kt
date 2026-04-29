@@ -11,6 +11,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,16 +23,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -52,17 +49,18 @@ import minmul.kwpass.BuildConfig
 import minmul.kwpass.R
 import minmul.kwpass.ui.ScreenDestination
 import minmul.kwpass.ui.UiText
+import minmul.kwpass.ui.components.KwPassTopAppBar
 import minmul.kwpass.ui.components.QrView
 import minmul.kwpass.ui.main.ProcessState
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenAppBar(
     navigateSetting: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    TopAppBar(
-        title = { Text(text = stringResource(R.string.app_name)) },
+    KwPassTopAppBar(
+        title = stringResource(R.string.app_name),
+        modifier = modifier,
         actions = {
             IconButton(
                 onClick = navigateSetting
@@ -72,13 +70,8 @@ fun HomeScreenAppBar(
                     contentDescription = stringResource(R.string.setting)
                 )
             }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = colorScheme.primaryContainer
-        ),
-        modifier = modifier,
-
-        )
+        }
+    )
 }
 
 @Composable
@@ -132,71 +125,86 @@ fun HomeScreen(
                 navigateSetting = {
                     navController.navigate(ScreenDestination.Setting)
                 },
-                modifier = Modifier
             )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
 
     ) { paddingValues ->
-        Column(
-            modifier = modifier
-                .padding(paddingValues)
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        HomeScreenContent(
+            modifier = modifier.padding(paddingValues),
+            processState = processState,
+            refreshQR = refreshQR,
+            refreshButtonRotation = angle,
+        )
+    }
+}
+
+@Composable
+private fun HomeScreenContent(
+    processState: ProcessState,
+    refreshQR: () -> Unit,
+    refreshButtonRotation: Float,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(horizontal = 24.dp, vertical = 24.dp),
+) {
+    Column(
+        modifier = modifier
+            .padding(contentPadding)
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        QrView(
+            isFetching = processState.isFetching,
+            qrBitmap = processState.qrBitmap,
+            unavailable = processState.fetchFailed,
+            refresh = refreshQR,
+            qrSize = processState.qrSize
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        Button(
+            onClick = refreshQR,
+            enabled = !processState.isFetching,
         ) {
-            QrView(
-                isFetching = processState.isFetching,
-                qrBitmap = processState.qrBitmap,
-                unavailable = processState.fetchFailed,
-                refresh = refreshQR,
-                qrSize = processState.qrSize
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            Button(
-                onClick = refreshQR,
-                enabled = !processState.isFetching,
-            ) {
-                AnimatedContent(
-                    targetState = processState.isFetching,
-                    transitionSpec = {
-                        fadeIn(animationSpec = tween(durationMillis = 300)) togetherWith
-                                fadeOut(animationSpec = tween(durationMillis = 300))
-                    }
-                ) { isFetching ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            modifier = Modifier
-                                .size(16.dp)
-                                .rotate(if (isFetching) angle else 0f),
-                            imageVector = Icons.Default.Refresh,
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        if (!isFetching) {
-                            Text(
-                                text = stringResource(
-                                    R.string.qr_seconds,
-                                    processState.refreshTimeLeft
-                                )
+            AnimatedContent(
+                targetState = processState.isFetching,
+                transitionSpec = {
+                    fadeIn(animationSpec = tween(durationMillis = 300)) togetherWith
+                            fadeOut(animationSpec = tween(durationMillis = 300))
+                }
+            ) { isFetching ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        modifier = Modifier
+                            .size(16.dp)
+                            .rotate(if (isFetching) refreshButtonRotation else 0f),
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    if (!isFetching) {
+                        Text(
+                            text = stringResource(
+                                R.string.qr_seconds,
+                                processState.refreshTimeLeft
                             )
-                        } else {
-                            Text(text = stringResource(R.string.fetching))
-                        }
+                        )
+                    } else {
+                        Text(text = stringResource(R.string.fetching))
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(24.dp))
-            if (BuildConfig.DEBUG) {
-                Button(
-                    onClick = {
-                        throw RuntimeException("Test Crash")
-                    }
-                ) {
-                    Text("Crashlytics 테스트")
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+        if (BuildConfig.DEBUG) {
+            Button(
+                onClick = {
+                    throw RuntimeException("Test Crash")
                 }
+            ) {
+                Text("Crashlytics 테스트")
             }
         }
     }

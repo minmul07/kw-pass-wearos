@@ -1,9 +1,9 @@
 package minmul.kwpass.ui.landing
 
-import android.annotation.SuppressLint
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Scaffold
@@ -36,7 +36,6 @@ fun LandingScreen(
     )
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LandingContent(
     onFinished: () -> Unit,
@@ -59,11 +58,11 @@ fun LandingContent(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        bottomBar = {}
-    ) {
+    ) { paddingValues ->
         HorizontalPager(
             state = pagerState,
             modifier = Modifier
+                .padding(paddingValues)
                 .fillMaxSize()
         ) { page ->
             when (page) {

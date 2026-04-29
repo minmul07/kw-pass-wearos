@@ -1,51 +1,33 @@
 package minmul.kwpass.ui.setting
 
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import minmul.kwpass.R
 import minmul.kwpass.service.KwPassLanguageService
+import minmul.kwpass.ui.components.KwPassTopAppBar
 import minmul.kwpass.ui.components.SingleMenu
 import minmul.kwpass.ui.theme.KWPassTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LanguageScreenTopBar(
     navigateUp: () -> Unit, modifier: Modifier = Modifier
 ) {
-    TopAppBar(
-        title = { Text(text = stringResource(R.string.language)) },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
+    KwPassTopAppBar(
+        title = stringResource(R.string.language),
         modifier = modifier,
-        navigationIcon = {
-            IconButton(onClick = navigateUp) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(
-                        (R.string.goBack)
-                    )
-                )
-            }
-        })
+        navigateUp = navigateUp,
+    )
 }
 
 @Composable
@@ -63,7 +45,10 @@ fun LanguageScreen(
                 })
         }) { paddingValues ->
         LazyColumn(
-            modifier = Modifier.padding(paddingValues)
+            contentPadding = PaddingValues(
+                top = paddingValues.calculateTopPadding() + 8.dp,
+                bottom = paddingValues.calculateBottomPadding() + 8.dp,
+            ),
         ) {
             itemsIndexed(languageOptions) { index, (code, displayName) ->
                 val isFirst = index == 0

@@ -195,14 +195,6 @@ fun MainScreen(
     }
 }
 
-fun Modifier.conditional(condition: Boolean, modifier: Modifier.() -> Modifier): Modifier {
-    return if (condition) {
-        then(modifier(Modifier))
-    } else {
-        this
-    }
-}
-
 fun Context.openUri(uri: String) {
     val intent = Intent(Intent.ACTION_VIEW).apply {
         data = uri.toUri()
