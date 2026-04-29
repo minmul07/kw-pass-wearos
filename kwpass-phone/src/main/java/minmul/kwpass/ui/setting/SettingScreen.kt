@@ -20,14 +20,19 @@ import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -50,20 +55,24 @@ import minmul.kwpass.ui.main.MainUiState
 import minmul.kwpass.ui.main.openUri
 import minmul.kwpass.ui.theme.KWPassTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingScreenAppBar(
     navigateUp: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
     KwPassTopAppBar(
         title = stringResource(R.string.setting),
         modifier = modifier,
         navigateUp = navigateUp,
+        scrollBehavior = scrollBehavior,
     )
 }
 
 // TODO: QR 페이지로 이동 시 계정 입력 상태 유지되도록 입력 필드와 QR크기의 UiState 조정
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingMainScreen(
     modifier: Modifier = Modifier,
@@ -83,14 +92,17 @@ fun SettingMainScreen(
         isRidValid && isTelValid && (isPasswordValid || passwordInput.isBlank())
     }
     val licenseTypography = MaterialTheme.typography
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             SettingScreenAppBar(
                 navigateUp = {
                     navController.navigateUp()
                     focusManager.clearFocus()
-                }
+                },
+                scrollBehavior = scrollBehavior,
             )
         }
     ) { paddingValues ->

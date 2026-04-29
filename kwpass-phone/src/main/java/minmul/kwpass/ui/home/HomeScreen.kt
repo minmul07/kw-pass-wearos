@@ -198,14 +198,5 @@ private fun HomeScreenContent(
             }
         }
         Spacer(modifier = Modifier.height(24.dp))
-        if (BuildConfig.DEBUG) {
-            Button(
-                onClick = {
-                    throw RuntimeException("Test Crash")
-                }
-            ) {
-                Text("Crashlytics 테스트")
-            }
-        }
     }
 }
