@@ -15,9 +15,9 @@ Wear OS를 지원하는 광운대학교 도서관 qr코드 인증 어플리케�
 | :---: | :---: | :---: |
 | <img src="https://github.com/user-attachments/assets/ea748f8e-bdd5-49b6-8c99-1f9cc343ed6f" width="240" >  | <img src="https://github.com/user-attachments/assets/5f42e6d0-25e9-4678-9f62-b0c72c4c535b" width="240"> | <img src="https://github.com/user-attachments/assets/c7971b9f-4313-4409-8344-83e1f3fda558" width="240"> |
 | **KW Pass WearOS 실행 화면** | **컴플리케이션 (텍스트)** | **컴플리케이션 (아이콘)** |
-| <img  src="https://github.com/user-attachments/assets/8f1f059b-0344-459f-a945-4aae26a3a25d" width="240"/> | <img src="https://github.com/user-attachments/assets/e0eca86d-485d-456e-ab5a-d36eaf694c04" width="240"> | <img src="https://github.com/user-attachments/assets/fe72ac7e-e979-41fe-9577-3845b57f1f77" width="240"> |
+| <img width="240" src="https://github.com/user-attachments/assets/a1b6e194-e2e7-4fdd-87e8-404de3292e0c" /> | <img width="240" src="https://github.com/user-attachments/assets/94487810-b1e1-435f-b955-507f27ede217" /> | <img width="240" src="https://github.com/user-attachments/assets/2b026803-e14d-4017-b870-e7971dd22d66" /> |
 | **KW Pass Phone 실행 화면** | **설정 화면** | **언어 선택 화면**|
-| <img src="https://github.com/user-attachments/assets/e9f718b2-c1b6-4020-9eb6-86bbffaee5fb" width="240"/> | <img src="https://github.com/user-attachments/assets/0742ccb4-3ffa-45d8-bd5b-d4889bce5728" width="240"> | <img src="https://github.com/user-attachments/assets/57c0c279-7028-4850-846b-895cb813bdb1" width="240"> |
+| <img width="240" src="https://github.com/user-attachments/assets/c0dfcef3-f79a-4d52-8523-723fd41e9f8b" />| <img src="https://github.com/user-attachments/assets/0742ccb4-3ffa-45d8-bd5b-d4889bce5728" width="240"> | <img width="240" src="https://github.com/user-attachments/assets/a314bf01-184e-4db8-9036-728875b0c67f" /> |
 | **다크 모드 지원** | **위젯 실행 화면** | **QR코드 크기 조정 화면** |
 
 ## 기능
