@@ -77,6 +77,7 @@ fun MainScreen(
                 LandingScreen(
                     onFinished = {
                         mainViewModel.completeInitialSetup()
+                        mainViewModel.clearAccountSubmitState()
                         navController.navigate(ScreenDestination.Home) {
                             popUpTo<ScreenDestination.Landing> {
                                 inclusive = true

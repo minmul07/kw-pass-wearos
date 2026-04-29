@@ -120,10 +120,42 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    private fun resolvePasswordForSave(inputForm: InputFormState, accountInfo: AccountInfoState): String {
+        return inputForm.passwordInput.ifBlank { accountInfo.password }
+    }
+
+    private fun hasAccountFormChanges(inputForm: InputFormState, accountInfo: AccountInfoState): Boolean {
+        return inputForm.ridInput != accountInfo.rid ||
+                inputForm.telInput != accountInfo.tel ||
+                inputForm.passwordInput.isNotBlank()
+    }
+
+    private fun isAccountFormValidForSave(
+        inputForm: InputFormState,
+        accountInfo: AccountInfoState
+    ): Boolean {
+        val passwordForSave = resolvePasswordForSave(inputForm, accountInfo)
+        return inputForm.isRidValid &&
+                inputForm.isTelValid &&
+                validateAccountUseCase.isValidPassword(passwordForSave)
+    }
+
     fun setAccountData() {
-        if (!mainUiState.value.inputForm.isAllValidInput) {
+        val currentUiState = mainUiState.value
+        val inputForm = currentUiState.inputForm
+        val accountInfo = currentUiState.accountInfo
+
+        if (!hasAccountFormChanges(inputForm, accountInfo)) {
+            return
+        }
+
+        if (!isAccountFormValidForSave(inputForm, accountInfo)) {
             _mainUiState.update { currentState ->
                 currentState.copy(
+                    accountSubmit = AccountSubmitState(
+                        failed = true,
+                        initialStatus = false
+                    ),
                     inputForm = currentState.inputForm.copy(
                         fieldErrorStatus = true
                     )
@@ -135,11 +167,9 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             _mainUiState.update { currentState ->
                 currentState.copy(
-                    process = currentState.process.copy(
-                        isFetching = true,
+                    accountSubmit = AccountSubmitState(
+                        isSubmitting = true,
                         initialStatus = false,
-                        fetchFailed = false,
-                        fetchSucceeded = false,
                     ),
                     inputForm = currentState.inputForm.copy(
                         fieldErrorStatus = false
@@ -147,22 +177,35 @@ class MainViewModel @Inject constructor(
                 )
             }
 
-            val newRid = mainUiState.value.inputForm.ridInput
-            val newPassword = mainUiState.value.inputForm.passwordInput.ifBlank {
-                mainUiState.value.accountInfo.password
-            }
-            val newTel = mainUiState.value.inputForm.telInput
+            val newRid = inputForm.ridInput
+            val newPassword = resolvePasswordForSave(inputForm, accountInfo)
+            val newTel = inputForm.telInput
 
-            getQrCodeUseCase(newRid, newPassword, newTel, source)
-                .onSuccess {
+            getQrCodeUseCase(
+                rid = newRid,
+                password = newPassword,
+                tel = newTel,
+                source = source,
+                useCachedAuthKey = false
+            )
+                .onSuccess { bitmap ->
                     saveDataOnLocal(newRid, newPassword, newTel)
                     syncWatchUseCase.sendAccountData(newRid, newPassword, newTel)
                     _mainUiState.update { currentState ->
                         currentState.copy(
+                            accountDataLoaded = true,
                             process = currentState.process.copy(
                                 isFetching = false,
                                 fetchFailed = false,
-                                fetchSucceeded = true
+                                fetchSucceeded = true,
+                                initialStatus = false,
+                                qrBitmap = bitmap,
+                                refreshTimeLeft = QR_VALID_TIME_SEC,
+                                qrCreationTime = System.currentTimeMillis()
+                            ),
+                            accountSubmit = AccountSubmitState(
+                                succeeded = true,
+                                initialStatus = false,
                             ),
                             accountInfo = currentState.accountInfo.copy(
                                 rid = newRid,
@@ -171,6 +214,7 @@ class MainViewModel @Inject constructor(
                             )
                         )
                     }
+                    startRefreshTimer(time = QR_VALID_TIME_SEC)
                 }
                 .onFailure { e ->
                     if (e is KwPassException) {
@@ -181,10 +225,9 @@ class MainViewModel @Inject constructor(
                     }
                     _mainUiState.update { currentState ->
                         currentState.copy(
-                            process = currentState.process.copy(
-                                isFetching = false,
-                                fetchFailed = true,
-                                fetchSucceeded = false
+                            accountSubmit = AccountSubmitState(
+                                failed = true,
+                                initialStatus = false,
                             ),
                             inputForm = currentState.inputForm.copy(
                                 fieldErrorStatus = true
@@ -212,6 +255,7 @@ class MainViewModel @Inject constructor(
                 currentState.copy(
                     process = currentState.process.copy(
                         isFetching = true,
+                        initialStatus = false,
                         fetchFailed = false
                     )
                 )
@@ -383,6 +427,14 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun clearAccountSubmitState() {
+        _mainUiState.update { currentState ->
+            currentState.copy(
+                accountSubmit = AccountSubmitState()
+            )
+        }
+    }
+
 
     fun updateRidInput(input: String) {
         if (input.length <= 10 && input.all { it.isDigit() }) {
@@ -392,7 +444,8 @@ class MainViewModel @Inject constructor(
                         ridInput = input,
                         isRidValid = validateAccountUseCase.isValidRid(input),
                         fieldErrorStatus = false
-                    )
+                    ),
+                    accountSubmit = AccountSubmitState()
                 )
             }
         }
@@ -407,7 +460,8 @@ class MainViewModel @Inject constructor(
                     passwordInput = input,
                     isPasswordValid = validateAccountUseCase.isValidPassword(input),
                     fieldErrorStatus = false
-                )
+                ),
+                accountSubmit = AccountSubmitState()
             )
         }
     }
@@ -420,7 +474,8 @@ class MainViewModel @Inject constructor(
                         telInput = input,
                         isTelValid = validateAccountUseCase.isValidTel(input),
                         fieldErrorStatus = false
-                    )
+                    ),
+                    accountSubmit = AccountSubmitState()
                 )
             }
         }
@@ -437,6 +492,7 @@ class MainViewModel @Inject constructor(
     fun setDataOnUiState(newRid: String, newPassword: String, newTel: String) {
         _mainUiState.update { currentState ->
             currentState.copy(
+                accountDataLoaded = true,
                 accountInfo = currentState.accountInfo.copy(
                     rid = newRid,
                     password = newPassword,
@@ -449,9 +505,6 @@ class MainViewModel @Inject constructor(
                     isRidValid = validateAccountUseCase.isValidRid(newRid), // true 보장됨
                     isPasswordValid = false,
                     isTelValid = validateAccountUseCase.isValidTel(newTel),  // true 보장됨
-                ),
-                process = currentState.process.copy(
-                    isFetching = false
                 )
             )
         }

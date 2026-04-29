@@ -19,11 +19,12 @@ class GetQrCodeUseCase @Inject constructor(
         rid: String,
         password: String,
         tel: String,
-        source: String
+        source: String,
+        useCachedAuthKey: Boolean = true
     ): Result<Bitmap> =
         runCatching {
             val realRid = "0$rid"
-            val cachedAuthKey = localDisk.getSavedAuthKey()
+            val cachedAuthKey = if (useCachedAuthKey) localDisk.getSavedAuthKey() else null
 
             val qrString = if (cachedAuthKey != null) {
                 Timber.i("저장된 auth 키 발견!")

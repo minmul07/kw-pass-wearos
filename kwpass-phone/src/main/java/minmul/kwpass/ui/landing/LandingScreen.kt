@@ -76,7 +76,7 @@ fun LandingContent(
 
                 2 -> InitialSetupScreen(
                     onNextClicked = onFinished,
-                    processState = mainUiState.process,
+                    accountSubmitState = mainUiState.accountSubmit,
                     inputFormState = mainUiState.inputForm,
                     onRidChange = onRidChange,
                     onPasswordChange = onPasswordChange,

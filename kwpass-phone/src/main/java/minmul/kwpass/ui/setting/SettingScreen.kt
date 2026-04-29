@@ -88,8 +88,20 @@ fun SettingMainScreen(
     context: Context,
     debugAuthKey: () -> Unit
 ) {
+    val hasAccountFormChanges = mainUiState.inputForm.run {
+        ridInput != mainUiState.accountInfo.rid ||
+                telInput != mainUiState.accountInfo.tel ||
+                passwordInput.isNotBlank()
+    }
+    val hasUsablePasswordForUpdate = mainUiState.inputForm.run {
+        if (passwordInput.isBlank()) {
+            mainUiState.accountInfo.password.isNotBlank()
+        } else {
+            isPasswordValid
+        }
+    }
     val isFormValidForUpdate = mainUiState.inputForm.run {
-        isRidValid && isTelValid && (isPasswordValid || passwordInput.isBlank())
+        hasAccountFormChanges && isRidValid && isTelValid && hasUsablePasswordForUpdate
     }
     val licenseTypography = MaterialTheme.typography
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
@@ -236,14 +248,14 @@ private fun AccountSettingsCard(
             )
             Spacer(modifier = Modifier.height(8.dp))
             AccountInputFieldSet(
-                processState = mainUiState.process,
+                accountSubmitState = mainUiState.accountSubmit,
                 inputFormState = mainUiState.inputForm,
                 onRidChange = onRidChange,
                 onPasswordChange = onPasswordChange,
                 onPasswordVisibilityChange = onPasswordVisibilityChange,
                 onTelChange = onTelChange,
                 onButtonClicked = onSave,
-                buttonEnabled = isFormValidForUpdate && !mainUiState.process.isFetching,
+                buttonEnabled = isFormValidForUpdate && !mainUiState.accountSubmit.isSubmitting,
                 buttonLabel = stringResource(R.string.login),
                 buttonOnWork = stringResource(R.string.checking),
                 isInitialSetup = false,

@@ -39,9 +39,18 @@ data class ProcessState(
     val sampleQrBitmap: Bitmap? = null
 )
 
+data class AccountSubmitState(
+    val isSubmitting: Boolean = false,
+    val failed: Boolean = false,
+    val succeeded: Boolean = false,
+    val initialStatus: Boolean = true,
+)
+
 data class MainUiState(
     val accountInfo: AccountInfoState = AccountInfoState(),
+    val accountDataLoaded: Boolean = false,
     val inputForm: InputFormState = InputFormState(),
+    val accountSubmit: AccountSubmitState = AccountSubmitState(),
     val process: ProcessState = ProcessState(),
     val setupFinished: Boolean = false,
 )

@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import minmul.kwpass.R
 import minmul.kwpass.ui.components.AccountInputFieldSet
 import minmul.kwpass.ui.components.OnboardingHeader
+import minmul.kwpass.ui.main.AccountSubmitState
 import minmul.kwpass.ui.main.InputFormState
-import minmul.kwpass.ui.main.ProcessState
 import minmul.kwpass.ui.theme.KWPassTheme
 
 // TODO: 비밀번호 오류 발생 시, 도서관 초기 비밀번호일 수 있음. 앱 사용을 위해 사용자에게 변경 권장
@@ -31,7 +31,7 @@ import minmul.kwpass.ui.theme.KWPassTheme
 @Composable
 fun InitialSetupScreen(
     onNextClicked: () -> Unit,
-    processState: ProcessState,
+    accountSubmitState: AccountSubmitState,
     inputFormState: InputFormState,
     onRidChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
@@ -69,16 +69,16 @@ fun InitialSetupScreen(
                     shape = MaterialTheme.shapes.extraLarge,
                 ) {
                     AccountInputFieldSet(
-                        processState = processState,
+                        accountSubmitState = accountSubmitState,
                         inputFormState = inputFormState,
                         onRidChange = onRidChange,
                         onPasswordChange = onPasswordChange,
                         onPasswordVisibilityChange = onPasswordVisibilityChange,
                         onTelChange = onTelChange,
                         onButtonClicked = {
-                            if (!processState.fetchSucceeded) onSave() else onNextClicked()
+                            if (!accountSubmitState.succeeded) onSave() else onNextClicked()
                         },
-                        buttonLabel = if (!processState.fetchSucceeded) {
+                        buttonLabel = if (!accountSubmitState.succeeded) {
                             stringResource(R.string.login)
                         } else {
                             stringResource(R.string.start)
@@ -92,8 +92,8 @@ fun InitialSetupScreen(
                             errorContainerColor = colorScheme.surfaceContainer
                         ),
                         modifier = Modifier.padding(16.dp),
-                        buttonEnabled = processState.fetchSucceeded ||
-                                (inputFormState.isAllValidInput && !processState.isFetching)
+                        buttonEnabled = accountSubmitState.succeeded ||
+                                (inputFormState.isAllValidInput && !accountSubmitState.isSubmitting)
                     )
                 }
             }
@@ -117,16 +117,16 @@ fun InitialSetupScreenPreview() {
             fieldErrorStatus = false
         )
 
-        val mockProcess = ProcessState(
-            isFetching = false,
-            fetchFailed = false,
-            fetchSucceeded = false,
+        val mockAccountSubmitState = AccountSubmitState(
+            isSubmitting = false,
+            failed = false,
+            succeeded = false,
             initialStatus = false
         )
 
         InitialSetupScreen(
             onNextClicked = { },
-            processState = mockProcess,
+            accountSubmitState = mockAccountSubmitState,
             inputFormState = mockInputForm,
             onRidChange = { },
             onPasswordChange = { },
@@ -152,16 +152,16 @@ fun DarkInitialSetupScreenPreview() {
             fieldErrorStatus = false
         )
 
-        val mockProcess = ProcessState(
-            isFetching = false,
-            fetchFailed = false,
-            fetchSucceeded = false,
+        val mockAccountSubmitState = AccountSubmitState(
+            isSubmitting = false,
+            failed = false,
+            succeeded = false,
             initialStatus = false
         )
 
         InitialSetupScreen(
             onNextClicked = { },
-            processState = mockProcess,
+            accountSubmitState = mockAccountSubmitState,
             inputFormState = mockInputForm,
             onRidChange = { },
             onPasswordChange = { },

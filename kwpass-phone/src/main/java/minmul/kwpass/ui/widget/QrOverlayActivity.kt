@@ -26,6 +26,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,7 +61,7 @@ class QrOverlayActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
         super.onNewIntent(intent, caller)
 
-        viewModel.refreshQR()
+        viewModel.refreshQR(onWidget = true)
     }
 
     override fun onDestroy() {
@@ -83,6 +84,7 @@ class QrOverlayActivity : ComponentActivity() {
                 }
 
                 val uiState by viewModel.mainUiState.collectAsStateWithLifecycle()
+                val hasValidAccount by rememberUpdatedState(uiState.accountInfo.hasValidInfo)
 
                 val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -97,8 +99,8 @@ class QrOverlayActivity : ComponentActivity() {
                 DisposableEffect(lifecycleOwner) {
                     val observer = LifecycleEventObserver { _, event ->
                         if (event == Event.ON_RESUME) {
-                            if (uiState.accountInfo.hasValidInfo) {
-                                viewModel.refreshQR()
+                            if (hasValidAccount) {
+                                viewModel.refreshQR(onWidget = true)
                             }
                         }
                     }
@@ -113,7 +115,7 @@ class QrOverlayActivity : ComponentActivity() {
                     if (uiState.process.qrBitmap != null) {
                         while (isActive) {
                             delay(50000L)
-                            viewModel.refreshQR()
+                            viewModel.refreshQR(onWidget = true)
                         }
                     }
                 }
@@ -156,7 +158,7 @@ class QrOverlayActivity : ComponentActivity() {
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (uiState.process.isFetching) {
+                    if (!uiState.accountDataLoaded || uiState.process.isFetching) {
                         CircularProgressIndicator(color = Color.White)
                     } else if (uiState.process.qrBitmap != null) {
                         KeepScreenMaxBrightness()

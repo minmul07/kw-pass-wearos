@@ -1,5 +1,7 @@
 package minmul.kwpass.ui.components
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,8 +24,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -32,15 +40,16 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import minmul.kwpass.R
+import minmul.kwpass.ui.main.AccountSubmitState
 import minmul.kwpass.ui.main.InputFormState
-import minmul.kwpass.ui.main.ProcessState
 import minmul.kwpass.ui.theme.KWPassTheme
 
 @Composable
 fun AccountInputFieldSet(
     modifier: Modifier = Modifier,
-    processState: ProcessState,
+    accountSubmitState: AccountSubmitState,
     inputFormState: InputFormState,
     onRidChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
@@ -58,21 +67,48 @@ fun AccountInputFieldSet(
         errorContainerColor = colorScheme.surfaceContainer
     )
 ) {
-    val fieldEnabled = !processState.isFetching && if (isInitialSetup) {
-        !processState.fetchSucceeded
+    var showSuccessMessage by remember { mutableStateOf(false) }
+
+    LaunchedEffect(accountSubmitState.succeeded) {
+        if (accountSubmitState.succeeded) {
+            showSuccessMessage = true
+            delay(3000L)
+            showSuccessMessage = false
+        } else {
+            showSuccessMessage = false
+        }
+    }
+
+    val fieldEnabled = !accountSubmitState.isSubmitting && if (isInitialSetup) {
+        !accountSubmitState.succeeded
     } else {
         true
     }
 
-    val statusMessage: String = if (processState.initialStatus) ""
-    else if (processState.isFetching) stringResource(R.string.verifying_account)
-    else if (processState.fetchFailed) stringResource(R.string.error_verifying_account)
-    else if (processState.fetchSucceeded) stringResource(R.string.login_success)
+    val statusMessage: String = if (accountSubmitState.initialStatus) ""
+    else if (accountSubmitState.isSubmitting) stringResource(R.string.verifying_account)
+    else if (accountSubmitState.failed) stringResource(R.string.error_verifying_account)
+    else if (accountSubmitState.succeeded) stringResource(R.string.login_success)
     else ""
 
+    val statusVisible = statusMessage.isNotBlank() &&
+            (!accountSubmitState.succeeded || showSuccessMessage)
+
+    val statusAlpha by animateFloatAsState(
+        targetValue = if (statusVisible) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = if (accountSubmitState.succeeded && !showSuccessMessage) {
+                1000
+            } else {
+                150
+            }
+        ),
+        label = "accountStatusAlpha"
+    )
+
     val statusColor = when {
-        processState.fetchFailed -> MaterialTheme.colorScheme.error
-        processState.fetchSucceeded -> MaterialTheme.colorScheme.primary
+        accountSubmitState.failed -> MaterialTheme.colorScheme.error
+        accountSubmitState.succeeded -> MaterialTheme.colorScheme.primary
         else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 
@@ -110,7 +146,8 @@ fun AccountInputFieldSet(
                 else "비밀번호 보기"
 
                 IconButton(
-                    onClick = onPasswordVisibilityChange, enabled = !processState.isFetching
+                    onClick = onPasswordVisibilityChange,
+                    enabled = !accountSubmitState.isSubmitting
                 ) {
                     Icon(imageVector = passwordVisibilityIcon, description)
                 }
@@ -146,13 +183,16 @@ fun AccountInputFieldSet(
                     .padding(start = 4.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
-                Text(
-                    text = statusMessage,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = statusColor,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
+                if (statusMessage.isNotBlank()) {
+                    Text(
+                        text = statusMessage,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = statusColor,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.alpha(statusAlpha)
+                    )
+                }
             }
             Button(
                 onClick = onButtonClicked,
@@ -161,7 +201,7 @@ fun AccountInputFieldSet(
                     .heightIn(min = 48.dp)
                     .widthIn(min = 96.dp)
             ) {
-                if (!processState.isFetching) {
+                if (!accountSubmitState.isSubmitting) {
                     Text(text = buttonLabel)
                 } else {
                     Text(text = buttonOnWork)
@@ -218,15 +258,15 @@ fun AccountInputFieldSetPreview() {
             fieldErrorStatus = false
         )
 
-        val mockProcess = ProcessState(
-            isFetching = false,
-            fetchFailed = false,
-            fetchSucceeded = false,
+        val mockAccountSubmitState = AccountSubmitState(
+            isSubmitting = false,
+            failed = false,
+            succeeded = false,
             initialStatus = false
         )
 
         AccountInputFieldSet(
-            processState = mockProcess,
+            accountSubmitState = mockAccountSubmitState,
             inputFormState = mockInputForm,
             onRidChange = {},
             onPasswordChange = {},
