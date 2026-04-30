@@ -34,6 +34,8 @@ import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import minmul.kwpass.R
 import minmul.kwpass.ui.theme.KWPassTheme
+import minmul.kwpass.ui.theme.onSurfaceDark
+import minmul.kwpass.ui.theme.onSurfaceLight
 
 class KwPassWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
@@ -87,13 +89,15 @@ class KwPassWidget : GlanceAppWidget() {
                     provider = ImageProvider(R.drawable.qr_icon_72_white),
                     contentDescription = null,
                     modifier = GlanceModifier.size(iconSize),
-                    colorFilter = ColorFilter.tint(GlanceTheme.colors.onSurface)
+                    colorFilter = ColorFilter.tint(
+                        ColorProvider(day = onSurfaceLight, night = onSurfaceDark)
+                    )
                 )
                 Spacer(modifier = GlanceModifier.height(spacerHeight))
                 Text(
                     text = context.getString(R.string.widget_title),
                     style = TextStyle(
-                        color = ColorProvider(day = Color.Black, night = Color.White),
+                        color = ColorProvider(day = onSurfaceLight, night = onSurfaceDark),
                         fontSize = textSize,
                         textAlign = TextAlign.Center
                     ),
