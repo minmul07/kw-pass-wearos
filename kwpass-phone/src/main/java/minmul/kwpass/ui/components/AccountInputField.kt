@@ -68,14 +68,25 @@ fun AccountInputFieldSet(
     )
 ) {
     var showSuccessMessage by remember { mutableStateOf(false) }
+    var showFailureMessage by remember { mutableStateOf(false) }
 
     LaunchedEffect(accountSubmitState.succeeded) {
         if (accountSubmitState.succeeded) {
             showSuccessMessage = true
-            delay(3000L)
+            delay(2500L)
             showSuccessMessage = false
         } else {
             showSuccessMessage = false
+        }
+    }
+
+    LaunchedEffect(accountSubmitState.failed) {
+        if (accountSubmitState.failed) {
+            showFailureMessage = true
+            delay(3000L)
+            showFailureMessage = false
+        } else {
+            showFailureMessage = false
         }
     }
 
@@ -92,12 +103,14 @@ fun AccountInputFieldSet(
     else ""
 
     val statusVisible = statusMessage.isNotBlank() &&
-            (!accountSubmitState.succeeded || showSuccessMessage)
+            ((!accountSubmitState.succeeded || showSuccessMessage) && (!accountSubmitState.failed || showFailureMessage))
 
     val statusAlpha by animateFloatAsState(
         targetValue = if (statusVisible) 1f else 0f,
         animationSpec = tween(
-            durationMillis = if (accountSubmitState.succeeded && !showSuccessMessage) {
+            durationMillis = if ((accountSubmitState.succeeded && !showSuccessMessage) ||
+                (accountSubmitState.failed && !showFailureMessage)
+            ) {
                 1000
             } else {
                 150
@@ -212,7 +225,6 @@ fun AccountInputFieldSet(
 }
 
 
-// TODO(): supportingText 적용하기
 @Composable
 fun AccountInputField(
     modifier: Modifier = Modifier,
