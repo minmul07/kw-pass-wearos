@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -24,6 +25,7 @@ class LocalDisk @Inject constructor(
         val KEY_TEL = stringPreferencesKey("tel") // 전화번호
         val KEY_IS_FIRST_RUN = booleanPreferencesKey("is_first_run")
         val AUTH_KEY = stringPreferencesKey("")
+        val AUTH_KEY_CACHED_AT = longPreferencesKey("auth_key_cached_at")
         val QR_SIZE = intPreferencesKey("qr_size")
     }
 
@@ -45,6 +47,7 @@ class LocalDisk @Inject constructor(
         Timber.i("disk에 auth key 저장중...")
         context.dataStore.edit { preferences ->
             preferences[AUTH_KEY] = authKey
+            preferences[AUTH_KEY_CACHED_AT] = System.currentTimeMillis()
         }
     }
 
@@ -54,10 +57,17 @@ class LocalDisk @Inject constructor(
         }.first()
     }
 
+    suspend fun getSavedAuthKeyCachedAt(): Long? {
+        return context.dataStore.data.map { preferences ->
+            preferences[AUTH_KEY_CACHED_AT]
+        }.first()
+    }
+
     // DEBUG
     suspend fun deleteSavedAuthKey() {
         context.dataStore.edit { preferences ->
             preferences.remove(AUTH_KEY)
+            preferences.remove(AUTH_KEY_CACHED_AT)
         }
     }
 

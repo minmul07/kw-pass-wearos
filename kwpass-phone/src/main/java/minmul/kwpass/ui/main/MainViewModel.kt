@@ -41,9 +41,9 @@ class MainViewModel @Inject constructor(
     companion object {
         const val QR_VALID_TIME_SEC = 50
         const val QR_VALID_TIME_MS = QR_VALID_TIME_SEC * 1000L
+        private const val PHONE_APP_SOURCE = "phone-app"
+        private const val PHONE_WIDGET_SOURCE = "phone-widget"
     }
-
-    private val source: String = "phone"
 
     private val _mainUiState = MutableStateFlow(MainUiState())
     val mainUiState: StateFlow<MainUiState> = _mainUiState.asStateFlow()
@@ -185,7 +185,7 @@ class MainViewModel @Inject constructor(
                 rid = newRid,
                 password = newPassword,
                 tel = newTel,
-                source = source,
+                source = PHONE_APP_SOURCE,
                 useCachedAuthKey = false
             )
                 .onSuccess { bitmap ->
@@ -247,6 +247,7 @@ class MainViewModel @Inject constructor(
         val rid = mainUiState.value.accountInfo.rid
         val password = mainUiState.value.accountInfo.password
         val tel = mainUiState.value.accountInfo.tel
+        val source = if (onWidget) PHONE_WIDGET_SOURCE else PHONE_APP_SOURCE
 
         timerJob?.cancel()
         refreshJob?.cancel()

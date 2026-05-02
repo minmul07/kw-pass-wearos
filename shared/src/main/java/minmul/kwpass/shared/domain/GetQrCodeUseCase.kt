@@ -23,15 +23,30 @@ class GetQrCodeUseCase @Inject constructor(
         useCachedAuthKey: Boolean = true
     ): Result<Bitmap> =
         runCatching {
+            val requestStartedAt = System.currentTimeMillis()
             val realRid = "0$rid"
             val cachedAuthKey = if (useCachedAuthKey) localDisk.getSavedAuthKey() else null
+            val cachedAuthKeyCachedAt = if (cachedAuthKey != null) {
+                localDisk.getSavedAuthKeyCachedAt()
+            } else {
+                null
+            }
+            var authKeyReused = false
 
             val qrString = if (cachedAuthKey != null) {
                 Timber.i("저장된 auth 키 발견!")
                 runCatching { // 캐시된 auth키로 시도
                     fastGetQr(realRid, cachedAuthKey)
+                        .also { authKeyReused = true }
                 }.recoverCatching { // 실패? 그럼 auth키 버리고 다시 시도
                     Timber.e("저장된 auth키 만료됨, 재시도")
+                    cachedAuthKeyCachedAt?.let { cachedAt ->
+                        kwPassLogger.logAuthKeyExpiredFallback(
+                            source = source,
+                            cachedElapsedMs = System.currentTimeMillis() - cachedAt
+                        )
+                    }
+                    authKeyReused = false
                     getQrWithoutCachedAuthKey(realRid, password, tel)
                 }.getOrThrow()
 
@@ -48,8 +63,16 @@ class GetQrCodeUseCase @Inject constructor(
 
             // 비트맵 생성 로직
             val margin = if (source == "watch") 0 else 2
-            QrGenerator.generateQrBitmapInternal(qrString, margin = margin)
+            val qrBitmap = QrGenerator.generateQrBitmapInternal(qrString, margin = margin)
                 ?: throw KwPassException.UnknownError()
+            kwPassLogger.logQrRequestToRender(
+                source = source,
+                authKeyReused = authKeyReused,
+                durationMs = System.currentTimeMillis() - requestStartedAt
+            )
+            qrBitmap
+        }.onFailure { e ->
+            kwPassLogger.logQrIssueFailed(source, e)
         }
 
     suspend fun getQrWithoutCachedAuthKey(
