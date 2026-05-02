@@ -25,6 +25,7 @@ import minmul.kwpass.shared.LocalDisk
 import minmul.kwpass.shared.QrGenerator
 import minmul.kwpass.shared.analytics.KwPassLogger
 import minmul.kwpass.shared.domain.GetQrCodeUseCase
+import minmul.kwpass.shared.maskLastFourForLog
 import minmul.kwpass.ui.UiText
 import timber.log.Timber
 import javax.inject.Inject
@@ -83,7 +84,8 @@ class MainViewModel @Inject constructor(
             }.collect { (user, firstRun, qrSize) ->
                 val (rid, password, tel) = user
 
-                Timber.tag("DEBUG_USER").d("로드된 정보: 학번=$rid, 비번= ${password.length}자리, 전화=$tel")
+                Timber.tag("DEBUG_USER")
+                    .d("로드된 정보: 학번=${rid.maskLastFourForLog()}, 비번= ${password.length}자리, 전화=${tel.maskLastFourForLog()}")
                 setDataOnUiState(rid, password, tel)
                 updateQrSize(qrSize.toFloat())
 

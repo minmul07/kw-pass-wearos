@@ -62,10 +62,10 @@ class KwuRepository @Inject constructor(
                 }).toKwResponse(
                     requiredTag = "sec_key",
                     missingRequiredError = KwPassException.ServerError()
-                )
+            )
             val secretKey = secretKeyResponse.item.secret
             Timber.tag("getSecretKey")
-                .i("   >> Secret Key: $secretKey (${secretKey?.length ?: "NULL"})")
+                .i("   >> Secret Key: ${secretKey.maskLastFourForLog()} (${secretKey?.length ?: "NULL"})")
             secretKey
         } catch (e: Exception) {
             if (e is CancellationException) throw e
@@ -97,7 +97,7 @@ class KwuRepository @Inject constructor(
 
             val authKey = authKeyResponse.item.authKey
             Timber.tag("getAuthKey")
-                .i("   >> Auth Key: $authKey (${authKey?.length ?: "NULL"})")
+                .i("   >> Auth Key: ${authKey.maskLastFourForLog()} (${authKey?.length ?: "NULL"})")
             authKey
         } catch (e: Exception) {
             if (e is CancellationException) throw e

@@ -42,18 +42,19 @@ class LocalDisk @Inject constructor(
         }
     }
 
-    // TODO: AuthKey 암호화하여 저장
     suspend fun saveAuthKey(authKey: String) {
         Timber.i("disk에 auth key 저장중...")
+        val encryptedAuthKey = CryptoManager.encrypt(authKey)
+
         context.dataStore.edit { preferences ->
-            preferences[AUTH_KEY] = authKey
+            preferences[AUTH_KEY] = encryptedAuthKey
             preferences[AUTH_KEY_CACHED_AT] = System.currentTimeMillis()
         }
     }
 
     suspend fun getSavedAuthKey(): String? {
         return context.dataStore.data.map { preferences ->
-            preferences[AUTH_KEY]
+            preferences[AUTH_KEY]?.let { CryptoManager.decrypt(it).ifBlank { null } }
         }.first()
     }
 

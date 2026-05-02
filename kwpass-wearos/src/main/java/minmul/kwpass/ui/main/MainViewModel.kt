@@ -24,9 +24,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import minmul.kwpass.shared.QrGenerator
 import minmul.kwpass.shared.LocalDisk
+import minmul.kwpass.shared.QrGenerator
 import minmul.kwpass.shared.domain.GetQrCodeUseCase
+import minmul.kwpass.shared.maskLastFourForLog
 import minmul.kwpass.ui.ScreenStatus
 import timber.log.Timber
 import javax.inject.Inject
@@ -78,7 +79,7 @@ class MainViewModel @Inject constructor(
                 .collect { (user, firstRun) ->
                     val (rid, password, tel) = user
 
-                    Timber.d("로드된 정보: 학번=$rid, 비번= ${password.length}자리, 전화=$tel")
+                    Timber.d("로드된 정보: 학번=${rid.maskLastFourForLog()}, 비번= ${password.length}자리, 전화=${tel.maskLastFourForLog()}")
 
                     if (rid.isNotEmpty() && password.isNotEmpty() && tel.isNotEmpty()) { // 데이터 로드 성공
                         setUserDataOnUiState(rid, password, tel)
