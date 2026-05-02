@@ -23,7 +23,7 @@ import minmul.kwpass.service.KwPassConst
 import minmul.kwpass.shared.KwPassException
 import minmul.kwpass.shared.LocalDisk
 import minmul.kwpass.shared.QrGenerator
-import minmul.kwpass.shared.analystics.KwPassLogger
+import minmul.kwpass.shared.analytics.KwPassLogger
 import minmul.kwpass.shared.domain.GetQrCodeUseCase
 import minmul.kwpass.ui.UiText
 import timber.log.Timber

@@ -5,7 +5,7 @@ import minmul.kwpass.shared.KwPassException
 import minmul.kwpass.shared.KwuRepository
 import minmul.kwpass.shared.LocalDisk
 import minmul.kwpass.shared.QrGenerator
-import minmul.kwpass.shared.analystics.KwPassLogger
+import minmul.kwpass.shared.analytics.KwPassLogger
 import okio.IOException
 import timber.log.Timber
 import javax.inject.Inject

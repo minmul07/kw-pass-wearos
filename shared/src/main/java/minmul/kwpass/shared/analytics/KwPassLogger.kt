@@ -1,4 +1,4 @@
-package minmul.kwpass.shared.analystics
+package minmul.kwpass.shared.analytics
 
 import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
