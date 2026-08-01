@@ -10,12 +10,12 @@ plugins {
 
 android {
     namespace = "minmul.kwpass"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "minmul.kwpass"
         minSdk = 30
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 20013
         versionName = "watch_2.0"
 
@@ -81,6 +81,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
+    ksp(libs.hilt.metadata.fix)
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)

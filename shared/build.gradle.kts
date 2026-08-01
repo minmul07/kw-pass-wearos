@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "minmul.kwpass.shared"
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
 
         minSdk = 29
@@ -46,6 +46,7 @@ dependencies {
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    ksp(libs.hilt.metadata.fix)
 
     implementation(platform(libs.firebase.bom))
     api(libs.firebase.analytics)

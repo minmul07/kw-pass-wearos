@@ -12,12 +12,12 @@ plugins {
 
 android {
     namespace = "minmul.kwpass"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "minmul.kwpass"
         minSdk = 29
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 10014
         versionName = "phone_2.0"
 
@@ -91,6 +91,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
+    ksp(libs.hilt.metadata.fix)
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
